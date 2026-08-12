@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 隐私与贡献规则
+    url: https://github.com/liver-detox/bazi-ziwei-calculator/blob/main/CONTRIBUTING.md
+    about: 提交公开 Issue 前，请确认只使用完全合成且不含个人资料的信息。
+  - name: 敏感安全问题
+    url: https://github.com/liver-detox/bazi-ziwei-calculator/security/policy
+    about: 不要在公开 Issue 中披露漏洞利用细节或敏感资料。

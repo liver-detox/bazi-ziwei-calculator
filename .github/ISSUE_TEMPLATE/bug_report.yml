@@ -1,0 +1,68 @@
+name: 缺陷报告
+description: 使用完全合成的资料报告可复现问题。
+title: "[Bug]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感谢帮助改进项目。此表单只接受完全合成、且与任何真实人物无关的最小复现。
+
+        不要提交真实姓名、出生日期、出生时间、出生地点、联系方式、私密导出、数据库、日志、本机路径、环境变量、密钥或令牌。涉及敏感安全问题时，请不要使用公开 Issue，改按 [安全政策](https://github.com/liver-detox/bazi-ziwei-calculator/security/policy) 处理。
+
+  - type: input
+    id: version
+    attributes:
+      label: 受影响版本或提交
+      description: 例如 v0.1.0；若从源码运行，请提供公开提交短哈希。
+      placeholder: v0.1.0
+    validations:
+      required: true
+
+  - type: dropdown
+    id: platform
+    attributes:
+      label: 操作系统
+      options:
+        - macOS
+        - Windows
+        - Linux
+        - 其他
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: 最小复现步骤
+      description: 只使用完全合成的输入；请写明能稳定复现的操作步骤。
+      placeholder: |
+        1. 使用完全合成的示例输入……
+        2. 打开……
+        3. 观察到……
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: 预期行为
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: 实际行为
+      description: 请勿粘贴含个人或设备识别信息的日志、截图或文件内容。
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: 隐私与安全确认
+      options:
+        - label: 我已阅读贡献和隐私规则，并确认本 Issue 不含任何真实案例或个人、设备、凭据信息。
+          required: true
+        - label: 我确认这不是敏感安全漏洞报告；如涉及安全问题，我会遵循安全政策而不公开细节。
+          required: true
