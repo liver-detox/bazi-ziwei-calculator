@@ -1,0 +1,71 @@
+{
+  "schemaVersion": "1.0.0",
+  "snapshotVersion": "CyberSaga-Rulesets-v1",
+  "time": {
+    "version": "CyberSaga-Time-v1",
+    "timezoneDatabase": "@js-joda/timezone@2.25.2#2026a",
+    "standardOffsetRuleset": "CyberSaga-StandardOffset-v1",
+    "trueSolarAlgorithm": "longitude-plus-equation-of-time-v1",
+    "lateZiDefault": "parallel-current-and-forward",
+    "supportedYears": [1900, 2099]
+  },
+  "xinjiangLocation": {
+    "ruleId": "xinjiang-clock-convention-confirmation",
+    "rulesetVersion": "CyberSaga-Xinjiang-Location-v1",
+    "countryCode": "CN",
+    "alwaysConfirmTimeZones": ["Asia/Urumqi"],
+    "geoNamesSnapshotVersion": "GeoNames-CN-major-cities-v1",
+    "geoNamesSnapshotSha256": "bb614978c8ad21b5ba2a47efaf99a16379e5cdaf635017f053626e6571ac835d",
+    "geoNamesCoordinateKind": "representative",
+    "trustedGeoNameIds": [1529102],
+    "conservativeBounds": {
+      "minLatitude": 34,
+      "maxLatitude": 49.5,
+      "minLongitude": 73,
+      "maxLongitude": 96.5
+    },
+    "longitudeOnlyWithinBoundsRequiresConfirmation": true
+  },
+  "bazi": {
+    "version": "CyberSaga-Bazi-v1",
+    "engine": "lunar-typescript@1.8.6",
+    "yearBoundary": "li_chun",
+    "monthBoundary": "solar_terms",
+    "luckSect": 1,
+    "lateZiCurrentPillarSect": 2,
+    "lateZiForwardPillarSect": 1,
+    "included": [
+      "four_pillars",
+      "hidden_stems",
+      "ten_gods",
+      "na_yin",
+      "void_branches",
+      "growth_stage",
+      "da_yun",
+      "annual_fortunes"
+    ],
+    "excluded": ["shen_sha", "strength", "structure", "useful_god", "auspiciousness"]
+  },
+  "ziwei": {
+    "version": "CyberSaga-Ziwei-v1",
+    "engine": "iztro@2.5.8",
+    "algorithm": "default",
+    "yearDivide": "normal",
+    "horoscopeDivide": "normal",
+    "ageDivide": "normal",
+    "astroType": "heaven",
+    "fixLeap": true,
+    "language": "zh-CN",
+    "lateZiForwardInvocation": "next-day-early-zi",
+    "included": ["twelve_palaces", "soul_body_palaces", "major_minor_stars", "mutagens", "decadal", "annual_fortunes"],
+    "excluded": ["adjective_stars", "boshi12", "jiangqian12", "suiqian12", "yearly_flower_helper_stars", "interpretation"]
+  },
+  "audit": {
+    "version": "CyberSaga-Audit-v1",
+    "levelOrder": ["A", "B", "C", "D"],
+    "workflowStates": ["draft", "review", "verified", "void"],
+    "workflowDoesNotLowerAuditLevel": true,
+    "manualDecisionDoesNotEraseCandidates": true,
+    "failClosedOnUnknownEvidence": true
+  }
+}

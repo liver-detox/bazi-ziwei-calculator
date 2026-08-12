@@ -1,0 +1,52 @@
+{
+  "name": "bazi-ziwei-calculator",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Cyber Saga offline dual-track Bazi and Zi Wei charting and audit workbench.",
+  "scripts": {
+    "chart": "node src/ziwei-chart.mjs",
+    "demo": "node src/ziwei-chart.mjs --solar 2000-01-15 --time 12:00 --gender 女 --name DEMO-NORMAL --format markdown",
+    "test": "node test/smoke.mjs",
+    "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.node.json --noEmit",
+    "test:unit": "vitest run",
+    "test:integration": "node scripts/run-optional-internal-suite.mjs",
+    "test:correctness": "npm run test && npm run test:unit && npm run test:integration",
+    "test:public": "npm test && vitest run --config vitest.public.config.ts",
+    "test:release": "npm run test:public && npm run typecheck && npm run build",
+    "test:performance": "vitest run --config vitest.performance.config.ts test/performance/public-synthetic-performance.test.ts --disableConsoleIntercept",
+    "test:performance:internal": "node scripts/run-performance-benchmarks.mjs",
+    "test:all": "npm run test:correctness && npm run typecheck && npm run build",
+    "build": "vite build",
+    "data:build:geonames-admin": "tsx scripts/build-geonames-cn-admin-places.ts",
+    "dev": "vite --host 127.0.0.1",
+    "start": "tsx src/server/index.ts"
+  },
+  "dependencies": {
+    "@fastify/static": "10.1.2",
+    "@js-joda/core": "6.1.0",
+    "@js-joda/timezone": "2.25.2",
+    "fastify": "5.11.2",
+    "iztro": "2.5.8",
+    "json-canonicalize": "2.0.0",
+    "lucide-react": "1.28.0",
+    "lunar-typescript": "1.8.6",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "zod": "4.4.3"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "devDependencies": {
+    "@4n6h4x0r/stem-branch": "0.8.0",
+    "@types/node": "26.1.2",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.4",
+    "@vitejs/plugin-react": "6.0.5",
+    "tsx": "4.23.8",
+    "typescript": "7.0.2",
+    "vite": "8.2.0",
+    "vitest": "4.1.10"
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "1.0.0",
+  "keysetVersion": "CyberSaga-Reference-Keyset-v1",
+  "requiredGroups": {
+    "time_identity": [
+      "time.original.localTime",
+      "time.candidate.earthlyBranch",
+      "time.candidate.dayBoundary"
+    ],
+    "bazi_four_pillars": [
+      "bazi.fourPillars"
+    ],
+    "ziwei_core": [
+      "ziwei.soulPalaceBranch",
+      "ziwei.bodyPalaceBranch",
+      "ziwei.fiveElementsClass"
+    ],
+    "ziwei_palace_mapping": [
+      "ziwei.palace.{earthlyBranch}.identity",
+      "ziwei.palace.{earthlyBranch}.majorStarNames"
+    ],
+    "bazi_luck_start": [
+      "bazi.luck.startSolarDateTime",
+      "bazi.luck.daYun.1.period",
+      "bazi.luck.daYun.1.ganZhi"
+    ],
+    "ziwei_decadal_start": [
+      "ziwei.palace.{earthlyBranch}.decadal"
+    ]
+  }
+}

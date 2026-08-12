@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="12" fill="#173f37"/>
+  <rect x="10" y="10" width="44" height="44" rx="7" fill="none" stroke="#d7c9a7" stroke-width="2"/>
+  <path d="M20 22h24M20 32h24M20 42h24M26 17v30M38 17v30" stroke="#d7c9a7" stroke-width="2" opacity=".45"/>
+  <text x="32" y="40" text-anchor="middle" font-size="25" font-family="serif" fill="#fffaf0">赛</text>
+</svg>
