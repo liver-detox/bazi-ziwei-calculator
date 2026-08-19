@@ -6,6 +6,7 @@ const publicProductFiles = [
   "index.html",
   "src/web/App.tsx",
   "src/server/index.ts",
+  "scripts/start-local.cmd",
   "scripts/start-local.command",
   "src/web/export-download.ts",
   "src/core/workbench/artifacts.ts"

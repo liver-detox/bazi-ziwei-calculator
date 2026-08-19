@@ -1,9 +1,9 @@
-import { Archive, Check, CircleAlert, Download, FolderLock, LoaderCircle, Search, ShieldCheck, X } from "lucide-react";
+import { Check, CircleAlert, Search, ShieldCheck, X } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
 import type { TimeEvidenceAny } from "../shared/contracts.js";
 import { PROVIDED_TIME_PRESENTATION } from "../shared/provided-time-presentation.js";
-import type { ExportDestination, ExportSaveResult } from "./export-download.js";
+import type { ExportSaveResult } from "./export-download.js";
 
 export function syncNativeDialog(dialog: HTMLDialogElement, open: boolean): void {
   if (open && !dialog.open) dialog.showModal();
@@ -154,31 +154,21 @@ export function AuditPanel({ audit, identity, open, onDecision, busy }: { audit:
 }
 
 export interface ExportPanelProps {
-  identity: string;
-  open: boolean;
   busy: boolean;
   status: "" | ExportSaveResult;
-  onExport: (includePrivate: boolean, destination: ExportDestination) => Promise<void>;
+  onExport: () => Promise<void>;
 }
 
-export function requestEvidenceExport(
-  onExport: ExportPanelProps["onExport"],
-  includePrivate: boolean,
-  destination: ExportDestination
-): Promise<void> {
-  return onExport(includePrivate, destination);
+export function requestChartDocumentExport(onExport: ExportPanelProps["onExport"]): Promise<void> {
+  return onExport();
 }
 
 function exportStatusText(status: ExportPanelProps["status"]): string {
   if (status === "download_started") return "已交给浏览器下载";
-  if (status === "saved") return "已保存到所选位置";
-  if (status === "fallback_download") return "浏览器不支持直接选择位置，已改用默认下载";
   return "";
 }
 
-export function ExportPanel({ identity, open, onExport, busy, status }: ExportPanelProps) {
-  const [includePrivate, setIncludePrivate] = useState(false);
-  useEffect(() => { setIncludePrivate(false); }, [identity, open]);
+export function ExportPanel({ onExport, busy, status }: ExportPanelProps) {
   const statusText = exportStatusText(status);
-  return <div className="drawer-export"><label className="check-row"><input checked={includePrivate} onChange={(event) => setIncludePrivate(event.target.checked)} type="checkbox" /> 显式包含私密身份文件（默认关闭）</label><p className="field-note"><FolderLock size={14} /> 默认导出不包含私密身份资料。</p><div className="export-actions"><button className="button primary" disabled={busy} onClick={() => void requestEvidenceExport(onExport, includePrivate, "downloads")} type="button">{busy ? <LoaderCircle className="spin" size={17} /> : <Archive size={17} />} 导出到下载文件夹</button><button className="button secondary" disabled={busy} onClick={() => void requestEvidenceExport(onExport, includePrivate, "choose")} type="button"><Download size={17} /> 选择保存位置…</button></div>{statusText && <p className="export-result"><Check size={16} /> {statusText}</p>}</div>;
+  return <div className="drawer-export"><p className="field-note">文件将包含当前输入的姓名或代号及出生资料，请妥善保存和分享。</p><div className="export-actions"><button className="button primary" disabled={busy} onClick={() => void requestChartDocumentExport(onExport)} type="button">导出 JSON</button></div>{statusText && <p className="export-result"><Check size={16} /> {statusText}</p>}</div>;
 }

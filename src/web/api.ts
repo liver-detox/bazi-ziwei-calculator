@@ -98,9 +98,9 @@ export interface ApiDownload {
   filename: string;
 }
 
-const SAFE_ATTACHMENT = /^attachment;\s*filename="([A-Za-z0-9][A-Za-z0-9._-]{0,127}\.tar\.gz)"$/iu;
+const SAFE_CHART_DOCUMENT_ATTACHMENT = /^attachment;\s*filename="(bazi-ziwei-chart-\d{8}-\d{4}\.json)"$/iu;
 
-export async function apiDownload(path: string, options: RequestInit = {}): Promise<ApiDownload> {
+export async function apiJsonDownload(path: string, options: RequestInit = {}): Promise<ApiDownload> {
   const response = await fetch(path, authorizedRequestOptions(options));
   const contentType = response.headers.get("content-type") ?? "";
   if (!response.ok) {
@@ -108,9 +108,9 @@ export async function apiDownload(path: string, options: RequestInit = {}): Prom
     throw new ApiError(response.status, responseMessage(response.status, detail), detail);
   }
   const disposition = response.headers.get("content-disposition") ?? "";
-  const filename = disposition.match(SAFE_ATTACHMENT)?.[1];
-  if (filename === undefined || !/^application\/gzip(?:;|$)/iu.test(contentType)) {
-    throw new ApiError(0, "本地服务返回了无效的证据包响应。", null);
+  const filename = disposition.match(SAFE_CHART_DOCUMENT_ATTACHMENT)?.[1];
+  if (filename === undefined || !/^application\/json(?:;|$)/iu.test(contentType)) {
+    throw new ApiError(0, "本地服务返回了无效的 JSON 排盘文件。", null);
   }
   return { blob: await response.blob(), filename };
 }

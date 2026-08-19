@@ -4,6 +4,7 @@ import { z, ZodError } from "zod";
 import { LegacyImportError } from "../core/import/legacy-import.js";
 import { CaseStoreError } from "../core/storage/case-store.js";
 import { EvidenceArchiveError } from "../core/storage/evidence-archive.js";
+import { ChartDocumentError } from "../core/workbench/chart-document.js";
 import { CaseWorkbench, WorkbenchError } from "../core/workbench/case-workbench.js";
 
 export interface WorkbenchRoutesOptions {
@@ -38,6 +39,9 @@ export async function registerWorkbenchRoutes(
       });
     }
     if (error instanceof WorkbenchError) {
+      return reply.code(error.statusCode).send({ error: error.code, message: error.message });
+    }
+    if (error instanceof ChartDocumentError) {
       return reply.code(error.statusCode).send({ error: error.code, message: error.message });
     }
     if (error instanceof CaseStoreError) {
@@ -94,21 +98,14 @@ export async function registerWorkbenchRoutes(
     return reply.code(201).send(result);
   });
 
-  app.post("/api/cases/:caseId/revisions/:revisionId/export", async (request) => {
+  app.post("/api/cases/:caseId/revisions/:revisionId/chart-document", async (request, reply) => {
     const params = z.object({ caseId: z.string(), revisionId: z.string() }).parse(request.params);
-    const body = z.object({ includePrivate: z.boolean().default(false) }).strict().parse(request.body ?? {});
-    return workbench.exportRevision(params.caseId, params.revisionId, body.includePrivate);
-  });
-
-  app.post("/api/cases/:caseId/revisions/:revisionId/export-download", async (request, reply) => {
-    const params = z.object({ caseId: z.string(), revisionId: z.string() }).parse(request.params);
-    const body = z.object({ includePrivate: z.boolean().default(false) }).strict().parse(request.body ?? {});
-    const archive = await workbench.downloadRevisionArchive(params.caseId, params.revisionId, body.includePrivate);
+    const download = await workbench.downloadChartDocument(params.caseId, params.revisionId, request.body);
     return reply
-      .header("content-type", archive.contentType)
-      .header("content-disposition", `attachment; filename="${archive.filename}"`)
+      .header("content-type", download.contentType)
+      .header("content-disposition", `attachment; filename="${download.filename}"`)
       .header("cache-control", "no-store")
-      .send(archive.bytes);
+      .send(download.document);
   });
 
   app.post("/api/imports/inspect", async (request) => {

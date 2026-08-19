@@ -279,8 +279,6 @@ code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monos
 .segmented { display: inline-flex; margin-top: 12px; padding: 2px; border: 1px solid var(--line); border-radius: 7px; background: var(--surface-soft); }
 .segmented button { min-width: 54px; height: 29px; border: 0; border-radius: 5px; background: transparent; cursor: pointer; font-size: 11px; }
 .segmented button.active { color: #fff; background: var(--jade); }
-.check-row { display: flex !important; grid-auto-flow: column; justify-content: start; align-items: center; gap: 8px !important; margin-top: 11px; color: var(--muted) !important; }
-.check-row input { width: 15px; height: 15px; accent-color: var(--jade); }
 .location-search { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: end; gap: 8px; }
 .city-results { display: grid; grid-template-columns: repeat(auto-fit,minmax(170px,1fr)); gap: 6px; margin-top: 8px; }
 .city-results button { padding: 9px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); cursor: pointer; text-align: left; }

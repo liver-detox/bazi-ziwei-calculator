@@ -34,3 +34,103 @@ jobs:
 
       - name: Run public release gate
         run: npm run test:release
+
+  test-release-windows:
+    name: Windows public candidate and launcher check
+    runs-on: windows-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out source in a Unicode path with spaces
+        uses: actions/checkout@v5
+        with:
+          path: 公开 候选 源码
+
+      - name: Set up Node.js 24
+        uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: 公开 候选 源码/package-lock.json
+
+      - name: Build a fresh public candidate in a Unicode path with spaces
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $sourcePath = Join-Path $env:GITHUB_WORKSPACE "公开 候选 源码"
+          $candidatePath = Join-Path $env:RUNNER_TEMP "公开 候选 $env:GITHUB_RUN_ID $env:GITHUB_RUN_ATTEMPT"
+          if (Test-Path -LiteralPath $candidatePath) { throw "Candidate destination already exists." }
+          $exitCode = 0
+          Push-Location -LiteralPath $sourcePath
+          try {
+            node scripts/build-public-candidate.mjs --destination $candidatePath
+            $exitCode = $LASTEXITCODE
+          }
+          finally {
+            Pop-Location
+          }
+          if ($exitCode -ne 0) { exit $exitCode }
+
+      - name: Check the public candidate
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $candidatePath = Join-Path $env:RUNNER_TEMP "公开 候选 $env:GITHUB_RUN_ID $env:GITHUB_RUN_ATTEMPT"
+          $exitCode = 0
+          Push-Location -LiteralPath $candidatePath
+          try {
+            node scripts/check-public-candidate.mjs --root $candidatePath
+            $exitCode = $LASTEXITCODE
+          }
+          finally {
+            Pop-Location
+          }
+          if ($exitCode -ne 0) { exit $exitCode }
+
+      - name: Install locked candidate dependencies
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $candidatePath = Join-Path $env:RUNNER_TEMP "公开 候选 $env:GITHUB_RUN_ID $env:GITHUB_RUN_ATTEMPT"
+          $exitCode = 0
+          Push-Location -LiteralPath $candidatePath
+          try {
+            npm ci
+            $exitCode = $LASTEXITCODE
+          }
+          finally {
+            Pop-Location
+          }
+          if ($exitCode -ne 0) { exit $exitCode }
+
+      - name: Run the candidate public release gate
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $candidatePath = Join-Path $env:RUNNER_TEMP "公开 候选 $env:GITHUB_RUN_ID $env:GITHUB_RUN_ATTEMPT"
+          $exitCode = 0
+          Push-Location -LiteralPath $candidatePath
+          try {
+            npm run test:release
+            $exitCode = $LASTEXITCODE
+          }
+          finally {
+            Pop-Location
+          }
+          if ($exitCode -ne 0) { exit $exitCode }
+
+      - name: Check the Windows launcher
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $candidatePath = Join-Path $env:RUNNER_TEMP "公开 候选 $env:GITHUB_RUN_ID $env:GITHUB_RUN_ATTEMPT"
+          $exitCode = 0
+          Push-Location -LiteralPath $candidatePath
+          try {
+            cmd /d /c scripts\start-local.cmd --check
+            $exitCode = $LASTEXITCODE
+          }
+          finally {
+            Pop-Location
+          }
+          if ($exitCode -ne 0) { exit $exitCode }

@@ -5,7 +5,7 @@ import type { BaziDetailV1 } from "../core/charts/bazi-detail-contract.js";
 import type { DualTrackChartSetV1 } from "../core/charts/types.js";
 import type { ResultCapabilities } from "../core/workbench/case-workbench.js";
 import type { BirthRecordAny, TimeEvidenceAny } from "../shared/contracts.js";
-import { ApiError, apiDownload, apiRequest, providedTimeFieldErrors } from "./api.js";
+import { ApiError, apiJsonDownload, apiRequest, providedTimeFieldErrors } from "./api.js";
 import { ProvidedTimeForm } from "./ProvidedTimeForm.js";
 import {
   AuditPanel,
@@ -17,7 +17,7 @@ import {
   type ResultCaseSummary
 } from "./ResultDrawers.js";
 import { ResultsShell } from "./ResultsShell.js";
-import { saveEvidenceDownload, type ExportDestination, type ExportSaveResult } from "./export-download.js";
+import { saveChartDocumentDownload, type ExportSaveResult } from "./export-download.js";
 import { createResultsAppActions, drawerIdentity, sortedTargetYears, type ResultsAppActionState } from "./results-orchestration-model.js";
 import {
   createResultSelection,
@@ -93,8 +93,20 @@ export function preferredCaseSummary(
   return rows.find((row) => row.caseId === wanted);
 }
 
-export function evidenceArchiveFilename(caseId: string, revisionId: string, includePrivate: boolean): string {
-  return `${caseId}-${revisionId}-${includePrivate ? "private" : "redacted"}.tar.gz`;
+export function chartDocumentDownloadRequest(
+  snapshot: Pick<RevisionSnapshot, "input" | "manifest">,
+  selection: Pick<ResultSelection, "candidateId" | "selectedTargetYear">
+): { path: string; options: RequestInit } {
+  return {
+    path: `/api/cases/${snapshot.input.caseId}/revisions/${snapshot.manifest.revisionId}/chart-document`,
+    options: {
+      method: "POST",
+      body: JSON.stringify({
+        candidateId: selection.candidateId,
+        ...(selection.selectedTargetYear === null ? {} : { targetYear: selection.selectedTargetYear })
+      })
+    }
+  };
 }
 
 function EmptyResults({ onCreate }: { onCreate: () => void }) {
@@ -239,18 +251,13 @@ export function App() {
     setBusy(true); setError("");
     try { const response = await apiRequest<CreateCaseResponse>(`/api/cases/${snapshot.input.caseId}/revisions/${snapshot.manifest.revisionId}/decision`, { method: "POST", body: JSON.stringify(payload) }); commitSnapshot(response.snapshot); setNotice("人工确认已保存。"); await loadCases(snapshot.input.caseId); } catch (reason) { setError(reason instanceof Error ? reason.message : "人工确认保存失败"); } finally { setBusy(false); }
   };
-  const exportEvidence = async (includePrivate: boolean, destination: ExportDestination) => {
-    if (!snapshot) return;
+  const exportChartDocument = async () => {
+    if (!snapshot || !selection) return;
     setBusy(true); setError("");
-    const filename = evidenceArchiveFilename(snapshot.input.caseId, snapshot.manifest.revisionId, includePrivate);
     try {
-      const result = await saveEvidenceDownload({
-        destination,
-        filename,
-        request: () => apiDownload(`/api/cases/${snapshot.input.caseId}/revisions/${snapshot.manifest.revisionId}/export-download`, {
-          method: "POST",
-          body: JSON.stringify({ includePrivate })
-        })
+      const request = chartDocumentDownloadRequest(snapshot, selection);
+      const result = await saveChartDocumentDownload({
+        request: () => apiJsonDownload(request.path, request.options)
       });
       setExportStatus(result);
     } catch (reason) {
@@ -278,6 +285,6 @@ export function App() {
       </> : <EmptyResults onCreate={beginCreate} />}
     </div>
     <CaseDrawer cases={cases} currentCaseId={selectedCaseId} onClose={() => setCaseDrawerOpen(false)} onCreate={() => { setCaseDrawerOpen(false); beginCreate(); }} onSelect={(item) => void selectCase(item)} open={caseDrawerOpen} returnFocus={caseTrigger.current} />
-    {snapshot && <VerificationDrawer audit={<AuditPanel audit={snapshot.audit} busy={busy} identity={verificationIdentity} onDecision={saveDecision} open={verificationOpen} />} evidence={<TimeEvidencePanel evidence={snapshot.timeEvidence} />} exportPanel={<ExportPanel busy={busy} identity={verificationIdentity} onExport={exportEvidence} open={verificationOpen} status={exportStatus} />} onClose={() => setVerificationOpen(false)} open={verificationOpen} returnFocus={verificationTrigger.current} technical={<dl className="technical-identity"><div><dt>修订编号</dt><dd>{snapshot.manifest.revisionId}</dd></div><div><dt>审计等级</dt><dd>{snapshot.audit.auditLevel}</dd></div><div><dt>内容指纹</dt><dd><code>{fingerprint}</code></dd></div></dl>} />}
+    {snapshot && <VerificationDrawer audit={<AuditPanel audit={snapshot.audit} busy={busy} identity={verificationIdentity} onDecision={saveDecision} open={verificationOpen} />} evidence={<TimeEvidencePanel evidence={snapshot.timeEvidence} />} exportPanel={<ExportPanel busy={busy} onExport={exportChartDocument} status={exportStatus} />} onClose={() => setVerificationOpen(false)} open={verificationOpen} returnFocus={verificationTrigger.current} technical={<dl className="technical-identity"><div><dt>修订编号</dt><dd>{snapshot.manifest.revisionId}</dd></div><div><dt>审计等级</dt><dd>{snapshot.audit.auditLevel}</dd></div><div><dt>内容指纹</dt><dd><code>{fingerprint}</code></dd></div></dl>} />}
   </div>;
 }

@@ -1,10 +1,15 @@
 import { spawnSync } from "node:child_process";
 import { existsSync } from "node:fs";
-import { resolve } from "node:path";
+import { createRequire } from "node:module";
+import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const projectRoot = fileURLToPath(new URL("..", import.meta.url));
-const vitestEntry = fileURLToPath(new URL("../node_modules/vitest/vitest.mjs", import.meta.url));
+const requireFromHere = createRequire(import.meta.url);
+const vitestEntry = resolve(
+  dirname(requireFromHere.resolve("vitest/package.json")),
+  "vitest.mjs"
+);
 const internalAssets = [
   "release/test-provenance.json",
   "vitest.integration.config.ts",

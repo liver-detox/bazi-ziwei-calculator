@@ -12,6 +12,7 @@ type PublicFilesManifest = {
 const projectRoot = resolve(import.meta.dirname, "..");
 const publicConfigPath = resolve(projectRoot, "vitest.public.config.ts");
 const publicCorrectnessTests = [
+  "test/chart-document-export.test.ts",
   "test/cli-synthetic-regression.test.ts",
   "test/synthetic-demo-cases.test.ts",
   "test/public-gate-closure.test.ts",
@@ -20,12 +21,19 @@ const publicCorrectnessTests = [
   "test/public-docs.test.ts"
 ];
 const requiredPublicAssets = [
+  ".github/ISSUE_TEMPLATE/bug_report.yml",
+  ".github/ISSUE_TEMPLATE/config.yml",
+  ".github/ISSUE_TEMPLATE/feature_request.yml",
+  ".github/workflows/ci.yml",
+  "docs/examples/chart-document-v1.json",
   "scripts/run-optional-internal-suite.mjs",
   "scripts/run-performance-benchmarks.mjs",
+  "scripts/start-local.cmd",
   "test/smoke.mjs",
   ...publicCorrectnessTests,
   "test/performance/public-synthetic-performance.test.ts",
-  "test/helpers/synthetic-demo-cases.ts"
+  "test/helpers/synthetic-demo-cases.ts",
+  "src/core/workbench/chart-document.ts"
 ];
 
 async function readJson<T>(path: string): Promise<T> {

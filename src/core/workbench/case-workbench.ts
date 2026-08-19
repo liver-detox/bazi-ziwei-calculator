@@ -55,6 +55,13 @@ import {
   AUDIT_CONTRACT_VERSION_V2,
   deriveApprovedRevisionIdentity
 } from "./revision-version-identity.js";
+import {
+  buildChartDocumentV1,
+  CALCULATOR_VERSION,
+  chartDocumentFilename,
+  ChartDocumentExportRequestSchema,
+  type ChartDocumentV1
+} from "./chart-document.js";
 
 const CASE_ID = z.string().regex(/^CS-\d{4}-\d{3}$/u);
 const REVISION_ID = z.string().regex(/^R\d{3}$/u);
@@ -488,6 +495,36 @@ export class CaseWorkbench {
       REVISION_ID.parse(revisionId),
       { includePrivate }
     );
+  }
+
+  async downloadChartDocument(
+    caseId: string,
+    revisionId: string,
+    raw: unknown
+  ): Promise<{
+    filename: string;
+    contentType: "application/json; charset=utf-8";
+    document: ChartDocumentV1;
+  }> {
+    const request = ChartDocumentExportRequestSchema.parse(raw);
+    const parsedCaseId = CASE_ID.parse(caseId);
+    const parsedRevisionId = REVISION_ID.parse(revisionId);
+    const exportedAt = this.now();
+    const storedRevision = await this.store.readRevision(parsedCaseId, parsedRevisionId, {
+      includePrivate: true
+    });
+    const document = buildChartDocumentV1({
+      calculatorVersion: CALCULATOR_VERSION,
+      exportedAt,
+      storedRevision,
+      requestedCandidateId: request.candidateId,
+      ...(request.targetYear === undefined ? {} : { targetYear: request.targetYear })
+    });
+    return {
+      filename: chartDocumentFilename(exportedAt),
+      contentType: "application/json; charset=utf-8" as const,
+      document
+    };
   }
 
   async updateTargetYears(caseId: string, revisionId: string, raw: unknown) {

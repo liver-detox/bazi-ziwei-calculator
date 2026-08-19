@@ -4,6 +4,7 @@ export default defineConfig({
   test: {
     environment: "node",
     include: [
+      "test/chart-document-export.test.ts",
       "test/cli-synthetic-regression.test.ts",
       "test/synthetic-demo-cases.test.ts",
       "test/public-gate-closure.test.ts",
