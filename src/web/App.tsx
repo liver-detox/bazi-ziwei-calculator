@@ -1,11 +1,14 @@
 import { Check, CircleAlert, LoaderCircle, Plus, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
+import { flushSync } from "react-dom";
 
 import type { BaziDetailV1 } from "../core/charts/bazi-detail-contract.js";
 import type { DualTrackChartSetV1 } from "../core/charts/types.js";
 import type { ResultCapabilities } from "../core/workbench/case-workbench.js";
 import type { BirthRecordAny, TimeEvidenceAny } from "../shared/contracts.js";
-import { ApiError, apiJsonDownload, apiRequest, providedTimeFieldErrors } from "./api.js";
+import { ApiError, apiChartDocument, apiJsonDownload, apiRequest, providedTimeFieldErrors } from "./api.js";
+import { ChartDocumentPrintout } from "./ChartDocumentPrintout.js";
+import type { ChartDocumentTextView } from "./chart-document-text.js";
 import { ProvidedTimeForm } from "./ProvidedTimeForm.js";
 import {
   AuditPanel,
@@ -17,7 +20,16 @@ import {
   type ResultCaseSummary
 } from "./ResultDrawers.js";
 import { ResultsShell } from "./ResultsShell.js";
-import { saveChartDocumentDownload, type ExportSaveResult } from "./export-download.js";
+import {
+  copyChartDocumentText,
+  printChartDocumentText,
+  saveChartDocumentDownload,
+  saveChartDocumentTextDownload,
+  shareChartDocumentText,
+  supportsChartDocumentShare,
+  type ExportActionResult
+} from "./export-download.js";
+import { runExportAction, runPreparedExportAction, startChartDocumentTextPreparation } from "./export-orchestration.js";
 import { createResultsAppActions, drawerIdentity, sortedTargetYears, type ResultsAppActionState } from "./results-orchestration-model.js";
 import {
   createResultSelection,
@@ -135,7 +147,12 @@ export function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
-  const [exportStatus, setExportStatus] = useState<"" | ExportSaveResult>("");
+  const [exportStatus, setExportStatus] = useState<"" | ExportActionResult>("");
+  const [printText, setPrintText] = useState("");
+  const [preparedChartText, setPreparedChartText] = useState<{ key: string; view: ChartDocumentTextView }>();
+  const [chartTextPreparing, setChartTextPreparing] = useState(false);
+  const [chartTextError, setChartTextError] = useState("");
+  const [chartTextRetryNonce, setChartTextRetryNonce] = useState(0);
   const [retainedSnapshotRisk, setRetainedSnapshotRisk] = useState(false);
   const caseTrigger = useRef<HTMLButtonElement>(null);
   const verificationTrigger = useRef<HTMLElement | null>(null);
@@ -179,6 +196,39 @@ export function App() {
   }, [retainTargetYearFailure, selectOrReloadSnapshot, selectedCaseId]);
 
   useEffect(() => { void loadCases().catch((reason: unknown) => setError(reason instanceof Error ? reason.message : "无法读取本地案例")).finally(() => setLoading(false)); }, []);
+
+  const chartTextPreparationKey = snapshot && selection
+    ? [snapshot.input.caseId, snapshot.manifest.revisionId, selection.candidateId, selection.selectedTargetYear ?? ""].join(":")
+    : "";
+  useEffect(() => {
+    if (!verificationOpen || !snapshot || !selection || chartTextPreparationKey === "") {
+      setPreparedChartText(undefined);
+      setChartTextPreparing(false);
+      setChartTextError("");
+      return;
+    }
+    const request = chartDocumentDownloadRequest(snapshot, selection);
+    const preparation = startChartDocumentTextPreparation({
+      key: chartTextPreparationKey,
+      request: () => apiChartDocument(request.path, request.options),
+      onUpdate: (update) => {
+        if (update.status === "preparing") {
+          setPreparedChartText(undefined);
+          setChartTextPreparing(true);
+          setChartTextError("");
+        } else if (update.status === "ready") {
+          setPreparedChartText({ key: update.key, view: update.view });
+          setChartTextPreparing(false);
+          setChartTextError("");
+        } else {
+          setPreparedChartText(undefined);
+          setChartTextPreparing(false);
+          setChartTextError(update.error);
+        }
+      }
+    });
+    return () => preparation.cancel();
+  }, [verificationOpen, chartTextPreparationKey, chartTextRetryNonce]);
 
   const beginCreate = () => { applyActionState(resultsAppActions.beginCreate(currentActionState())); setForm(emptyProvidedTimeForm()); setFormErrors({}); setError(""); };
   const beginRevision = () => {
@@ -251,21 +301,53 @@ export function App() {
     setBusy(true); setError("");
     try { const response = await apiRequest<CreateCaseResponse>(`/api/cases/${snapshot.input.caseId}/revisions/${snapshot.manifest.revisionId}/decision`, { method: "POST", body: JSON.stringify(payload) }); commitSnapshot(response.snapshot); setNotice("人工确认已保存。"); await loadCases(snapshot.input.caseId); } catch (reason) { setError(reason instanceof Error ? reason.message : "人工确认保存失败"); } finally { setBusy(false); }
   };
-  const exportChartDocument = async () => {
-    if (!snapshot || !selection) return;
-    setBusy(true); setError("");
-    try {
+  const exportLifecycle = { setBusy, setError, setStatus: setExportStatus };
+  const runCurrentTextAction = (
+    action: (view: ChartDocumentTextView) => ExportActionResult | Promise<ExportActionResult>,
+    fallbackError: string
+  ): Promise<void> => {
+    if (preparedChartText?.key !== chartTextPreparationKey) return Promise.resolve();
+    return runPreparedExportAction({
+      view: preparedChartText.view,
+      action,
+      lifecycle: exportLifecycle,
+      fallbackError
+    });
+  };
+  const copyChartDocument = () => runCurrentTextAction(
+    (view) => copyChartDocumentText({ view }),
+    "复制失败"
+  );
+  const downloadChartDocumentText = () => runCurrentTextAction(
+    (view) => saveChartDocumentTextDownload({ view }),
+    "TXT 下载失败"
+  );
+  const shareChartDocument = () => runCurrentTextAction(
+    (view) => shareChartDocumentText({ view }),
+    "分享失败"
+  );
+  const printChartDocument = () => runCurrentTextAction(
+    (view) => printChartDocumentText({
+      view,
+      reveal: (text) => flushSync(() => setPrintText(text)),
+      conceal: () => setPrintText("")
+    }),
+    "打印失败"
+  );
+  const downloadChartDocumentJson = async () => runExportAction({
+    action: async () => {
+      if (!snapshot || !selection) throw new Error("当前没有可导出的排盘结果");
       const request = chartDocumentDownloadRequest(snapshot, selection);
-      const result = await saveChartDocumentDownload({
+      return saveChartDocumentDownload({
         request: () => apiJsonDownload(request.path, request.options)
       });
-      setExportStatus(result);
-    } catch (reason) {
-      setError(reason instanceof Error ? reason.message : "导出失败");
-    } finally { setBusy(false); }
-  };
+    },
+    lifecycle: exportLifecycle,
+    fallbackError: "JSON 下载失败"
+  });
 
   const openVerification = (trigger: HTMLElement | null) => { verificationTrigger.current = trigger; setExportStatus(""); setVerificationOpen(true); };
+  const closeVerification = () => { setPreparedChartText(undefined); setChartTextPreparing(false); setChartTextError(""); setVerificationOpen(false); };
   const riskNotice = useMemo(() => snapshot && (retainedSnapshotRisk || snapshot.audit.blockingReasons?.length || snapshot.charts.candidates.length > 1) ? retainedSnapshotRisk ? "本次更新未成功，当前显示的是上一次成功结果；请查看原因后再继续。" : "当前结果保留多个可能候选或待处理差异；请在核验与导出中查看依据。" : "", [retainedSnapshotRisk, snapshot]);
   const fingerprint = snapshot && (typeof snapshot.audit.contentFingerprint === "string" ? snapshot.audit.contentFingerprint : snapshot.audit.contentFingerprint?.value) || snapshot?.manifest.contentFingerprint || "";
   const verificationIdentity = snapshot ? drawerIdentity(snapshot.input.caseId, snapshot.manifest.revisionId) : "";
@@ -274,7 +356,8 @@ export function App() {
     requestAnimationFrame(() => document.querySelector<HTMLButtonElement>(".results-navigation button.active")?.scrollIntoView({ block: "nearest", inline: "nearest" }));
   };
 
-  return <div className="app-shell results-app-shell">
+  return <div className={printText === "" ? undefined : "chart-document-print-active"}>
+  <div className="app-shell results-app-shell">
     <header className="topbar"><div className="brand"><div className="brand-seal">赛</div><strong>赛博大师·八字与紫微排盘计算器</strong></div><button className="button primary" onClick={beginCreate} type="button"><Plus size={16} /> 新建排盘</button></header>
     <div className="main-workspace">
       {error && <div className="toast error"><CircleAlert size={18} /><span>{error}</span><button aria-label="关闭提醒" onClick={() => setError("")} type="button"><X size={16} /></button></div>}
@@ -285,6 +368,8 @@ export function App() {
       </> : <EmptyResults onCreate={beginCreate} />}
     </div>
     <CaseDrawer cases={cases} currentCaseId={selectedCaseId} onClose={() => setCaseDrawerOpen(false)} onCreate={() => { setCaseDrawerOpen(false); beginCreate(); }} onSelect={(item) => void selectCase(item)} open={caseDrawerOpen} returnFocus={caseTrigger.current} />
-    {snapshot && <VerificationDrawer audit={<AuditPanel audit={snapshot.audit} busy={busy} identity={verificationIdentity} onDecision={saveDecision} open={verificationOpen} />} evidence={<TimeEvidencePanel evidence={snapshot.timeEvidence} />} exportPanel={<ExportPanel busy={busy} onExport={exportChartDocument} status={exportStatus} />} onClose={() => setVerificationOpen(false)} open={verificationOpen} returnFocus={verificationTrigger.current} technical={<dl className="technical-identity"><div><dt>修订编号</dt><dd>{snapshot.manifest.revisionId}</dd></div><div><dt>审计等级</dt><dd>{snapshot.audit.auditLevel}</dd></div><div><dt>内容指纹</dt><dd><code>{fingerprint}</code></dd></div></dl>} />}
+    {snapshot && <VerificationDrawer audit={<AuditPanel audit={snapshot.audit} busy={busy} identity={verificationIdentity} onDecision={saveDecision} open={verificationOpen} />} evidence={<TimeEvidencePanel evidence={snapshot.timeEvidence} />} exportPanel={<ExportPanel busy={busy} onCopy={copyChartDocument} onDownloadJson={downloadChartDocumentJson} onDownloadText={downloadChartDocumentText} onPrint={printChartDocument} onRetryText={() => setChartTextRetryNonce((value) => value + 1)} onShare={shareChartDocument} shareAvailable={typeof navigator !== "undefined" && supportsChartDocumentShare()} status={exportStatus} textError={chartTextError} textPreparing={chartTextPreparing} textReady={preparedChartText?.key === chartTextPreparationKey} />} onClose={closeVerification} open={verificationOpen} returnFocus={verificationTrigger.current} technical={<dl className="technical-identity"><div><dt>修订编号</dt><dd>{snapshot.manifest.revisionId}</dd></div><div><dt>审计等级</dt><dd>{snapshot.audit.auditLevel}</dd></div><div><dt>内容指纹</dt><dd><code>{fingerprint}</code></dd></div></dl>} />}
+  </div>
+  <ChartDocumentPrintout text={printText} />
   </div>;
 }

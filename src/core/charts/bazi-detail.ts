@@ -300,7 +300,7 @@ export function resolveSharedSupportedTargetYears(sources: BaziDetailSourcesV1):
     strict.baseChartSet.candidates.map((base) => {
       const candidate = strict.timeEvidence.candidates.find((item) => item.id === base.candidateId)!;
       const baziYears = baziSupportedYearsForCandidate(strict, base.candidateId);
-      return filterZiweiSupportedTargetYears(strict.publicBirthRecord, candidate, baziYears);
+      return filterZiweiSupportedTargetYears(strict.publicBirthRecord, candidate, baziYears, base.ziwei);
     })
   ));
 }

@@ -1,3 +1,5 @@
+import type { ChartDocumentV1 } from "../core/workbench/chart-document.js";
+
 export interface RuntimeConfig {
   sessionToken: string;
 }
@@ -98,7 +100,20 @@ export interface ApiDownload {
   filename: string;
 }
 
+export interface ApiChartDocument {
+  filename: string;
+  document: ChartDocumentV1;
+}
+
 const SAFE_CHART_DOCUMENT_ATTACHMENT = /^attachment;\s*filename="(bazi-ziwei-chart-\d{8}-\d{4}\.json)"$/iu;
+
+function chartDocumentFilenameFromHeaders(contentType: string, disposition: string): string {
+  const filename = disposition.match(SAFE_CHART_DOCUMENT_ATTACHMENT)?.[1];
+  if (filename === undefined || !/^application\/json(?:;|$)/iu.test(contentType)) {
+    throw new ApiError(0, "本地服务返回了无效的 JSON 排盘文件。", null);
+  }
+  return filename;
+}
 
 export async function apiJsonDownload(path: string, options: RequestInit = {}): Promise<ApiDownload> {
   const response = await fetch(path, authorizedRequestOptions(options));
@@ -108,9 +123,36 @@ export async function apiJsonDownload(path: string, options: RequestInit = {}): 
     throw new ApiError(response.status, responseMessage(response.status, detail), detail);
   }
   const disposition = response.headers.get("content-disposition") ?? "";
-  const filename = disposition.match(SAFE_CHART_DOCUMENT_ATTACHMENT)?.[1];
-  if (filename === undefined || !/^application\/json(?:;|$)/iu.test(contentType)) {
-    throw new ApiError(0, "本地服务返回了无效的 JSON 排盘文件。", null);
-  }
+  const filename = chartDocumentFilenameFromHeaders(contentType, disposition);
   return { blob: await response.blob(), filename };
+}
+
+export async function apiChartDocument(path: string, options: RequestInit = {}): Promise<ApiChartDocument> {
+  const response = await fetch(path, authorizedRequestOptions(options));
+  const contentType = response.headers.get("content-type") ?? "";
+  if (!response.ok) {
+    let detail: unknown = null;
+    if (contentType.includes("application/json")) {
+      try {
+        detail = await response.json();
+      } catch {
+        detail = null;
+      }
+    }
+    throw new ApiError(response.status, responseMessage(response.status, detail), detail);
+  }
+
+  const disposition = response.headers.get("content-disposition") ?? "";
+  const filename = chartDocumentFilenameFromHeaders(contentType, disposition);
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(await response.text()) as unknown;
+  } catch {
+    throw new ApiError(0, "本地服务返回了无法读取的排盘数据。", null);
+  }
+  if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)
+    || (parsed as { schemaVersion?: unknown }).schemaVersion !== 1) {
+    throw new ApiError(0, "本地服务返回了无法读取的排盘数据。", null);
+  }
+  return { filename, document: parsed as ChartDocumentV1 };
 }

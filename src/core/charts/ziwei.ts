@@ -1,4 +1,5 @@
-import { LocalDateTime } from "@js-joda/core";
+import { LocalDate, LocalDateTime } from "@js-joda/core";
+import { Solar } from "lunar-typescript";
 import { createRequire } from "node:module";
 import { astro, data } from "iztro";
 
@@ -150,13 +151,42 @@ function withLockedIztroRuntime<T>(callback: () => T): T {
 export function filterZiweiSupportedTargetYears(
   record: ChartBirthRecord,
   candidate: ChartTimeCandidate,
-  targetYears: readonly number[]
+  targetYears: readonly number[],
+  natalSnapshot?: Pick<ZiweiChartV1, "candidateId" | "input" | "palaces">
 ): number[] {
-  return withLockedIztroRuntime(() => {
-    const { chart } = createLockedAstrolabe(record, candidate);
-    return targetYears.filter((targetYear) => (
-      chart.horoscope(`${targetYear}-07-01`, candidate.earthlyBranch.index).decadal.index >= 0
-    ));
+  if (natalSnapshot === undefined) {
+    return withLockedIztroRuntime(() => {
+      const { chart } = createLockedAstrolabe(record, candidate);
+      return targetYears.filter((targetYear) => (
+        chart.horoscope(`${targetYear}-07-01`, candidate.earthlyBranch.index).decadal.index >= 0
+      ));
+    });
+  }
+  if (natalSnapshot.candidateId !== candidate.id) {
+    throw new Error(`ZIWEI_NATAL_SNAPSHOT_CANDIDATE_MISMATCH:${candidate.id}`);
+  }
+  const birthDate = LocalDate.parse(natalSnapshot.input.engineInputDate);
+  const birthLunarYear = Solar.fromYmd(
+    birthDate.year(),
+    birthDate.monthValue(),
+    birthDate.dayOfMonth()
+  ).getLunar().getYear();
+  const decadalRanges = natalSnapshot.palaces.map((palace) => [
+    palace.decadal.startAge,
+    palace.decadal.endAge
+  ] as const);
+  return targetYears.filter((targetYear) => {
+    const targetDate = LocalDate.parse(`${targetYear}-07-01`);
+    const targetLunarYear = Solar.fromYmd(
+      targetDate.year(),
+      targetDate.monthValue(),
+      targetDate.dayOfMonth()
+    ).getLunar().getYear();
+    const nominalAge = targetLunarYear - birthLunarYear + 1;
+    return nominalAge >= 1 && (
+      nominalAge <= 6
+      || decadalRanges.some(([startAge, endAge]) => nominalAge >= startAge && nominalAge <= endAge)
+    );
   });
 }
 

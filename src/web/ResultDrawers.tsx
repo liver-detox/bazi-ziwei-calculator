@@ -3,7 +3,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 
 import type { TimeEvidenceAny } from "../shared/contracts.js";
 import { PROVIDED_TIME_PRESENTATION } from "../shared/provided-time-presentation.js";
-import type { ExportSaveResult } from "./export-download.js";
+import type { ExportActionResult } from "./export-download.js";
 
 export function syncNativeDialog(dialog: HTMLDialogElement, open: boolean): void {
   if (open && !dialog.open) dialog.showModal();
@@ -155,20 +155,41 @@ export function AuditPanel({ audit, identity, open, onDecision, busy }: { audit:
 
 export interface ExportPanelProps {
   busy: boolean;
-  status: "" | ExportSaveResult;
-  onExport: () => Promise<void>;
-}
-
-export function requestChartDocumentExport(onExport: ExportPanelProps["onExport"]): Promise<void> {
-  return onExport();
+  shareAvailable: boolean;
+  status: "" | ExportActionResult;
+  textError?: string;
+  textPreparing?: boolean;
+  textReady?: boolean;
+  onRetryText?: () => void;
+  onCopy: () => Promise<void>;
+  onDownloadText: () => Promise<void>;
+  onShare: () => Promise<void>;
+  onPrint: () => Promise<void>;
+  onDownloadJson: () => Promise<void>;
 }
 
 function exportStatusText(status: ExportPanelProps["status"]): string {
-  if (status === "download_started") return "已交给浏览器下载";
-  return "";
+  const labels: Record<ExportActionResult, string> = {
+    copied: "复制成功",
+    download_started: "浏览器已开始下载",
+    shared: "分享完成",
+    share_unavailable: "分享不可用",
+    share_cancelled: "取消分享",
+    print_started: "已请求系统打印"
+  };
+  return status === "" ? "" : labels[status];
 }
 
-export function ExportPanel({ onExport, busy, status }: ExportPanelProps) {
+export function ExportPanel({ busy, shareAvailable, status, textError = "", textPreparing = false, textReady = true, onRetryText, onCopy, onDownloadText, onShare, onPrint, onDownloadJson }: ExportPanelProps) {
   const statusText = exportStatusText(status);
-  return <div className="drawer-export"><p className="field-note">文件将包含当前输入的姓名或代号及出生资料，请妥善保存和分享。</p><div className="export-actions"><button className="button primary" disabled={busy} onClick={() => void requestChartDocumentExport(onExport)} type="button">导出 JSON</button></div>{statusText && <p className="export-result"><Check size={16} /> {statusText}</p>}</div>;
+  const textActionDisabled = busy || !textReady;
+  return <div className="drawer-export">
+    <p className="field-note">导出内容包含当前输入的姓名或代号及出生资料，请确认后再分享。</p>
+    {textPreparing && <p aria-live="polite" className="field-note" role="status">正在准备文本导出……</p>}
+    {textError && <div className="field-note" role="alert">AI 文本准备失败：{textError} {onRetryText && <button className="button ghost" disabled={busy || textPreparing} onClick={onRetryText} type="button">重试准备 AI 文本</button>}</div>}
+    <section className="export-action-group"><h3>给大模型使用</h3><div className="export-actions">{shareAvailable && <button className="button primary" disabled={textActionDisabled} onClick={() => void onShare()} type="button">系统分享</button>}<button className={shareAvailable ? "button secondary" : "button primary"} disabled={textActionDisabled} onClick={() => void onCopy()} type="button">复制 AI 文本</button></div>{shareAvailable ? <p className="field-note">系统分享可能发送 TXT 文件或同一文本，复制可作为备选。</p> : <p className="field-note">当前浏览器不支持系统分享，请使用复制或下载 TXT。</p>}</section>
+    <section className="export-action-group"><h3>阅读与保存</h3><div className="export-actions"><button className="button secondary" disabled={textActionDisabled} onClick={() => void onDownloadText()} type="button">下载 TXT</button><button className="button secondary" disabled={textActionDisabled} onClick={() => void onPrint()} type="button">打开打印</button></div><p className="field-note">浏览器/系统提供时可在打印窗口存为 PDF。</p></section>
+    <section className="export-action-group"><h3>完整数据</h3><div className="export-actions"><button className="button secondary" disabled={busy} onClick={() => void onDownloadJson()} type="button">下载完整 JSON</button></div></section>
+    {statusText && <p aria-live="polite" className="export-result" role="status"><Check size={16} /> {statusText}</p>}
+  </div>;
 }

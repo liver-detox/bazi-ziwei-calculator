@@ -335,7 +335,10 @@ code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monos
 .drawer-evidence .issue { margin-top: 8px; }
 .drawer-export { display: grid; gap: 10px; }
 .drawer-export p { margin: 0; }
-.export-actions { display: flex; flex-wrap: wrap; gap: 9px; }
+.export-action-group { display: grid; gap: 8px; }
+.export-action-group h3 { margin: 0; color: var(--muted); font-size: 12px; }
+.export-actions { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 9px; }
+.chart-document-printout { display: none; }
 .advanced-technical { padding: 12px 0 0; color: var(--muted); }
 .advanced-technical summary { cursor: pointer; font-size: 12px; font-weight: 750; }
 .advanced-technical > div { margin-top: 10px; padding: 12px; border: 1px solid var(--line); border-radius: 7px; background: var(--surface-soft); }
@@ -556,6 +559,7 @@ code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monos
   .ziwei-detail-center { order: -1; }
   .result-drawer { width: 100vw; max-width: 100vw; max-height: 100vh; min-height: 100vh; margin: 0; border-radius: 0; }
   .drawer-dialog-bar { min-height: 56px; }
+  .export-actions { grid-template-columns: 1fr; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -570,4 +574,25 @@ code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monos
 @media (forced-colors: active) {
   .results-navigation button.active, .drawer-case-list button.selected, .persistent-risk-notice { border: 2px solid CanvasText; }
   .result-drawer::backdrop { background: Canvas; }
+}
+
+@media print {
+  @page { margin: 14mm; }
+  body { color: #111; background: #fff; }
+  .chart-document-print-active .results-app-shell { display: none !important; }
+  .chart-document-print-active .chart-document-printout {
+    display: block;
+    max-width: none;
+    color: #111;
+    background: #fff;
+    font-family: "Songti SC", "STSong", serif;
+    font-size: 11pt;
+    line-height: 1.55;
+  }
+  .chart-document-printout h1,
+  .chart-document-printout h2,
+  .chart-document-printout h3,
+  .chart-document-printout h4,
+  .chart-document-printout h5 { break-after: avoid; }
+  .chart-document-printout p { margin: 0 0 4pt; orphans: 3; widows: 3; }
 }

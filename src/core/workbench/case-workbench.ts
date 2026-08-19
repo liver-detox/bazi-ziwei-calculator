@@ -660,7 +660,9 @@ export class CaseWorkbench {
       }
       throw error;
     }
-    const charts = calculateCandidateCharts(publicRecord, evidence, { targetYears: request.targetYears });
+    const charts = request.targetYears.length === 0
+      ? capabilityCharts
+      : calculateCandidateCharts(publicRecord, evidence, { targetYears: request.targetYears });
     const provenanceFlags = providedTimeProvenanceFlags(fullRecord);
     const coverage = overrides.precisionCoverage ?? providedTimePrecisionCoverage(
       publicRecord,

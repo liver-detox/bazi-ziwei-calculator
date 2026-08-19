@@ -13,8 +13,14 @@ const projectRoot = resolve(import.meta.dirname, "..");
 const publicConfigPath = resolve(projectRoot, "vitest.public.config.ts");
 const publicCorrectnessTests = [
   "test/chart-document-export.test.ts",
+  "test/web-chart-document-text.test.ts",
+  "test/web-export-download.test.ts",
+  "test/web-export-orchestration.test.ts",
+  "test/web-chart-document-printout.test.tsx",
+  "test/web-result-drawers.test.tsx",
   "test/cli-synthetic-regression.test.ts",
   "test/synthetic-demo-cases.test.ts",
+  "test/ziwei-capability-equivalence.test.ts",
   "test/public-gate-closure.test.ts",
   "test/local-browser-open.test.ts",
   "test/public-branding.test.ts",
@@ -33,7 +39,10 @@ const requiredPublicAssets = [
   ...publicCorrectnessTests,
   "test/performance/public-synthetic-performance.test.ts",
   "test/helpers/synthetic-demo-cases.ts",
-  "src/core/workbench/chart-document.ts"
+  "src/core/workbench/chart-document.ts",
+  "src/web/ChartDocumentPrintout.tsx",
+  "src/web/chart-document-text.ts",
+  "src/web/export-orchestration.ts"
 ];
 
 async function readJson<T>(path: string): Promise<T> {
