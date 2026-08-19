@@ -102,6 +102,7 @@ export async function pathStatus(path: string): Promise<Awaited<ReturnType<typeo
 }
 
 export async function syncDirectory(directory: string): Promise<void> {
+  if (process.platform === "win32") return;
   const handle = await open(directory, "r");
   try {
     await handle.sync();

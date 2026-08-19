@@ -536,9 +536,9 @@ async function readJson<T>(filePath: string): Promise<T> {
 }
 
 async function writeDurableText(filePath: string, contents: string): Promise<void> {
-  await writeFile(filePath, contents, { encoding: "utf8", flag: "wx", mode: 0o600 });
-  const handle = await open(filePath, "r");
+  const handle = await open(filePath, "wx", 0o600);
   try {
+    await handle.writeFile(contents, "utf8");
     await handle.sync();
   } finally {
     await handle.close();
@@ -546,6 +546,7 @@ async function writeDurableText(filePath: string, contents: string): Promise<voi
 }
 
 async function syncDirectory(directory: string): Promise<void> {
+  if (process.platform === "win32") return;
   const handle = await open(directory, "r");
   try {
     await handle.sync();

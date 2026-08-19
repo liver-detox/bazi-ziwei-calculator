@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import { createReadStream } from "node:fs";
-import { open, writeFile } from "node:fs/promises";
+import { open } from "node:fs/promises";
 
 import { canonicalize } from "json-canonicalize";
 
@@ -25,9 +25,9 @@ export async function sha256File(filePath: string): Promise<string> {
 }
 
 export async function writeCanonicalJson(filePath: string, value: unknown, mode = 0o600): Promise<void> {
-  await writeFile(filePath, canonicalJson(value), { encoding: "utf8", flag: "wx", mode });
-  const handle = await open(filePath, "r");
+  const handle = await open(filePath, "wx", mode);
   try {
+    await handle.writeFile(canonicalJson(value), "utf8");
     await handle.sync();
   } finally {
     await handle.close();
