@@ -96,7 +96,7 @@ function horoscopeText(
     field("四化", list(horoscope.transformations))
   );
   horoscope.starsByPalace.forEach((stars, index) => {
-    lines.push(field(`第 ${index} 宫星曜`, stars.map(starText).join("；") || "未提供"));
+    lines.push(field(`${horoscope.palaceNames[index]}星曜`, stars.map(starText).join("；") || "未提供"));
   });
 }
 

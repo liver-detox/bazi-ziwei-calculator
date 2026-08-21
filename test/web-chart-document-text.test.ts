@@ -102,4 +102,33 @@ describe("ChartDocument plain-text presentation", () => {
       expect(() => chartDocumentTextFilename(filename)).toThrow();
     }
   });
+
+  it("labels fortune stars with their indexed palace names", async () => {
+    const workbench = await makeWorkbench();
+    const created = await workbench.createCase(syntheticDemoRequest("DEMO-YEARS", "CS-2002-930"));
+    const candidateId = (created.snapshot.timeEvidence as { candidates: Array<{ id: string }> })
+      .candidates[0].id;
+    const { document, filename } = await workbench.downloadChartDocument(
+      "CS-2002-930",
+      created.revision.revisionId,
+      { candidateId, targetYear: 2026 }
+    );
+    const target = document.ziwei.yearlyFortunes.find(({ targetYear }) => targetYear === 2026);
+    expect(target).toBeDefined();
+    if (target === undefined) throw new Error("synthetic target-year fortune missing");
+
+    target.decadal.palaceNames[0] = "合成命宫";
+    target.decadal.palaceNames[1] = "合成财帛宫";
+    target.decadal.starsByPalace[0] = [{
+      name: "合成甲星", type: "主星", scope: "大限", brightness: null, transformation: null
+    }];
+    target.decadal.starsByPalace[1] = [{
+      name: "合成乙星", type: "辅星", scope: "大限", brightness: null, transformation: null
+    }];
+
+    const text = presentChartDocumentText(document, filename).plainText;
+    expect(text).toContain("合成命宫星曜：合成甲星");
+    expect(text).toContain("合成财帛宫星曜：合成乙星");
+    expect(text).not.toContain("第 0 宫星曜");
+  });
 });
