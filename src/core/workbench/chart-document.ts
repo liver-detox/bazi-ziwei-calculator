@@ -14,7 +14,7 @@ import {
   TimeEvidenceV2Schema
 } from "../../shared/provided-time-contracts.js";
 
-export const CALCULATOR_VERSION = "0.2.0" as const;
+export const CALCULATOR_VERSION = "0.3.0" as const;
 
 export const ChartDocumentExportRequestSchema = z.object({
   candidateId: z.string().min(1),

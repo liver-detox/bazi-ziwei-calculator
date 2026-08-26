@@ -78,7 +78,7 @@ describe("ChartDocument v1", () => {
     expect(ChartDocumentV1Schema.parse(document)).toEqual(document);
     expect(document).toMatchObject({
       schemaVersion: 1,
-      calculatorVersion: "0.2.0",
+      calculatorVersion: "0.3.0",
       subject: { nameOrAlias: "SYNTHETIC-NAME-JSON", gender: "女" },
       selection: { candidateId, hadAlternatives: false, rationale: null }
     });
