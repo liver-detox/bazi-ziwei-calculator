@@ -318,4 +318,21 @@ describe("chart document export orchestration", () => {
     expect(state.setStatus.mock.calls).toEqual([[""]]);
     expect(state.setBusy.mock.calls).toEqual([[true], [false]]);
   });
+
+  it("runs the caller fallback when a prepared browser action fails", async () => {
+    const state = lifecycle();
+    const onFailure = vi.fn();
+
+    await runPreparedExportAction({
+      view: present(apiResult.document, apiResult.filename),
+      action: async () => { throw new Error("剪贴板权限被拒绝"); },
+      lifecycle: state,
+      fallbackError: "复制失败",
+      onFailure
+    });
+
+    expect(onFailure).toHaveBeenCalledOnce();
+    expect(state.setError.mock.calls).toEqual([[""], ["剪贴板权限被拒绝"]]);
+    expect(state.setBusy.mock.calls).toEqual([[true], [false]]);
+  });
 });

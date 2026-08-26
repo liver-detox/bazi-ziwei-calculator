@@ -185,6 +185,14 @@ export function shouldShowCandidateChooser(snapshot: ResultSnapshotInput): boole
   return snapshot.charts.candidates.length > 1;
 }
 
+export function requiresCandidateDecision(snapshot: ResultSnapshotInput): boolean {
+  if (snapshot.charts.candidates.length <= 1) return false;
+  const decision = snapshot.audit.manualDecision;
+  return decision?.status !== "selected"
+    || decision.selectedCandidateId === null
+    || !snapshot.charts.candidates.some((candidate) => candidate.candidateId === decision.selectedCandidateId);
+}
+
 export function selectResultCandidate(
   selection: ResultSelection,
   snapshot: ResultSnapshotInput,

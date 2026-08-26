@@ -33,6 +33,7 @@ import { runExportAction, runPreparedExportAction, startChartDocumentTextPrepara
 import { createResultsAppActions, drawerIdentity, sortedTargetYears, type ResultsAppActionState } from "./results-orchestration-model.js";
 import {
   createResultSelection,
+  requiresCandidateDecision,
   selectionAfterTargetYearMutation,
   type ResultSelection,
   type TargetYearPage
@@ -201,7 +202,7 @@ export function App() {
     ? [snapshot.input.caseId, snapshot.manifest.revisionId, selection.candidateId, selection.selectedTargetYear ?? ""].join(":")
     : "";
   useEffect(() => {
-    if (!verificationOpen || !snapshot || !selection || chartTextPreparationKey === "") {
+    if (!snapshot || !selection || chartTextPreparationKey === "") {
       setPreparedChartText(undefined);
       setChartTextPreparing(false);
       setChartTextError("");
@@ -228,7 +229,7 @@ export function App() {
       }
     });
     return () => preparation.cancel();
-  }, [verificationOpen, chartTextPreparationKey, chartTextRetryNonce]);
+  }, [chartTextPreparationKey, chartTextRetryNonce]);
 
   const beginCreate = () => { applyActionState(resultsAppActions.beginCreate(currentActionState())); setForm(emptyProvidedTimeForm()); setFormErrors({}); setError(""); };
   const beginRevision = () => {
@@ -301,22 +302,32 @@ export function App() {
     setBusy(true); setError("");
     try { const response = await apiRequest<CreateCaseResponse>(`/api/cases/${snapshot.input.caseId}/revisions/${snapshot.manifest.revisionId}/decision`, { method: "POST", body: JSON.stringify(payload) }); commitSnapshot(response.snapshot); setNotice("人工确认已保存。"); await loadCases(snapshot.input.caseId); } catch (reason) { setError(reason instanceof Error ? reason.message : "人工确认保存失败"); } finally { setBusy(false); }
   };
-  const exportLifecycle = { setBusy, setError, setStatus: setExportStatus };
+  const exportLifecycle = {
+    setBusy,
+    setError,
+    setStatus: (status: "" | ExportActionResult) => {
+      setExportStatus(status);
+      if (status === "copied") setNotice("已复制，可粘贴到你选择的大模型。");
+    }
+  };
   const runCurrentTextAction = (
     action: (view: ChartDocumentTextView) => ExportActionResult | Promise<ExportActionResult>,
-    fallbackError: string
+    fallbackError: string,
+    onFailure?: () => void
   ): Promise<void> => {
     if (preparedChartText?.key !== chartTextPreparationKey) return Promise.resolve();
     return runPreparedExportAction({
       view: preparedChartText.view,
       action,
       lifecycle: exportLifecycle,
-      fallbackError
+      fallbackError,
+      onFailure
     });
   };
-  const copyChartDocument = () => runCurrentTextAction(
+  const copyChartDocument = (onFailure?: () => void) => runCurrentTextAction(
     (view) => copyChartDocumentText({ view }),
-    "复制失败"
+    "复制失败",
+    onFailure
   );
   const downloadChartDocumentText = () => runCurrentTextAction(
     (view) => saveChartDocumentTextDownload({ view }),
@@ -347,7 +358,26 @@ export function App() {
   });
 
   const openVerification = (trigger: HTMLElement | null) => { verificationTrigger.current = trigger; setExportStatus(""); setVerificationOpen(true); };
-  const closeVerification = () => { setPreparedChartText(undefined); setChartTextPreparing(false); setChartTextError(""); setVerificationOpen(false); };
+  const closeVerification = () => { setVerificationOpen(false); };
+  const candidateDecisionRequired = snapshot ? requiresCandidateDecision(snapshot) : false;
+  const currentChartTextReady = preparedChartText?.key === chartTextPreparationKey;
+  const copyForAiState = candidateDecisionRequired
+    ? "review" as const
+    : busy
+      ? "busy" as const
+      : currentChartTextReady
+        ? "ready" as const
+        : chartTextError === ""
+          ? "preparing" as const
+          : "failed" as const;
+  const copyForAi = () => {
+    const trigger = document.querySelector<HTMLButtonElement>("[data-copy-for-ai-trigger]");
+    if (copyForAiState !== "ready") {
+      openVerification(trigger);
+      return;
+    }
+    void copyChartDocument(() => openVerification(trigger));
+  };
   const riskNotice = useMemo(() => snapshot && (retainedSnapshotRisk || snapshot.audit.blockingReasons?.length || snapshot.charts.candidates.length > 1) ? retainedSnapshotRisk ? "本次更新未成功，当前显示的是上一次成功结果；请查看原因后再继续。" : "当前结果保留多个可能候选或待处理差异；请在核验与导出中查看依据。" : "", [retainedSnapshotRisk, snapshot]);
   const fingerprint = snapshot && (typeof snapshot.audit.contentFingerprint === "string" ? snapshot.audit.contentFingerprint : snapshot.audit.contentFingerprint?.value) || snapshot?.manifest.contentFingerprint || "";
   const verificationIdentity = snapshot ? drawerIdentity(snapshot.input.caseId, snapshot.manifest.revisionId) : "";
@@ -364,7 +394,7 @@ export function App() {
       {notice && <div className="toast success"><Check size={18} /><span>{notice}</span>{snapshot && notice.includes("保留") && <button className="button ghost" onClick={(event) => openVerification(event.currentTarget)} type="button">查看原因</button>}<button aria-label="关闭提醒" onClick={() => setNotice("")} type="button"><X size={16} /></button></div>}
       {loading ? <div className="loading-state"><LoaderCircle className="spin" size={28} /> 正在读取本地案例……</div> : showForm ? <ProvidedTimeForm busy={busy} errors={formErrors} form={form} onCancel={() => setShowForm(false)} onSubmit={submitCase} setForm={(next) => { setForm(next); setFormErrors({}); }} /> : snapshot && selection ? <>
         {riskNotice && <div className="persistent-risk-notice"><CircleAlert size={17} /><span>{riskNotice}</span><button className="button ghost" onClick={(event) => openVerification(event.currentTarget)} type="button">查看原因</button></div>}
-        <ResultsShell caseName={snapshot.input.alias} isNarrow={isNarrow} onAddTargetYear={(year, page) => void updateTargetYears([...snapshot.charts.targetYears, year], year, "add", page)} onModifyInput={beginRevision} onOpenCaseDialog={() => { caseTrigger.current = document.querySelector<HTMLButtonElement>("[data-result-case-trigger]"); setCaseDrawerOpen(true); }} onOpenVerification={() => openVerification(document.querySelector<HTMLButtonElement>(".result-primary-action.primary"))} onRecoverBaziDetail={recoverBaziDetail} onRemoveTargetYear={(year, page) => void updateTargetYears(snapshot.charts.targetYears.filter((item) => item !== year), year, "remove", page)} onSelectionChange={changeSelection} selection={selection} snapshot={snapshot} />
+        <ResultsShell caseName={snapshot.input.alias} copyForAiState={copyForAiState} isNarrow={isNarrow} onAddTargetYear={(year, page) => void updateTargetYears([...snapshot.charts.targetYears, year], year, "add", page)} onCopyForAi={copyForAi} onModifyInput={beginRevision} onOpenCaseDialog={() => { caseTrigger.current = document.querySelector<HTMLButtonElement>("[data-result-case-trigger]"); setCaseDrawerOpen(true); }} onOpenVerification={() => openVerification(document.querySelector<HTMLButtonElement>("[data-verification-trigger]"))} onRecoverBaziDetail={recoverBaziDetail} onRemoveTargetYear={(year, page) => void updateTargetYears(snapshot.charts.targetYears.filter((item) => item !== year), year, "remove", page)} onSelectionChange={changeSelection} selection={selection} snapshot={snapshot} />
       </> : <EmptyResults onCreate={beginCreate} />}
     </div>
     <CaseDrawer cases={cases} currentCaseId={selectedCaseId} onClose={() => setCaseDrawerOpen(false)} onCreate={() => { setCaseDrawerOpen(false); beginCreate(); }} onSelect={(item) => void selectCase(item)} open={caseDrawerOpen} returnFocus={caseTrigger.current} />

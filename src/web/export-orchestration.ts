@@ -17,6 +17,7 @@ export interface RunExportActionInput {
   action: () => Promise<ExportActionResult>;
   lifecycle: ExportActionLifecycle;
   fallbackError: string;
+  onFailure?: () => void;
 }
 
 export interface RunPreparedExportActionInput extends Omit<RunExportActionInput, "action"> {
@@ -78,6 +79,7 @@ export async function runExportAction(input: RunExportActionInput): Promise<void
     input.lifecycle.setStatus(await input.action());
   } catch (reason) {
     input.lifecycle.setError(reason instanceof Error ? reason.message : input.fallbackError);
+    input.onFailure?.();
   } finally {
     input.lifecycle.setBusy(false);
   }
@@ -87,6 +89,7 @@ export function runPreparedExportAction(input: RunPreparedExportActionInput): Pr
   return runExportAction({
     action: () => Promise.resolve(input.action(input.view)),
     lifecycle: input.lifecycle,
-    fallbackError: input.fallbackError
+    fallbackError: input.fallbackError,
+    onFailure: input.onFailure
   });
 }

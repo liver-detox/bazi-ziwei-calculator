@@ -12,6 +12,8 @@ import {
 } from "./results-model.js";
 import { ZiweiDetailPage } from "./ZiweiDetailPage.js";
 
+export type CopyForAiState = "ready" | "preparing" | "review" | "failed" | "busy";
+
 export interface ResultsShellProps {
   snapshot: ResultSnapshotInput;
   selection: ResultSelection;
@@ -20,6 +22,8 @@ export interface ResultsShellProps {
   onOpenCaseDialog: () => void;
   onModifyInput: () => void;
   onOpenVerification: () => void;
+  onCopyForAi: () => void;
+  copyForAiState: CopyForAiState;
   onRecoverBaziDetail?: () => void;
   onAddTargetYear?: (year: number, page: TargetYearPage) => void;
   onRemoveTargetYear?: (year: number, page: TargetYearPage) => void;
@@ -116,6 +120,8 @@ export function ResultsShell({
   onOpenCaseDialog,
   onModifyInput,
   onOpenVerification,
+  onCopyForAi,
+  copyForAiState,
   onRecoverBaziDetail,
   onAddTargetYear,
   onRemoveTargetYear,
@@ -123,6 +129,14 @@ export function ResultsShell({
 }: ResultsShellProps) {
   const presentation = presentResults(snapshot, selection);
   const activePage = selection.activePage;
+  const copyForAiLabel = copyForAiState === "preparing"
+    ? "正在准备…"
+    : copyForAiState === "busy"
+      ? "请稍候…"
+      : copyForAiState === "review"
+        ? "核验后复制"
+        : "复制给 AI";
+  const copyForAiDisabled = copyForAiState === "preparing" || copyForAiState === "busy";
 
   return (
     <main className="results-shell">
@@ -131,9 +145,13 @@ export function ResultsShell({
           <p className="eyebrow">当前案例</p>
           <button aria-haspopup="dialog" className="results-case-trigger" data-result-case-trigger type="button" onClick={onOpenCaseDialog}>{caseName}</button>
         </div>
-        <div className="result-primary-actions">
-          <button className="button result-primary-action secondary" type="button" onClick={onModifyInput}>修改输入</button>
-          <button className="button result-primary-action primary" type="button" onClick={onOpenVerification}>核验与导出</button>
+        <div className="result-action-cluster">
+          <div className="result-primary-actions">
+            <button className="button result-primary-action secondary" type="button" onClick={onModifyInput}>修改输入</button>
+            <button className="button result-primary-action secondary" data-verification-trigger type="button" onClick={onOpenVerification}>核验与导出</button>
+            <button aria-describedby="copy-for-ai-note" aria-busy={copyForAiState === "preparing" || copyForAiState === "busy" ? "true" : undefined} className="button result-primary-action primary" data-copy-for-ai-trigger disabled={copyForAiDisabled} type="button" onClick={onCopyForAi}>{copyForAiLabel}</button>
+          </div>
+          <p className="result-action-note" id="copy-for-ai-note">复制内容包含姓名或代号及出生资料。</p>
         </div>
       </header>
 
