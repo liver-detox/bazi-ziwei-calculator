@@ -1,4 +1,4 @@
-import { Check, CircleAlert, Search, ShieldCheck, X } from "lucide-react";
+import { Check, CircleAlert, Search, X } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
 import type { TimeEvidenceAny } from "../shared/contracts.js";
@@ -101,10 +101,10 @@ export interface VerificationDrawerProps {
 }
 
 export function VerificationDrawer({ open, evidence, audit, exportPanel, technical, onClose, returnFocus }: VerificationDrawerProps) {
-  return <NativeDialog className="result-drawer verification-drawer" label="核验与导出" onClose={onClose} open={open} returnFocus={returnFocus}>
+  return <NativeDialog className="result-drawer verification-drawer" label="结果与导出" onClose={onClose} open={open} returnFocus={returnFocus}>
     <div className="drawer-body verification-body">
       <section><h2>时间依据</h2>{evidence}</section>
-      <section><h2>差异与人工确认</h2>{audit}</section>
+      <section><h2>选择结果</h2>{audit}</section>
       <section><h2>导出</h2>{exportPanel}</section>
       <details className="advanced-technical"><summary>高级技术信息</summary><div>{technical ?? <p>版本与指纹仅用于本地复核。</p>}</div></details>
     </div>
@@ -113,9 +113,6 @@ export function VerificationDrawer({ open, evidence, audit, exportPanel, technic
 
 const BASIS_LABELS: Record<string, string> = { civil_iana: "民用时 · IANA", civil_standard: "标准时候选", gap_before: "跳时前纠偏", gap_after: "跳时后纠偏", apparent_solar: "真太阳时", apparent_solar_provided: PROVIDED_TIME_PRESENTATION.apparent_solar_provided.label, civil_clock_provided: PROVIDED_TIME_PRESENTATION.civil_clock_provided.label };
 const CALENDAR_BASIS_LABELS: Record<string, string> = { solar: "公历", lunar_regular: "农历普通月", lunar_leap: "农历闰月" };
-const ANALYSIS_LABELS: Record<string, string> = { full_dual: "完整双轨", provisional_dual: "暂准双轨", single_track: "稳定单轨", data_diagnosis: "资料诊断" };
-const WORKFLOW_LABELS: Record<string, string> = { draft: "待完善", review: "待核验", verified: "已核验", void: "已作废" };
-
 export function TimeEvidencePanel({ evidence }: { evidence: TimeEvidenceAny }) {
   const provided = evidence.schemaVersion === "2.0.0" ? PROVIDED_TIME_PRESENTATION[evidence.originalTimeBasis] : undefined;
   return <div className="drawer-evidence">
@@ -123,7 +120,7 @@ export function TimeEvidencePanel({ evidence }: { evidence: TimeEvidenceAny }) {
     {provided && <p className="time-boundary-statement">{provided.statement}</p>}
     <div className="candidate-grid">{evidence.candidates.map((candidate, index) => <article className={candidate.preferred ? "candidate-card preferred" : "candidate-card"} key={candidate.id}><div className="candidate-card-header"><div><strong className="candidate-number">候选 {index + 1}</strong><span>{BASIS_LABELS[candidate.basis] ?? candidate.basis}{candidate.calendarBasis ? ` · ${CALENDAR_BASIS_LABELS[candidate.calendarBasis] ?? candidate.calendarBasis}` : ""}</span></div>{candidate.preferred && <em>主候选</em>}</div><strong className="candidate-time">{candidate.localDateTime.replace("T", " ")}</strong><div className="candidate-meta"><span>{candidate.earthlyBranch.name}时</span>{"offset" in candidate && <span>UTC {candidate.offset}</span>}<span>{candidate.dayBoundary === "forward" ? "次日换日" : "当日换日"}</span></div>{"trueSolarCorrection" in candidate && candidate.trueSolarCorrection && <dl className="correction-list"><div><dt>经度修正</dt><dd>{candidate.trueSolarCorrection.longitudeCorrectionMinutes.toFixed(2)} 分</dd></div><div><dt>均时差</dt><dd>{candidate.trueSolarCorrection.equationOfTimeMinutes.toFixed(2)} 分</dd></div><div><dt>总修正</dt><dd>{candidate.trueSolarCorrection.roundedTotalCorrectionMinutes} 分</dd></div></dl>}</article>)}</div>
     {evidence.calendarResolutions.length > 0 && <div className="issue-list">{evidence.calendarResolutions.map((resolution) => resolution.status === "valid" ? <div className="success-note" key={resolution.id}><Check size={17} /> {CALENDAR_BASIS_LABELS[resolution.basis] ?? resolution.basis} → {resolution.solarDate} · {resolution.note}</div> : <article className="issue blocking" key={resolution.id}><CircleAlert size={16} /><div><strong>{CALENDAR_BASIS_LABELS[resolution.basis] ?? resolution.basis}转换无效</strong><p>{resolution.note}</p></div></article>)}</div>}
-    <div className="issue-list">{evidence.issues.length === 0 ? <div className="success-note"><Check size={16} /> 当前没有时间口径警告</div> : evidence.issues.map((issue, index) => <article className={`issue ${issue.severity}`} key={`${issue.code}-${index}`}><CircleAlert size={16} /><div><strong>{issue.code}</strong><p>{issue.message}</p></div></article>)}</div>
+    <div className="issue-list">{evidence.issues.length === 0 ? <div className="success-note"><Check size={16} /> 当前没有时间口径警告</div> : evidence.issues.map((issue, index) => <article className={`issue ${issue.severity}`} key={`${issue.code}-${index}`}><CircleAlert size={16} /><p>{issue.message}</p></article>)}</div>
   </div>;
 }
 
@@ -136,21 +133,47 @@ export interface DrawerAudit {
   manualDecision?: { selectedCandidateId: string | null; rationale: string | null };
 }
 
-export function drawerDecisionState(audit: Pick<DrawerAudit, "candidateIds" | "manualDecision">): { candidateId: string; rationale: string } {
-  return { candidateId: audit.manualDecision?.selectedCandidateId ?? audit.candidateIds[0] ?? "", rationale: audit.manualDecision?.rationale ?? "" };
+function visibleDecisionNote(rationale: string | null | undefined): string {
+  if (!rationale) return "";
+  if (rationale.startsWith("用户补充说明：")) return rationale.slice("用户补充说明：".length);
+  if (rationale.startsWith("用户补充：")) return rationale.slice("用户补充：".length);
+  if (/^用户已确认使用候选 \d+。$/u.test(rationale)) return "";
+  return rationale;
 }
 
-export function AuditPanel({ audit, identity, open, onDecision, busy }: { audit: DrawerAudit; identity: string; open: boolean; onDecision: (payload: Record<string, unknown>) => Promise<void>; busy: boolean }) {
-  const initial = drawerDecisionState(audit);
+export function drawerDecisionState(audit: Pick<DrawerAudit, "candidateIds" | "manualDecision">): { candidateId: string; rationale: string } {
+  return {
+    candidateId: audit.manualDecision?.selectedCandidateId ?? audit.candidateIds[0] ?? "",
+    rationale: visibleDecisionNote(audit.manualDecision?.rationale)
+  };
+}
+
+export function selectionDecisionPayload(candidateId: string, candidateIds: readonly string[], note: string): Record<string, unknown> {
+  const candidateIndex = candidateIds.indexOf(candidateId);
+  const rationale = note.trim() === ""
+    ? candidateIndex >= 0 ? `用户已确认使用候选 ${candidateIndex + 1}。` : "用户已确认使用所选结果。"
+    : `用户补充说明：${note.trim()}`;
+  return { status: "selected", selectedCandidateId: candidateId, rationale, workflowStatus: "review" };
+}
+
+export function AuditPanel({ audit, candidateOrder, identity, open, onDecision, busy }: { audit: DrawerAudit; candidateOrder?: readonly string[]; identity: string; open: boolean; onDecision: (payload: Record<string, unknown>) => Promise<void>; busy: boolean }) {
+  const orderedCandidateIds = candidateOrder?.filter((id) => audit.candidateIds.includes(id));
+  const candidateIds = orderedCandidateIds?.length === audit.candidateIds.length
+    ? orderedCandidateIds
+    : audit.candidateIds;
+  const initial = drawerDecisionState({ candidateIds, manualDecision: audit.manualDecision });
   const [candidateId, setCandidateId] = useState(initial.candidateId);
   const [rationale, setRationale] = useState(initial.rationale);
-  useEffect(() => { const next = drawerDecisionState(audit); setCandidateId(next.candidateId); setRationale(next.rationale); }, [identity, open]);
-  const submit = (status: "selected" | "retained_all" | "deferred", workflowStatus: "review" | "verified") => void onDecision({ status, selectedCandidateId: status === "selected" ? candidateId : null, rationale, workflowStatus });
+  useEffect(() => { const next = drawerDecisionState({ candidateIds, manualDecision: audit.manualDecision }); setCandidateId(next.candidateId); setRationale(next.rationale); }, [identity, open]);
   const visibleCandidates = (ids: readonly string[]) => ids.map((id) => {
-    const index = audit.candidateIds.indexOf(id);
+    const index = candidateIds.indexOf(id);
     return index < 0 ? "未识别候选" : `候选 ${index + 1}`;
   }).join(" · ");
-  return <div className="drawer-audit"><p>当前核验状态：{WORKFLOW_LABELS[audit.workflowStatus] ?? "待确认"}</p><div className="analysis-modes"><span>当前允许：</span>{(audit.allowedAnalysisModes ?? []).map((mode) => <em key={mode}>{ANALYSIS_LABELS[mode] ?? mode}</em>)}</div><div className="finding-list">{audit.findings.map((finding, index) => <article className={finding.severity} key={`${finding.code}-${index}`}><div><strong>{finding.code}</strong>{finding.levelImpact && <span>影响 {finding.levelImpact}</span>}</div><p>{finding.summary}</p>{finding.candidateIds?.length ? <small>{visibleCandidates(finding.candidateIds)}</small> : null}</article>)}</div><div className="decision-box"><div><h3>人工决定</h3><p>决定只记录操作口径，不删除原始候选和阻断原因。</p></div><label>工作主候选<select onChange={(event) => setCandidateId(event.target.value)} value={candidateId}>{audit.candidateIds.map((id, index) => <option key={id} value={id}>候选 {index + 1}</option>)}</select></label><label>采用理由<input onChange={(event) => setRationale(event.target.value)} placeholder="至少说明证据依据与保留风险" value={rationale} /></label><div className="decision-actions"><button className="button secondary" disabled={busy || rationale.trim().length < 8} onClick={() => submit("retained_all", "review")} type="button">保留全部</button><button className="button secondary" disabled={busy || rationale.trim().length < 8 || !candidateId} onClick={() => submit("selected", "review")} type="button">选为工作主盘</button><button className="button primary" disabled={busy || rationale.trim().length < 8} onClick={() => submit(candidateId ? "selected" : "deferred", "verified")} type="button"><ShieldCheck size={16} /> 保存为已核验新修订</button></div></div></div>;
+  const needsChoice = candidateIds.length > 1;
+  return <div className="drawer-audit">
+    <div className="finding-list">{audit.findings.map((finding, index) => <article className={finding.severity} key={`${finding.code}-${index}`}><p>{finding.summary}</p>{finding.candidateIds?.length ? <small>{visibleCandidates(finding.candidateIds)}</small> : null}</article>)}</div>
+    {needsChoice ? <div className="decision-box"><div><h3>选择要使用的结果</h3><p>有多个可能结果，请选择一个。</p></div><label>选择结果<select onChange={(event) => setCandidateId(event.target.value)} value={candidateId}>{candidateIds.map((id, index) => <option key={id} value={id}>候选 {index + 1}</option>)}</select></label><label>补充说明（可选）<input onChange={(event) => setRationale(event.target.value)} placeholder="例如：出生记录更支持候选 1" value={rationale} /></label><div className="decision-actions"><button className="button primary" disabled={busy || !candidateId} onClick={() => void onDecision(selectionDecisionPayload(candidateId, candidateIds, rationale))} type="button"><Check size={16} /> 确认选择</button></div></div> : <p className="result-inline-empty">当前只有一个结果，无需选择。</p>}
+  </div>;
 }
 
 export interface ExportPanelProps {

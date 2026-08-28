@@ -2,7 +2,8 @@ import { renderToStaticMarkup } from "react-dom/server";
 import type { ReactElement, ReactNode } from "react";
 import { describe, expect, it, vi } from "vitest";
 
-import { AuditPanel, TimeEvidencePanel, closeNativeDialog, connectNativeDialogLifecycle, drawerDecisionState, CaseDrawer, ExportPanel, VerificationDrawer, type ExportPanelProps } from "../src/web/ResultDrawers.js";
+import { DecisionRequestSchema } from "../src/core/workbench/case-workbench.js";
+import { AuditPanel, TimeEvidencePanel, closeNativeDialog, connectNativeDialogLifecycle, drawerDecisionState, selectionDecisionPayload, CaseDrawer, ExportPanel, VerificationDrawer, type ExportPanelProps } from "../src/web/ResultDrawers.js";
 import type { ExportActionResult } from "../src/web/export-download.js";
 import type { TimeEvidenceV2 } from "../src/shared/provided-time-contracts.js";
 
@@ -53,6 +54,9 @@ describe("result drawers", () => {
   it("resets the candidate and rationale to the new case/revision identity defaults", () => {
     expect(drawerDecisionState({ candidateIds: ["candidate-b"], manualDecision: { selectedCandidateId: null, rationale: null } })).toEqual({ candidateId: "candidate-b", rationale: "" });
     expect(drawerDecisionState({ candidateIds: ["candidate-c"], manualDecision: { selectedCandidateId: "candidate-c", rationale: "新的理由" } })).toEqual({ candidateId: "candidate-c", rationale: "新的理由" });
+    expect(drawerDecisionState({ candidateIds: ["candidate-a"], manualDecision: { selectedCandidateId: "candidate-a", rationale: "用户已确认使用候选 1。" } })).toEqual({ candidateId: "candidate-a", rationale: "" });
+    expect(drawerDecisionState({ candidateIds: ["candidate-a"], manualDecision: { selectedCandidateId: "candidate-a", rationale: "用户补充：出生证" } })).toEqual({ candidateId: "candidate-a", rationale: "出生证" });
+    expect(drawerDecisionState({ candidateIds: ["candidate-a"], manualDecision: { selectedCandidateId: "candidate-a", rationale: "用户补充说明：出生证" } })).toEqual({ candidateId: "candidate-a", rationale: "出生证" });
   });
 
   it("renders the current-case chooser with search, list, and a fixed new chart action", () => {
@@ -73,7 +77,7 @@ describe("result drawers", () => {
     expect(html).toContain("<dialog");
   });
 
-  it("keeps three user tasks visible and technical identity in a closed advanced section", () => {
+  it("keeps the three user tasks plain and technical identity in a closed advanced section", () => {
     const html = renderToStaticMarkup(
       <VerificationDrawer
         audit={<p>差异内容</p>}
@@ -84,7 +88,7 @@ describe("result drawers", () => {
       />
     );
 
-    ["时间依据", "差异与人工确认", "导出", "高级技术信息"].forEach((heading) => expect(html).toContain(heading));
+    ["时间依据", "选择结果", "导出", "高级技术信息"].forEach((heading) => expect(html).toContain(heading));
     expect(html).toMatch(/<details class="advanced-technical"><summary>高级技术信息<\/summary><div>.*sha256:technical-only.*<\/div><\/details>/u);
     expect(html).not.toMatch(/<details[^>]*open/u);
     expect(html).not.toContain("Handoff");
@@ -92,26 +96,74 @@ describe("result drawers", () => {
     expect(html).not.toContain("预览");
   });
 
-  it("keeps the full time evidence and all three human-decision paths inside verification", () => {
+  it("shows plain findings and one optional-note decision for multiple candidates", () => {
     const evidence: TimeEvidenceV2 = {
       schemaVersion: "2.0.0", caseId: "CS-1991-001", sourceRecordFingerprint: "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", rulesetVersion: "CyberSaga-Provided-Time-v1",
       originalCalendar: { type: "solar", date: "1991-03-23", leapMonth: false }, originalLocalTime: "16:56", originalTimeBasis: "apparent_solar_provided", solarDate: "1991-03-23",
       calendarResolutions: [{ id: "calendar", basis: "solar", status: "valid", sourceDate: "1991-03-23", solarDate: "1991-03-23", note: "公历日期直接采用" }],
-      candidates: [{ id: "candidate-a", basis: "apparent_solar_provided", preferred: true, localDateTime: "1991-03-23T16:56", earthlyBranch: { index: 8, name: "申", range: "15:00~17:00" }, ziSegment: null, dayBoundary: "current", calendarResolutionId: "calendar", calendarBasis: "solar", warnings: [] }], issues: []
+      candidates: [{ id: "candidate-a", basis: "apparent_solar_provided", preferred: true, localDateTime: "1991-03-23T16:56", earthlyBranch: { index: 8, name: "申", range: "15:00~17:00" }, ziSegment: null, dayBoundary: "current", calendarResolutionId: "calendar", calendarBasis: "solar", warnings: [] }],
+      issues: [{ code: "late_zi_ambiguity", severity: "warning", message: "这个时间附近可能出现不同换日结果", candidateIds: ["candidate-a"] }]
     };
     const evidenceHtml = renderToStaticMarkup(<TimeEvidencePanel evidence={evidence} />);
-    const auditHtml = renderToStaticMarkup(<AuditPanel audit={{ auditLevel: "B", workflowStatus: "review", candidateIds: ["candidate-a"], findings: [] }} busy={false} identity="CS-1991-001:R001" onDecision={async () => undefined} open />);
+    const auditHtml = renderToStaticMarkup(<AuditPanel audit={{
+      auditLevel: "B",
+      workflowStatus: "review",
+      allowedAnalysisModes: ["data_diagnosis"],
+      candidateIds: ["candidate-a", "candidate-b"],
+      findings: [{ code: "LATE_ZI_DAY_BOUNDARY", severity: "blocking", summary: "23 点附近有两种换日结果", levelImpact: "C", candidateIds: ["candidate-a", "candidate-b"] }]
+    }} busy={false} candidateOrder={["candidate-b", "candidate-a"]} identity="CS-1991-001:R001" onDecision={async () => undefined} open />);
 
-    ["输入口径", "公历日期直接采用", "当前没有时间口径警告"].forEach((text) => expect(evidenceHtml).toContain(text));
-    ["保留全部", "选为工作主盘", "保存为已核验新修订"].forEach((text) => expect(auditHtml).toContain(text));
+    ["输入口径", "公历日期直接采用", "这个时间附近可能出现不同换日结果"].forEach((text) => expect(evidenceHtml).toContain(text));
+    expect(evidenceHtml).not.toContain("late_zi_ambiguity");
     expect(evidenceHtml).toContain("候选 1");
     expect(auditHtml).toContain("候选 1");
-    expect(auditHtml).toContain("当前核验状态：待核验");
-    expect(auditHtml).not.toContain("审计等级 B");
+    expect(auditHtml).toContain("候选 2");
+    expect(auditHtml).toMatch(/<option value="candidate-b" selected="">候选 1<\/option><option value="candidate-a">候选 2<\/option>/u);
+    expect(auditHtml).toContain("23 点附近有两种换日结果");
+    expect(auditHtml).toContain("补充说明（可选）");
+    expect(auditHtml).toMatch(/<button class="button primary"[^>]*>.*确认选择<\/button>/u);
+    expect(auditHtml).not.toMatch(/<button class="button primary"[^>]*disabled=""/u);
+    expect(auditHtml.match(/<button/gu)).toHaveLength(1);
+    for (const hidden of ["当前核验状态", "当前允许", "LATE_ZI_DAY_BOUNDARY", "影响 C", "保留全部", "选为工作主盘", "保存为已核验新修订", "至少说明"]) {
+      expect(auditHtml).not.toContain(hidden);
+    }
     expect(evidenceHtml).not.toContain("candidate-a");
     expect(auditHtml).not.toContain(">candidate-a<");
     expect(auditHtml).not.toContain("· candidate-a");
     expect(auditHtml).toContain('value="candidate-a"');
+  });
+
+  it("does not ask for a decision when only one result exists", () => {
+    const html = renderToStaticMarkup(<AuditPanel audit={{
+      auditLevel: "A",
+      workflowStatus: "verified",
+      candidateIds: ["candidate-a"],
+      findings: []
+    }} busy={false} identity="CS-1991-001:R001" onDecision={async () => undefined} open />);
+
+    expect(html).toContain("当前只有一个结果，无需选择");
+    expect(html).not.toContain("补充说明");
+    expect(html).not.toContain("确认选择");
+    expect(html).not.toContain("<select");
+  });
+
+  it("builds a valid selected decision even when the optional note is empty or short", () => {
+    const emptyNote = selectionDecisionPayload("candidate-b", ["candidate-a", "candidate-b"], "");
+    const shortNote = selectionDecisionPayload("candidate-a", ["candidate-a", "candidate-b"], "证");
+    expect(emptyNote).toEqual({
+      status: "selected",
+      selectedCandidateId: "candidate-b",
+      rationale: "用户已确认使用候选 2。",
+      workflowStatus: "review"
+    });
+    expect(shortNote).toEqual({
+      status: "selected",
+      selectedCandidateId: "candidate-a",
+      rationale: "用户补充说明：证",
+      workflowStatus: "review"
+    });
+    expect(DecisionRequestSchema.parse(emptyNote)).toMatchObject({ evidenceRefs: [] });
+    expect(DecisionRequestSchema.parse(shortNote)).toMatchObject({ evidenceRefs: [] });
   });
 
   it("renders five grouped export actions when system sharing is available", () => {

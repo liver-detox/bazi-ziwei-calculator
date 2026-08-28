@@ -134,7 +134,7 @@ export function ResultsShell({
     : copyForAiState === "busy"
       ? "请稍候…"
       : copyForAiState === "review"
-        ? "核验后复制"
+        ? "先选择结果"
         : "复制给 AI";
   const copyForAiDisabled = copyForAiState === "preparing" || copyForAiState === "busy";
 
@@ -148,7 +148,7 @@ export function ResultsShell({
         <div className="result-action-cluster">
           <div className="result-primary-actions">
             <button className="button result-primary-action secondary" type="button" onClick={onModifyInput}>修改输入</button>
-            <button className="button result-primary-action secondary" data-verification-trigger type="button" onClick={onOpenVerification}>核验与导出</button>
+            <button className="button result-primary-action secondary" data-verification-trigger type="button" onClick={onOpenVerification}>更多导出</button>
             <button aria-describedby="copy-for-ai-note" aria-busy={copyForAiState === "preparing" || copyForAiState === "busy" ? "true" : undefined} className="button result-primary-action primary" data-copy-for-ai-trigger disabled={copyForAiDisabled} type="button" onClick={onCopyForAi}>{copyForAiLabel}</button>
           </div>
           <p className="result-action-note" id="copy-for-ai-note">复制内容包含姓名或代号及出生资料。</p>

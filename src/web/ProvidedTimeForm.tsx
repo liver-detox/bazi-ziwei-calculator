@@ -62,9 +62,9 @@ export function ProvidedTimeForm({
     <form className="birth-form provided-time-form" onSubmit={onSubmit} noValidate>
       <div className="form-heading">
         <div>
-          <p className="eyebrow">极简入口 · 给定时间</p>
-          <h2>输入时间，直接开始双轨排盘</h2>
-          <p>建议先在外部确认真太阳日期时间；本系统不会再次校正。</p>
+          <p className="eyebrow">本地排盘</p>
+          <h2>输入出生时间</h2>
+          <p>填写四项，即可同时查看八字与紫微斗数排盘。</p>
         </div>
         <button type="button" className="icon-button" onClick={onCancel} aria-label="关闭"><X size={19} /></button>
       </div>
@@ -117,13 +117,14 @@ export function ProvidedTimeForm({
               {...errorProps(errors, "localTime", "birth-time")}
             />
             <FieldError errors={errors} name="localTime" inputId="birth-time" />
+            {shouldShowLateZiChoice(form) && <p className="field-note" role="note">这个时间可能有两种换日结果，计算后选择即可。</p>}
           </div>
         </div>
 
         <fieldset className="basis-fieldset" {...(errors.timeBasis === undefined
           ? {}
           : { "aria-invalid": true, "aria-describedby": "time-basis-error" })}>
-          <legend>时间口径</legend>
+          <legend>你输入的是什么时间？</legend>
           <div className="basis-card-grid">
             {(["apparent_solar_provided", "civil_clock_provided"] as const).map((basis, index) => {
               const presentation = PROVIDED_TIME_PRESENTATION[basis];
@@ -137,9 +138,7 @@ export function ProvidedTimeForm({
                     required={index === 0}
                     onChange={() => patch("timeBasis", basis)}
                   />
-                  <span><strong>{presentation.label}</strong><small>{basis === "apparent_solar_provided"
-                    ? "把已确认的真太阳日期时间原样用于双轨计算"
-                    : "把输入的当地钟表日期时间原样用于双轨计算"}</small></span>
+                  <span><strong>{presentation.label}</strong><small>{basis === "apparent_solar_provided" ? "已在其他工具完成校正" : "按当地钟表记录直接计算"}</small></span>
                 </label>
               );
             })}
@@ -147,25 +146,6 @@ export function ProvidedTimeForm({
           {basisPresentation && <p className="basis-statement" role="note">{basisPresentation.statement}</p>}
           <FieldError errors={errors} name="timeBasis" inputId="time-basis" />
         </fieldset>
-
-        {shouldShowLateZiChoice(form) && (
-          <div className="conditional-option" role="note">
-            <div>
-              <strong>23 点晚子时</strong>
-              <p>默认同时保留当日与次日换日两种候选，便于后续审计。</p>
-            </div>
-            <label htmlFor="late-zi-policy">换日口径</label>
-            <select
-              id="late-zi-policy"
-              value={form.lateZi}
-              onChange={(event) => patch("lateZi", event.target.value as ProvidedTimeFormState["lateZi"])}
-            >
-              <option value="candidates">保留两种换日</option>
-              <option value="current_day">只按当日</option>
-              <option value="next_day">只按次日</option>
-            </select>
-          </div>
-        )}
 
         <div className="form-field target-years-field">
           <label htmlFor="target-years">目标流年（可选）</label>
@@ -241,7 +221,7 @@ export function ProvidedTimeForm({
         <button type="button" className="button ghost" onClick={onCancel}>取消</button>
         <button className="button primary" disabled={busy}>
           {busy ? <LoaderCircle className="spin" size={17} /> : <Sparkles size={17} />}
-          计算并保存新修订
+          计算并查看排盘
         </button>
       </div>
     </form>

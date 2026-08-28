@@ -23,7 +23,6 @@ export interface ProvidedTimeFormState {
   sourceType: ProvidedTimeSourceType;
   sourceNote: string;
   birthplaceNote: string;
-  lateZi: "candidates" | "current_day" | "next_day";
   targetYears: string;
 }
 
@@ -46,7 +45,7 @@ export interface ProvidedTimeRequest {
       sourceType: ProvidedTimeSourceType;
       sourceNote?: string;
     };
-    policy: { lateZi: ProvidedTimeFormState["lateZi"] };
+    policy: { lateZi: "candidates" };
   };
   targetYears: number[];
   workflowStatus: "review";
@@ -71,7 +70,6 @@ export function emptyProvidedTimeForm(): ProvidedTimeFormState {
     sourceType: "unknown",
     sourceNote: "",
     birthplaceNote: "",
-    lateZi: "candidates",
     targetYears: ""
   };
 }
@@ -193,7 +191,7 @@ export function buildProvidedTimeRequest(
         sourceType: form.sourceType,
         ...(sourceNote === "" ? {} : { sourceNote })
       },
-      policy: { lateZi: form.lateZi }
+      policy: { lateZi: "candidates" }
     },
     targetYears,
     workflowStatus: "review",
