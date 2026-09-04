@@ -26,6 +26,7 @@ export interface ResultsShellProps {
   copyForAiState: CopyForAiState;
   onRecoverBaziDetail?: () => void;
   onAddTargetYear?: (year: number, page: TargetYearPage) => void;
+  onAddTargetYearRange?: (years: readonly number[], page: TargetYearPage) => void;
   onRemoveTargetYear?: (year: number, page: TargetYearPage) => void;
   isNarrow: boolean;
 }
@@ -124,6 +125,7 @@ export function ResultsShell({
   copyForAiState,
   onRecoverBaziDetail,
   onAddTargetYear,
+  onAddTargetYearRange,
   onRemoveTargetYear,
   isNarrow
 }: ResultsShellProps) {
@@ -184,7 +186,7 @@ export function ResultsShell({
       {activePage === "overview" && <CompactOverview onSelectionChange={onSelectionChange} selection={selection} snapshot={snapshot} />}
       {activePage === "bazi" && <BaziDetailPage onRecoverDetail={onRecoverBaziDetail} presentation={presentation} />}
       {activePage === "fortune" && <FortunePage isNarrow={isNarrow} onAddTargetYear={onAddTargetYear} onRemoveTargetYear={onRemoveTargetYear} onSelectionChange={onSelectionChange} selection={selection} snapshot={snapshot} />}
-      {activePage === "ziwei" && <ZiweiDetailPage isNarrow={isNarrow} onAddTargetYear={onAddTargetYear} onRemoveTargetYear={onRemoveTargetYear} onSelectionChange={onSelectionChange} selection={selection} snapshot={snapshot} />}
+      {activePage === "ziwei" && <ZiweiDetailPage isNarrow={isNarrow} onAddTargetYear={onAddTargetYear} onAddTargetYearRange={onAddTargetYearRange} onRemoveTargetYear={onRemoveTargetYear} onSelectionChange={onSelectionChange} selection={selection} snapshot={snapshot} />}
     </main>
   );
 }

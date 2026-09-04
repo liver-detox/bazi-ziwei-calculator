@@ -16,6 +16,7 @@ export interface TargetYearControlProps {
   isNarrow: boolean;
   onSelectionChange: (selection: ResultSelection) => void;
   onAddTargetYear?: (year: number, page: TargetYearPage) => void;
+  onAddTargetYearRange?: (years: readonly number[], page: TargetYearPage) => void;
   onRemoveTargetYear?: (year: number, page: TargetYearPage) => void;
 }
 
@@ -94,6 +95,7 @@ export function TargetYearControl({
   isNarrow,
   onSelectionChange,
   onAddTargetYear,
+  onAddTargetYearRange,
   onRemoveTargetYear
 }: TargetYearControlProps) {
   const presentation = presentResults(snapshot, selection);
@@ -104,9 +106,25 @@ export function TargetYearControl({
   const capability = presentation.baziDetail.availability === "available"
     ? snapshot.resultCapabilities.baziDetail
     : presentation.baziDetail.capability;
-  const supported = capability.status === "reconfirm_required"
+  const supportedTargetYears = capability.status === "reconfirm_required"
     ? []
-    : capability.supportedTargetYears.filter((year) => !existingYears.has(year));
+    : capability.supportedTargetYears;
+  const supportedYearSet = new Set(supportedTargetYears);
+  const supported = supportedTargetYears.filter((year) => !existingYears.has(year));
+  const rangeOptions = selection.selectedTargetYear === null ? [] : [5, 10].map((count) => {
+    const rangeYears = Array.from({ length: count }, (_, offset) => selection.selectedTargetYear! + offset);
+    const missingYears = rangeYears.filter((year) => !existingYears.has(year));
+    const completeRangeSupported = rangeYears.every((year) => supportedYearSet.has(year));
+    const withinSavedYearLimit = existingYears.size + missingYears.length <= snapshot.resultCapabilities.maxTargetYears;
+    const disabledReason = missingYears.length === 0
+      ? "这段流年已全部添加"
+      : !completeRangeSupported
+        ? "当前排盘不能完整计算这段流年"
+        : !withinSavedYearLimit
+          ? `最多可保存 ${snapshot.resultCapabilities.maxTargetYears} 个目标流年`
+          : undefined;
+    return { count, rangeYears, disabledReason };
+  });
   const titleId = `target-year-title-${page}`;
 
   return (
@@ -121,6 +139,27 @@ export function TargetYearControl({
           {supported.map((year) => <option key={year} value={year}>{year}</option>)}
         </select>
       </label>
+
+      {page === "ziwei" && selection.selectedTargetYear !== null && onAddTargetYearRange && (
+        <div className="target-year-range-actions" role="group" aria-label={`以 ${selection.selectedTargetYear} 年为起点批量添加流年`}>
+          <span>从 {selection.selectedTargetYear} 年起</span>
+          {rangeOptions.map(({ count, rangeYears, disabledReason }) => (
+            <button
+              aria-label={disabledReason === undefined ? undefined : `连续 ${count} 年，${disabledReason}`}
+              className="button secondary"
+              disabled={disabledReason !== undefined}
+              key={count}
+              title={disabledReason}
+              type="button"
+              onClick={() => {
+                if (disabledReason === undefined) onAddTargetYearRange(rangeYears, page);
+              }}
+            >
+              连续 {count} 年
+            </button>
+          ))}
+        </div>
+      )}
 
       {years.length > 0 && (years.length <= 8 && !isNarrow ? (
         <div className="year-tabs" aria-label="目标流年切换">

@@ -15,6 +15,7 @@ export interface ZiweiDetailPageProps {
   selection: ResultSelection;
   onSelectionChange: (selection: ResultSelection) => void;
   onAddTargetYear?: (year: number, page: TargetYearPage) => void;
+  onAddTargetYearRange?: (years: readonly number[], page: TargetYearPage) => void;
   onRemoveTargetYear?: (year: number, page: TargetYearPage) => void;
   isNarrow?: boolean;
 }
@@ -80,7 +81,7 @@ function resolveYearlyOverlay(
   return { status: "available", fortune };
 }
 
-export function ZiweiDetailPage({ snapshot, selection, onSelectionChange, onAddTargetYear, onRemoveTargetYear, isNarrow = false }: ZiweiDetailPageProps) {
+export function ZiweiDetailPage({ snapshot, selection, onSelectionChange, onAddTargetYear, onAddTargetYearRange, onRemoveTargetYear, isNarrow = false }: ZiweiDetailPageProps) {
   const presentation = presentResults(snapshot, selection);
   const chart = presentation.chart.ziwei;
   const fortunes = [...chart.yearlyFortunes].sort((left, right) => left.targetYear - right.targetYear);
@@ -99,7 +100,7 @@ export function ZiweiDetailPage({ snapshot, selection, onSelectionChange, onAddT
           <div><p className="eyebrow">十二宫全盘</p><h2 id="ziwei-detail-title">紫微详盘</h2></div>
           <p>本命空间位置固定；所选年份只叠加已保存的运限资料。</p>
         </div>
-        <TargetYearControl isNarrow={isNarrow} onAddTargetYear={onAddTargetYear} onRemoveTargetYear={onRemoveTargetYear} onSelectionChange={onSelectionChange} page="ziwei" selection={selection} snapshot={snapshot} />
+        <TargetYearControl isNarrow={isNarrow} onAddTargetYear={onAddTargetYear} onAddTargetYearRange={onAddTargetYearRange} onRemoveTargetYear={onRemoveTargetYear} onSelectionChange={onSelectionChange} page="ziwei" selection={selection} snapshot={snapshot} />
         <div className="result-empty-state" role="status">
           <h3>所选流年紫微详盘暂不可用</h3>
           <p>这份结果没有完整、唯一且逐宫对齐的所选流年资料。</p>
@@ -116,7 +117,7 @@ export function ZiweiDetailPage({ snapshot, selection, onSelectionChange, onAddT
         <p>本命空间位置固定；所选年份只叠加已保存的运限资料。</p>
       </div>
 
-      <TargetYearControl isNarrow={isNarrow} onAddTargetYear={onAddTargetYear} onRemoveTargetYear={onRemoveTargetYear} onSelectionChange={onSelectionChange} page="ziwei" selection={selection} snapshot={snapshot} />
+      <TargetYearControl isNarrow={isNarrow} onAddTargetYear={onAddTargetYear} onAddTargetYearRange={onAddTargetYearRange} onRemoveTargetYear={onRemoveTargetYear} onSelectionChange={onSelectionChange} page="ziwei" selection={selection} snapshot={snapshot} />
 
       {fortunes.length > 0 && (
         <nav className="ziwei-mode-tabs" aria-label="紫微盘模式">

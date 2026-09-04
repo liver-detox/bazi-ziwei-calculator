@@ -241,6 +241,8 @@ code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monos
 .provided-time-form fieldset legend { margin-bottom: 9px; color: #49544f; font-size: 11px; font-weight: 700; }
 .core-time-fields, .optional-fields { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; }
 .form-field { display: grid; min-width: 0; gap: 6px; color: #49544f; font-size: 10px; }
+.birth-form .date-field-label { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.calendar-type-badge { display: inline-flex; align-items: center; min-height: 24px; padding: 3px 9px; border-radius: 999px; color: #fff; background: var(--jade); font-size: 11px; font-weight: 800; line-height: 1.2; white-space: nowrap; }
 .form-field input, .form-field select, .conditional-option select { width: 100%; min-width: 0; height: 42px; padding: 0 11px; border: 1px solid var(--line); border-radius: 7px; color: var(--ink); background: var(--surface); font-size: 12px; }
 .form-field input[aria-invalid="true"], .basis-fieldset[aria-invalid="true"] .basis-card, .radio-pills input[aria-invalid="true"] + span { border-color: #cf8e87; }
 .radio-pills { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 9px; }
@@ -434,6 +436,8 @@ code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monos
 .add-year-control, .year-search-selector label { display: grid; gap: 6px; color: var(--muted); font-size: 13px; }
 .add-year-control { max-width: 300px; }
 .add-year-control select, .year-search-selector input, .year-search-selector select { width: 100%; height: 40px; padding: 0 10px; border: 1px solid var(--line); border-radius: 6px; color: var(--ink); background: var(--surface); font-size: var(--result-text-sm); }
+.target-year-range-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; }
+.target-year-range-actions span { color: var(--muted); font-size: 13px; }
 .year-tabs, .ziwei-mode-tabs { display: flex; flex-wrap: wrap; gap: 7px; }
 .year-tabs button, .ziwei-mode-tabs button { min-height: 38px; padding: 0 12px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); cursor: pointer; font-size: 13px; }
 .year-tabs button.selected, .ziwei-mode-tabs button.selected { color: var(--jade-dark); border-color: #8fb7aa; background: var(--jade-soft); }

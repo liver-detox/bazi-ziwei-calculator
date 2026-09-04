@@ -30,7 +30,7 @@ import {
   type ExportActionResult
 } from "./export-download.js";
 import { runExportAction, runPreparedExportAction, startChartDocumentTextPreparation } from "./export-orchestration.js";
-import { createResultsAppActions, drawerIdentity, sortedTargetYears, type ResultsAppActionState } from "./results-orchestration-model.js";
+import { createResultsAppActions, drawerIdentity, type ResultsAppActionState } from "./results-orchestration-model.js";
 import {
   createResultSelection,
   requiresCandidateDecision,
@@ -42,6 +42,7 @@ import {
   buildProvidedTimeRequest,
   emptyProvidedTimeForm,
   nextAvailableCaseId,
+  providedTimeBirthYear,
   type ProvidedTimeFormState
 } from "./provided-time-form-model.js";
 
@@ -250,8 +251,10 @@ export function App() {
     event.preventDefault(); setBusy(true); setError(""); setNotice(""); setFormErrors({});
     const prior = revisionCaseId === undefined ? undefined : lastSuccessful.current;
     try {
-      if (!form.date.trim()) throw new Error("请输入出生日期");
-      const caseId = revisionCaseId ?? nextAvailableCaseId(Number(form.date.slice(0, 4)), cases.map((item) => item.caseId));
+      const caseId = revisionCaseId ?? nextAvailableCaseId(
+        providedTimeBirthYear(form),
+        cases.map((item) => item.caseId)
+      );
       const response = await apiRequest<CreateCaseResponse>(revisionCaseId === undefined ? "/api/cases" : `/api/cases/${revisionCaseId}/revisions`, { method: "POST", body: JSON.stringify(buildProvidedTimeRequest(form, { caseId })) });
       setSelectedCaseId(caseId); commitSnapshot(response.snapshot); setShowForm(false); setRevisionCaseId(undefined); setNotice("排盘已保存，可继续查看双盘结果。");
       await loadCases(caseId);
@@ -268,8 +271,7 @@ export function App() {
     const base = snapshot;
     setBusy(true); setError("");
     try {
-      const targetYears = sortedTargetYears(nextYears);
-      const response = await apiRequest<CreateCaseResponse>(`/api/cases/${base.input.caseId}/revisions/${base.manifest.revisionId}/target-years`, { method: "POST", body: JSON.stringify(resultsAppActions.targetYearRequest(targetYears)) });
+      const response = await apiRequest<CreateCaseResponse>(`/api/cases/${base.input.caseId}/revisions/${base.manifest.revisionId}/target-years`, { method: "POST", body: JSON.stringify(resultsAppActions.targetYearRequest(nextYears)) });
       const initial = createResultSelection(response.snapshot);
       const nextSelection: ResultSelection = action === "refresh" || changedYear === undefined
         ? { ...initial, activePage: "fortune" }
@@ -394,7 +396,7 @@ export function App() {
       {notice && <div className="toast success"><Check size={18} /><span>{notice}</span>{snapshot && notice.includes("保留") && <button className="button ghost" onClick={(event) => openVerification(event.currentTarget)} type="button">查看原因</button>}<button aria-label="关闭提醒" onClick={() => setNotice("")} type="button"><X size={16} /></button></div>}
       {loading ? <div className="loading-state"><LoaderCircle className="spin" size={28} /> 正在读取本地案例……</div> : showForm ? <ProvidedTimeForm busy={busy} errors={formErrors} form={form} onCancel={() => setShowForm(false)} onSubmit={submitCase} setForm={(next) => { setForm(next); setFormErrors({}); }} /> : snapshot && selection ? <>
         {riskNotice && <div className="persistent-risk-notice"><CircleAlert size={17} /><span>{riskNotice}</span><button className="button ghost" onClick={(event) => openVerification(event.currentTarget)} type="button">{candidateDecisionRequired ? "选择结果" : "查看详情"}</button></div>}
-        <ResultsShell caseName={snapshot.input.alias} copyForAiState={copyForAiState} isNarrow={isNarrow} onAddTargetYear={(year, page) => void updateTargetYears([...snapshot.charts.targetYears, year], year, "add", page)} onCopyForAi={copyForAi} onModifyInput={beginRevision} onOpenCaseDialog={() => { caseTrigger.current = document.querySelector<HTMLButtonElement>("[data-result-case-trigger]"); setCaseDrawerOpen(true); }} onOpenVerification={() => openVerification(document.querySelector<HTMLButtonElement>("[data-verification-trigger]"))} onRecoverBaziDetail={recoverBaziDetail} onRemoveTargetYear={(year, page) => void updateTargetYears(snapshot.charts.targetYears.filter((item) => item !== year), year, "remove", page)} onSelectionChange={changeSelection} selection={selection} snapshot={snapshot} />
+        <ResultsShell caseName={snapshot.input.alias} copyForAiState={copyForAiState} isNarrow={isNarrow} onAddTargetYear={(year, page) => void updateTargetYears([...snapshot.charts.targetYears, year], year, "add", page)} onAddTargetYearRange={(years, page) => void updateTargetYears([...snapshot.charts.targetYears, ...years], years[0], "add", page)} onCopyForAi={copyForAi} onModifyInput={beginRevision} onOpenCaseDialog={() => { caseTrigger.current = document.querySelector<HTMLButtonElement>("[data-result-case-trigger]"); setCaseDrawerOpen(true); }} onOpenVerification={() => openVerification(document.querySelector<HTMLButtonElement>("[data-verification-trigger]"))} onRecoverBaziDetail={recoverBaziDetail} onRemoveTargetYear={(year, page) => void updateTargetYears(snapshot.charts.targetYears.filter((item) => item !== year), year, "remove", page)} onSelectionChange={changeSelection} selection={selection} snapshot={snapshot} />
       </> : <EmptyResults onCreate={beginCreate} />}
     </div>
     <CaseDrawer cases={cases} currentCaseId={selectedCaseId} onClose={() => setCaseDrawerOpen(false)} onCreate={() => { setCaseDrawerOpen(false); beginCreate(); }} onSelect={(item) => void selectCase(item)} open={caseDrawerOpen} returnFocus={caseTrigger.current} />

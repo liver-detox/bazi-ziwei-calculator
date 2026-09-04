@@ -71,7 +71,7 @@ export function createResultsAppActions<Snapshot, Selection>(options: {
       return { ...state, showForm: true, revisionCaseId: undefined };
     },
     targetYearRequest(storedTargetYears: readonly number[]): { targetYears: number[] } {
-      return { targetYears: [...storedTargetYears] };
+      return { targetYears: sortedTargetYears(storedTargetYears) };
     },
     recoverBaziDetail(
       request: { schemaVersion: "1.0.0" | "2.0.0"; baziDetailStatus: string; storedTargetYears: readonly number[] },

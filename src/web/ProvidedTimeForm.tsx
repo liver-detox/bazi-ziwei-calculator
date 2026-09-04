@@ -5,6 +5,7 @@ import { PROVIDED_TIME_PRESENTATION } from "../shared/provided-time-presentation
 import {
   shouldShowLateZiChoice,
   shouldShowLeapMonthChoice,
+  switchProvidedTimeCalendar,
   type ProvidedTimeFormState
 } from "./provided-time-form-model.js";
 
@@ -57,6 +58,7 @@ export function ProvidedTimeForm({
   const basisPresentation = form.timeBasis === ""
     ? undefined
     : PROVIDED_TIME_PRESENTATION[form.timeBasis];
+  const lunarInput = form.calendarType === "lunar";
 
   return (
     <form className="birth-form provided-time-form" onSubmit={onSubmit} noValidate>
@@ -93,13 +95,19 @@ export function ProvidedTimeForm({
 
         <div className="core-time-fields">
           <div className="form-field">
-            <label htmlFor="birth-date">出生日期</label>
+            <label className="date-field-label" htmlFor="birth-date">
+              出生日期
+              <strong className="calendar-type-badge" role="status">
+                当前历法：{lunarInput ? "农历" : "公历（默认）"}
+              </strong>
+            </label>
             <input
               id="birth-date"
-              type="date"
+              type={lunarInput ? "text" : "date"}
               required
-              min="1900-01-01"
-              max="2099-12-31"
+              min={lunarInput ? undefined : "1900-01-01"}
+              max={lunarInput ? undefined : "2099-12-31"}
+              placeholder={lunarInput ? "YYYY-MM-DD（农历）" : undefined}
               value={form.date}
               onChange={(event) => patch("date", event.target.value)}
               {...errorProps(errors, "date", "birth-date")}
@@ -172,7 +180,14 @@ export function ProvidedTimeForm({
             </div>
             <div className="form-field">
               <label htmlFor="calendar-type">历法</label>
-              <select id="calendar-type" value={form.calendarType} onChange={(event) => patch("calendarType", event.target.value as ProvidedTimeFormState["calendarType"])}>
+              <select
+                id="calendar-type"
+                value={form.calendarType}
+                onChange={(event) => setForm(switchProvidedTimeCalendar(
+                  form,
+                  event.target.value as ProvidedTimeFormState["calendarType"]
+                ))}
+              >
                 <option value="solar">公历</option>
                 <option value="lunar">农历</option>
               </select>

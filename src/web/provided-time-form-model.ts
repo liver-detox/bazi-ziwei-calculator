@@ -74,6 +74,14 @@ export function emptyProvidedTimeForm(): ProvidedTimeFormState {
   };
 }
 
+export function switchProvidedTimeCalendar(
+  form: ProvidedTimeFormState,
+  calendarType: ProvidedTimeFormState["calendarType"]
+): ProvidedTimeFormState {
+  if (calendarType === form.calendarType) return form;
+  return { ...form, calendarType, date: "", leapMonth: false };
+}
+
 function fourDigitYear(value: number): string {
   if (!Number.isInteger(value) || value < 1900 || value > 2099) {
     throw new Error("出生年份必须在 1900 至 2099 之间");
@@ -119,6 +127,12 @@ function parsedDate(form: Pick<ProvidedTimeFormState, "date" | "calendarType">):
     throw new Error("请输入有效的农历日期");
   }
   return { year, month, day };
+}
+
+export function providedTimeBirthYear(
+  form: Pick<ProvidedTimeFormState, "date" | "calendarType">
+): number {
+  return parsedDate(form).year;
 }
 
 export function parseTargetYearsInput(text: string, birthYear: number): number[] {
