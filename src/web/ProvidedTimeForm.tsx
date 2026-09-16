@@ -175,7 +175,7 @@ export function ProvidedTimeForm({
               <input id="case-alias" value={form.alias} onChange={(event) => patch("alias", event.target.value)} placeholder="不填则使用自动编号" />
             </div>
             <div className="form-field">
-              <label htmlFor="private-name">真实姓名（可选，仅私密保存）</label>
+              <label htmlFor="private-name">姓名或代号（可选，复制与导出会包含）</label>
               <input id="private-name" value={form.privateName} onChange={(event) => patch("privateName", event.target.value)} />
             </div>
             <div className="form-field">
