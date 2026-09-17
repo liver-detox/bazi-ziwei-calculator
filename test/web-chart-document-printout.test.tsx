@@ -4,6 +4,23 @@ import { describe, expect, it } from "vitest";
 import { ChartDocumentPrintout } from "../src/web/ChartDocumentPrintout.js";
 
 describe("chart document printout", () => {
+  it("prints the shared palace relation table as escaped table cells", () => {
+    const html = renderToStaticMarkup(<ChartDocumentPrintout text={[
+      "### 宫位关系表",
+      "| 索引 | 地支 | 本命宫 | 所选大限宫 | 所选流年宫 | 对宫索引 | 两处三合宫索引 |",
+      "| --- | --- | --- | --- | --- | --- | --- |",
+      "| 0 | 寅 | 命宫 | 财帛 | 事业 | 6 | 4、8 |",
+      "| 1 | 卯 | <script>synthetic</script> | 未展开 | 未展开 | 7 | 5、9 |",
+      "### 十二宫"
+    ].join("\n")} />);
+    expect(html).toContain("<th>两处三合宫索引</th>");
+    expect(html).toContain("<td>寅</td>");
+    expect(html).toContain("<td>4、8</td>");
+    expect(html).toContain("&lt;script&gt;synthetic&lt;/script&gt;");
+    expect(html).toContain("</table><h3>十二宫</h3>");
+    expect(html).not.toContain("<script>");
+  });
+
   it("renders supported plain-text prefixes as safe semantic print markup", () => {
     const html = renderToStaticMarkup(<ChartDocumentPrintout text={[
       "# 八字与紫微斗数双轨排盘",

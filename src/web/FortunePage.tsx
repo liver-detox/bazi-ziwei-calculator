@@ -1,4 +1,5 @@
 import type { BaziGanZhiRelationsV1 } from "../core/charts/bazi-detail-contract.js";
+import { BAZI_LUCK_DATE_NOTE, BAZI_LUCK_DATE_UNAVAILABLE, DUAL_YEAR_BOUNDARY_NOTE, baziDaYunAnnualLabels, baziDaYunIntervalText, baziDaYunYearIntervals } from "../shared/chart-display.js";
 import { GanZhiText } from "./five-elements.js";
 import {
   presentResults,
@@ -58,6 +59,7 @@ export function FortunePage({
   const presentation = presentResults(snapshot, selection);
   const chart = presentation.chart.bazi;
   const selectedMonth = presentation.annual?.detail?.liuYue.find(({ ordinal }) => ordinal === selection.selectedLiuYueOrdinal) ?? null;
+  const yearIntervals = presentation.annual === null ? null : baziDaYunYearIntervals(chart, presentation.annual.base.year);
 
   return (
     <section className="result-page fortune-page" aria-labelledby="fortune-title">
@@ -80,12 +82,14 @@ export function FortunePage({
             >
               <span>{period.index === selection.viewingDaYunIndex ? "正在查看" : `第 ${period.index} 段`}</span>
               <strong>{period.ganZhi === null ? "起运前" : <GanZhiText text={period.ganZhi} />}</strong>
-              <small>虚岁 {period.startAge}–{period.endAge}</small>
-              <small>{period.startYear}–{period.endYear}</small>
+              <small>{baziDaYunAnnualLabels(period).age}</small>
+              <small>{baziDaYunAnnualLabels(period).years}</small>
               <small>{period.xun === null ? "旬空未生成" : `${period.xun}旬 · 空亡 ${period.voidBranches}`}</small>
             </button>
           ))}
         </div>
+        <p className="engine-time-label">{BAZI_LUCK_DATE_NOTE}</p>
+        <p className="engine-time-label">{DUAL_YEAR_BOUNDARY_NOTE}</p>
       </section>
 
       <TargetYearControl isNarrow={isNarrow} onAddTargetYear={onAddTargetYear} onRemoveTargetYear={onRemoveTargetYear} onSelectionChange={onSelectionChange} page="fortune" selection={selection} snapshot={snapshot} />
@@ -98,7 +102,11 @@ export function FortunePage({
             <div className="result-subsection-heading">
               <div><span>已选流年</span><h3>{presentation.annual.base.year} 年 · 虚岁 {presentation.annual.base.age}</h3></div>
             </div>
-            <div className="fortune-ganzhi-line"><GanZhiText text={presentation.annual.base.ganZhi} /><span>所属大运第 {presentation.annual.base.daYunIndex} 段</span><span>{presentation.annual.base.xun}旬 · 空亡 {presentation.annual.base.voidBranches}</span></div>
+            <div className="fortune-ganzhi-line"><GanZhiText text={presentation.annual.base.ganZhi} /><span>年表索引：大运第 {presentation.annual.base.daYunIndex} 段</span><span>{presentation.annual.base.xun}旬 · 空亡 {presentation.annual.base.voidBranches}</span></div>
+            <div className="engine-time-label">
+              <p>所选公历年内的大运分段（{presentation.annual.base.year} 年；出生前不适用，与立春起的八字流年区间不同）：</p>
+              {yearIntervals === null ? <p role="status">{BAZI_LUCK_DATE_UNAVAILABLE}</p> : yearIntervals.map((period) => <p key={period.daYunIndex}>{baziDaYunIntervalText(period)}</p>)}
+            </div>
             {presentation.annual.detail && <Relations relations={presentation.annual.detail.relations} />}
           </article>
 

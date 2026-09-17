@@ -1,8 +1,14 @@
 {
   "name": "bazi-ziwei-calculator",
-  "version": "0.3.2",
+  "version": "0.4.0",
   "private": true,
   "type": "module",
+  "imports": {
+    "#source-identity": {
+      "browser": "./src/shared/source-identity-browser.ts",
+      "default": "./src/core/source-identity.ts"
+    }
+  },
   "description": "Cyber Saga offline dual-track Bazi and Zi Wei charting and audit workbench.",
   "scripts": {
     "chart": "node src/ziwei-chart.mjs",
@@ -26,7 +32,7 @@
     "@fastify/static": "10.1.2",
     "@js-joda/core": "6.1.0",
     "@js-joda/timezone": "2.25.2",
-    "fastify": "5.11.2",
+    "fastify": "5.12.1",
     "iztro": "2.5.8",
     "json-canonicalize": "2.0.0",
     "lucide-react": "1.28.0",
@@ -47,6 +53,6 @@
     "tsx": "4.23.8",
     "typescript": "7.0.2",
     "vite": "8.2.0",
-    "vitest": "4.1.10"
+    "vitest": "4.1.11"
   }
 }

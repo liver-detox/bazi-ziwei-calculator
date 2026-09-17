@@ -37,4 +37,19 @@ describe("public documentation artifacts", () => {
     expect(example.ziwei.candidateId).toBe(candidateId);
     expect("candidates" in example.bazi.detail).toBe(false);
   });
+
+  it("accepts legacy V1 while requiring old strict readers to upgrade before new metadata", async () => {
+    const current = ChartDocumentV1Schema.parse(JSON.parse(await read(examplePath)));
+    const legacy = structuredClone(current);
+    delete legacy.evidence;
+    delete legacy.exportSourceId;
+    legacy.calculatorVersion = "0.3.2";
+    expect(ChartDocumentV1Schema.parse(legacy)).toEqual(legacy);
+    // The previous strict V1 envelope has no slots for these additive fields.
+    const oldStrictEnvelope = ChartDocumentV1Schema.omit({ evidence: true, exportSourceId: true }).strict();
+    expect(oldStrictEnvelope.safeParse(legacy).success).toBe(true);
+    for (const extra of [{ evidence: current.evidence }, { exportSourceId: "src1-0000000000000000" }]) {
+      expect(oldStrictEnvelope.safeParse({ ...legacy, ...extra }).success).toBe(false);
+    }
+  });
 });

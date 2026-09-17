@@ -13,5 +13,24 @@ function printLine(line: string, index: number): ReactElement | null {
 
 export function ChartDocumentPrintout({ text }: { text: string }): ReactElement | null {
   if (text === "") return null;
-  return <article aria-label="八字与紫微斗数打印内容" className="chart-document-printout">{text.split("\n").map(printLine)}</article>;
+  const lines = text.split("\n");
+  const content: Array<ReactElement | null> = [];
+  const cells = (line: string) => line.slice(1, -1).split("|").map((cell) => cell.trim());
+  for (let index = 0; index < lines.length; index += 1) {
+    if (lines[index].startsWith("| ") && /^\|(?:\s*---\s*\|)+$/u.test(lines[index + 1] ?? "")) {
+      const key = index;
+      const headings = cells(lines[index]);
+      const rows: string[][] = [];
+      index += 2;
+      while (index < lines.length && lines[index].startsWith("| ")) {
+        rows.push(cells(lines[index]));
+        index += 1;
+      }
+      index -= 1;
+      content.push(<table key={key}><thead><tr>{headings.map((heading, column) => <th key={column}>{heading}</th>)}</tr></thead><tbody>{rows.map((row, number) => <tr key={number}>{row.map((cell, column) => <td key={column}>{cell}</td>)}</tr>)}</tbody></table>);
+    } else {
+      content.push(printLine(lines[index], index));
+    }
+  }
+  return <article aria-label="八字与紫微斗数打印内容" className="chart-document-printout">{content}</article>;
 }

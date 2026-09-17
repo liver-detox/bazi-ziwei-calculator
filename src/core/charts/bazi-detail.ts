@@ -280,6 +280,9 @@ function baziSupportedYearsForCandidate(
   daYun.forEach((period, index) => {
     const saved = base.bazi.luck.daYun[index];
     const periodLength = saved.endYear - saved.startYear + 1;
+    // The replayed engine has no pre-luck annual rows when luck starts in the birth year.
+    // It still has a real birth-to-start date interval; only the annual coverage is empty.
+    if (index === 0 && saved.index === 0 && saved.ganZhi === null && periodLength === 0) return;
     if (!Number.isInteger(periodLength) || periodLength < 1) {
       fail("BAZI_DETAIL_XIAOYUN_NOT_UNIQUE", `${candidateId}: invalid bounded period`);
     }

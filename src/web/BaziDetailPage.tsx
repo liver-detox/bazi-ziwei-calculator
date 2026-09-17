@@ -1,5 +1,6 @@
 import type { BaziDaYunDetailV1 } from "../core/charts/bazi-detail-contract.js";
 import type { BaziDaYun, BaziPillar } from "../core/charts/types.js";
+import { baziDaYunAnnualLabels } from "../shared/chart-display.js";
 import { GanZhiText, NaYinText } from "./five-elements.js";
 import type { ResultPresentation } from "./results-model.js";
 
@@ -134,8 +135,8 @@ export function BaziDetailPage({ presentation, onRecoverDetail }: BaziDetailPage
               <article data-dayun-index={period.index} key={period.index}>
                 <span>第 {period.index} 段</span>
                 <strong>{period.ganZhi === null ? "起运前" : <GanZhiText text={period.ganZhi} />}</strong>
-                <p>虚岁 {period.startAge}–{period.endAge}</p>
-                <p>{period.startYear}–{period.endYear}</p>
+                <p>{baziDaYunAnnualLabels(period).age}</p>
+                <p>{baziDaYunAnnualLabels(period).years}</p>
                 {joined.relations === null ? <small>关系项为空</small> : <small>{joined.relations.stemTenGod} · 主气十神 {joined.relations.branchMainQiTenGod}</small>}
               </article>
             );

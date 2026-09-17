@@ -1,4 +1,4 @@
-import { readFile, mkdtemp, rm } from "node:fs/promises";
+import { readFile, mkdtemp, rm, mkdir, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
@@ -12,6 +12,7 @@ import {
 } from "../src/core/workbench/chart-document.js";
 import { CaseWorkbench } from "../src/core/workbench/case-workbench.js";
 import { syntheticDemoRequest } from "./helpers/synthetic-demo-cases.js";
+import { CURRENT_SOURCE_ID, calculateSourceId } from "../src/core/source-identity.js";
 
 const roots: string[] = [];
 const EXPORTED_AT = new Date("2026-08-13T06:30:00.000Z");
@@ -66,6 +67,55 @@ function build(
 }
 
 describe("ChartDocument v1", () => {
+  it("keeps source IDs reproducible across locations and sensitive to runtime source and lock changes only", async () => {
+    const fixtures: string[] = [];
+    for (let index = 0; index < 2; index += 1) {
+      const root = await mkdtemp(join(tmpdir(), "synthetic-source-id-"));
+      roots.push(root);
+      fixtures.push(root);
+      await mkdir(join(root, "release"));
+      await mkdir(join(root, "src"));
+      await mkdir(join(root, "data"));
+      await mkdir(join(root, "dist"));
+      await writeFile(join(root, "release/public-files.json"), JSON.stringify({ files: ["src/app.ts", "package-lock.json", "README.md"] }));
+      await writeFile(join(root, "src/app.ts"), "export const synthetic = 1;\n");
+      await writeFile(join(root, "package-lock.json"), "{\"synthetic\":1}\n");
+      await writeFile(join(root, "README.md"), `Synthetic documentation ${index}`);
+      await writeFile(join(root, "data/case.json"), `SYNTHETIC-EXCLUDED-DATA-${index}`);
+      await writeFile(join(root, "dist/old-build.js"), `SYNTHETIC-EXCLUDED-BUILD-${index}`);
+    }
+    const first = calculateSourceId(fixtures[0]);
+    expect(first).toMatch(/^src1-[a-f0-9]{16}$/u);
+    expect(calculateSourceId(fixtures[0])).toBe(first);
+    expect(calculateSourceId(fixtures[1])).toBe(first);
+    await writeFile(join(fixtures[1], "src/app.ts"), "export const synthetic = 2;\n");
+    expect(calculateSourceId(fixtures[1])).not.toBe(first);
+    await writeFile(join(fixtures[1], "src/app.ts"), "export const synthetic = 1;\n");
+    await writeFile(join(fixtures[1], "package-lock.json"), "{\"synthetic\":2}\n");
+    expect(calculateSourceId(fixtures[1])).not.toBe(first);
+    // The process identity is a startup constant; recalculating another tree cannot relabel it.
+    expect(CURRENT_SOURCE_ID).toMatch(/^src1-[a-f0-9]{16}$/u);
+  });
+
+  it("creates and exports a birth-year luck start with an empty pre-luck annual segment", async () => {
+    const workbench = await makeWorkbench();
+    const request = syntheticDemoRequest("DEMO-NORMAL", "CS-2000-971");
+    request.birthRecord.calendar.date = "2000-03-04";
+    request.birthRecord.gender = "男";
+    request.birthRecord.providedTime.localTime = "12:34";
+    const created = await workbench.createCase(request);
+    const candidateId = (created.snapshot.timeEvidence as { candidates: Array<{ id: string }> }).candidates[0].id;
+    const natal = await workbench.downloadChartDocument("CS-2000-971", created.revision.revisionId, { candidateId });
+    expect(natal.document.bazi.chart.luck.startSolarDateTime).toBe("2000-07-14 12:34:00");
+    expect(natal.document.bazi.chart.luck.daYun[0]).toMatchObject({ index: 0, startYear: 2000, endYear: 1999 });
+    expect(natal.document.bazi.chart.annualFortunes).toEqual([]);
+
+    const updated = await workbench.updateTargetYears("CS-2000-971", created.revision.revisionId, { targetYears: [2000, 2010] });
+    const annual = await workbench.downloadChartDocument("CS-2000-971", updated.revision.revisionId, { candidateId, targetYear: 2000 });
+    expect(annual.document.bazi.chart.annualFortunes.map(({ year, daYunIndex }) => [year, daYunIndex])).toEqual([[2000, 1], [2010, 2]]);
+    expect(annual.document.bazi.detail.candidate.annualDetails.map(({ xiaoYun }) => xiaoYun.year)).toEqual([2000, 2010]);
+  }, 20_000);
+
   it("exports one strictly validated ordinary document and prefers the entered name", async () => {
     const { storedRevision, candidateIds } = await createStoredRevision(
       "DEMO-NORMAL",
@@ -75,16 +125,33 @@ describe("ChartDocument v1", () => {
     const candidateId = candidateIds[0];
     const document = build(storedRevision, candidateId);
 
+    expect(document.exportSourceId).toBe(CURRENT_SOURCE_ID);
+    const sourceBefore = structuredClone(storedRevision);
+    const laterExport = buildChartDocumentV1({ calculatorVersion: CALCULATOR_VERSION, exportedAt: new Date("2026-08-20T00:00:00Z"), storedRevision, requestedCandidateId: candidateId });
+    expect(laterExport.exportSourceId).toBe(document.exportSourceId);
+    expect(laterExport.bazi).toEqual(document.bazi);
+    expect(laterExport.ziwei).toEqual(document.ziwei);
+    expect(storedRevision).toEqual(sourceBefore);
+    const oldDocument = structuredClone(document);
+    delete oldDocument.exportSourceId;
+    expect(ChartDocumentV1Schema.parse(oldDocument).exportSourceId).toBeUndefined();
+
     expect(ChartDocumentV1Schema.parse(document)).toEqual(document);
     expect(document).toMatchObject({
       schemaVersion: 1,
-      calculatorVersion: "0.3.2",
+      calculatorVersion: CALCULATOR_VERSION,
       subject: { nameOrAlias: "SYNTHETIC-NAME-JSON", gender: "女" },
       selection: { candidateId, hadAlternatives: false, rationale: null }
     });
     expect(document.bazi.chart.candidateId).toBe(candidateId);
     expect(document.bazi.detail.candidate.candidateId).toBe(candidateId);
     expect(document.ziwei.candidateId).toBe(candidateId);
+    expect(document.evidence).toMatchObject({
+      auditLevel: "A",
+      workflowStatus: "review",
+      allowedAnalysisModes: ["full_dual", "provisional_dual", "single_track", "data_diagnosis"],
+      timeHandling: "user_provided_unverified"
+    });
     expect(JSON.stringify(document)).not.toMatch(/birthplaceNote|providedTimeSourceNote|\/Users\//u);
   }, 20_000);
 
@@ -130,6 +197,21 @@ describe("ChartDocument v1", () => {
     expect(document.bazi.chart.candidateId).toBe(selectedCandidateId);
     expect(document.bazi.detail.candidate.candidateId).toBe(selectedCandidateId);
     expect(document.ziwei.candidateId).toBe(selectedCandidateId);
+    const audit = selectedRevision.audit as {
+      auditLevel: string;
+      allowedAnalysisModes: string[];
+      findings: Array<{ code: string; severity: string; summary: string }>;
+    };
+    expect(document.evidence).toMatchObject({
+      auditLevel: audit.auditLevel,
+      workflowStatus: "verified",
+      allowedAnalysisModes: audit.allowedAnalysisModes,
+      findings: audit.findings.map(({ code, severity, summary }) => ({ code, severity, summary }))
+    });
+    expect(document.evidence?.findings.some(({ code }) => code === "TIME_LATE_ZI_MATERIAL")).toBe(true);
+    for (const finding of audit.findings.filter(({ severity }) => severity !== "info")) {
+      expect(document.warnings).toContain(finding.summary);
+    }
     expect(JSON.stringify({ bazi: document.bazi, ziwei: document.ziwei }))
       .not.toContain(otherCandidateId);
   }, 20_000);

@@ -1,6 +1,7 @@
 import { z } from "zod";
+import { CURRENT_SOURCE_ID } from "#source-identity";
 
-import { AuditReportV2Schema } from "../audit/index.js";
+import { AuditFindingV1Schema, AuditReportV2Schema } from "../audit/index.js";
 import {
   BaziDetailBaseChartSetSourceSchema,
   BaziDetailCandidateV1Schema,
@@ -14,7 +15,7 @@ import {
   TimeEvidenceV2Schema
 } from "../../shared/provided-time-contracts.js";
 
-export const CALCULATOR_VERSION = "0.3.2" as const;
+export const CALCULATOR_VERSION = "0.4.0" as const;
 
 export const ChartDocumentExportRequestSchema = z.object({
   candidateId: z.string().min(1),
@@ -31,6 +32,8 @@ const BaziDetailExportSchema = z.object({
 export const ChartDocumentV1Schema = z.object({
   schemaVersion: z.literal(1),
   calculatorVersion: z.string().min(1),
+  // Export assembly source only; never attribute this build to an older saved calculation.
+  exportSourceId: z.string().regex(/^src1-[a-f0-9]{16}$/u).optional(),
   exportedAt: z.string().datetime({ offset: true }),
   subject: z.object({
     nameOrAlias: z.string().min(1),
@@ -52,6 +55,14 @@ export const ChartDocumentV1Schema = z.object({
   }).strict(),
   ziwei: StrictZiweiChartV1Schema,
   targetYear: z.number().int().min(1900).max(2099).optional(),
+  // Additive V1 evidence: absence in older documents means unknown, never cleared.
+  evidence: z.object({
+    auditLevel: AuditReportV2Schema.shape.auditLevel,
+    workflowStatus: AuditReportV2Schema.shape.workflowStatus,
+    allowedAnalysisModes: AuditReportV2Schema.shape.allowedAnalysisModes,
+    findings: z.array(AuditFindingV1Schema.pick({ code: true, severity: true, summary: true })),
+    timeHandling: z.literal("user_provided_unverified")
+  }).strict().optional(),
   warnings: z.array(z.string().min(1))
 }).strict();
 
@@ -186,13 +197,16 @@ export function buildChartDocumentV1(input: {
     ...selectedTime.warnings,
     ...timeEvidence.issues
       .filter((issue) => issue.candidateIds.includes(selectedCandidateId))
-      .map((issue) => issue.message)
+      .map((issue) => issue.message),
+    // Modes apply to the whole revision, including global and other-candidate findings.
+    ...audit.findings.filter((finding) => finding.severity !== "info").map((finding) => finding.summary)
   ])];
 
   try {
     return ChartDocumentV1Schema.parse({
       schemaVersion: 1,
       calculatorVersion: input.calculatorVersion,
+      exportSourceId: CURRENT_SOURCE_ID,
       exportedAt: input.exportedAt.toISOString(),
       subject: {
         nameOrAlias: privateName ?? publicInput.alias,
@@ -221,6 +235,13 @@ export function buildChartDocumentV1(input: {
       },
       ziwei: selectedChart.ziwei,
       ...(input.targetYear === undefined ? {} : { targetYear: input.targetYear }),
+      evidence: {
+        auditLevel: audit.auditLevel,
+        workflowStatus: audit.workflowStatus,
+        allowedAnalysisModes: audit.allowedAnalysisModes,
+        findings: audit.findings.map(({ code, severity, summary }) => ({ code, severity, summary })),
+        timeHandling: "user_provided_unverified"
+      },
       warnings
     });
   } catch {

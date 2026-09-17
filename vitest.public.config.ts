@@ -13,6 +13,7 @@ export default defineConfig({
       "test/cli-synthetic-regression.test.ts",
       "test/synthetic-demo-cases.test.ts",
       "test/ziwei-capability-equivalence.test.ts",
+      "test/independent-chart-rules.test.ts",
       "test/public-gate-closure.test.ts",
       "test/local-browser-open.test.ts",
       "test/public-branding.test.ts",

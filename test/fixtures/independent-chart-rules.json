@@ -1,0 +1,4912 @@
+{
+  "schemaVersion": 1,
+  "description": "Synthetic source-first expectations. External sources describe traditional calculation rules, not predictive validity.",
+  "sources": {
+    "qiYunRule": "https://zh.wikisource.org/wiki/三命通會/卷二",
+    "solarTerms": "https://www.hko.gov.hk/sc/gts/astronomy/Solar_Term.htm",
+    "ziweiClassical": "https://zh.wikisource.org/w/index.php?title=紫微斗數全書/卷二&oldid=1963110",
+    "renModernSupplement": {
+      "url": "https://www.ziweicn.com/show/3909.html",
+      "author": "炎一",
+      "published": "2022-01-02",
+      "timing": "Added after initial frozen-source comparison exposed the Ren-Ke variant; original frozen expectations remain unchanged."
+    },
+    "ziweiIndependentImplementation": "https://github.com/airicyu/fortel-ziweidoushu/tree/2620cc895395f9f6994abd4927e739d31015c67d"
+  },
+  "frozenExpectedSha256": {
+    "qiYun": "7a524cefd56a90dd539b815165e2264d5671bf2352830ab374bef94ccc78831c",
+    "ziwei": "e760030453c9d2d04a1c1023bda417f80e61fad80f0e81626e41c118c8b9786a"
+  },
+  "solarTerms": [
+    {
+      "name": "小寒",
+      "localDateTime": "2023-01-05T23:05:00"
+    },
+    {
+      "name": "立春",
+      "localDateTime": "2023-02-04T10:43:00"
+    },
+    {
+      "name": "惊蛰",
+      "localDateTime": "2023-03-06T04:36:00"
+    },
+    {
+      "name": "清明",
+      "localDateTime": "2023-04-05T09:13:00"
+    },
+    {
+      "name": "立夏",
+      "localDateTime": "2023-05-06T02:19:00"
+    },
+    {
+      "name": "芒种",
+      "localDateTime": "2023-06-06T06:18:00"
+    },
+    {
+      "name": "小暑",
+      "localDateTime": "2023-07-07T16:31:00"
+    },
+    {
+      "name": "立秋",
+      "localDateTime": "2023-08-08T02:23:00"
+    },
+    {
+      "name": "白露",
+      "localDateTime": "2023-09-08T05:27:00"
+    },
+    {
+      "name": "寒露",
+      "localDateTime": "2023-10-08T21:16:00"
+    },
+    {
+      "name": "立冬",
+      "localDateTime": "2023-11-08T00:36:00"
+    },
+    {
+      "name": "大雪",
+      "localDateTime": "2023-12-07T17:33:00"
+    },
+    {
+      "name": "小寒",
+      "localDateTime": "2024-01-06T04:49:00"
+    },
+    {
+      "name": "立春",
+      "localDateTime": "2024-02-04T16:27:00"
+    },
+    {
+      "name": "惊蛰",
+      "localDateTime": "2024-03-05T10:23:00"
+    },
+    {
+      "name": "清明",
+      "localDateTime": "2024-04-04T15:02:00"
+    },
+    {
+      "name": "立夏",
+      "localDateTime": "2024-05-05T08:10:00"
+    },
+    {
+      "name": "芒种",
+      "localDateTime": "2024-06-05T12:10:00"
+    },
+    {
+      "name": "小暑",
+      "localDateTime": "2024-07-06T22:20:00"
+    },
+    {
+      "name": "立秋",
+      "localDateTime": "2024-08-07T08:09:00"
+    },
+    {
+      "name": "白露",
+      "localDateTime": "2024-09-07T11:11:00"
+    },
+    {
+      "name": "寒露",
+      "localDateTime": "2024-10-08T03:00:00"
+    },
+    {
+      "name": "立冬",
+      "localDateTime": "2024-11-07T06:20:00"
+    },
+    {
+      "name": "大雪",
+      "localDateTime": "2024-12-06T23:17:00"
+    }
+  ],
+  "qiYun": [
+    {
+      "id": "QI-01",
+      "birthLocalDateTime": "2023-02-10T12:00:00",
+      "gender": "男",
+      "yearStem": "癸",
+      "sourceSolarTerm": {
+        "name": "立春",
+        "localDateTime": "2023-02-04T10:43:00"
+      },
+      "elapsedShichen": 73,
+      "expected": {
+        "forward": false,
+        "startAfter": {
+          "years": 2,
+          "months": 0,
+          "days": 10,
+          "hours": 0
+        },
+        "startSolarDateTime": "2025-02-20 12:00:00"
+      }
+    },
+    {
+      "id": "QI-02",
+      "birthLocalDateTime": "2023-02-10T12:00:00",
+      "gender": "女",
+      "yearStem": "癸",
+      "sourceSolarTerm": {
+        "name": "惊蛰",
+        "localDateTime": "2023-03-06T04:36:00"
+      },
+      "elapsedShichen": 284,
+      "expected": {
+        "forward": true,
+        "startAfter": {
+          "years": 7,
+          "months": 10,
+          "days": 20,
+          "hours": 0
+        },
+        "startSolarDateTime": "2030-12-30 12:00:00"
+      }
+    },
+    {
+      "id": "QI-03",
+      "birthLocalDateTime": "2023-05-31T08:00:00",
+      "gender": "男",
+      "yearStem": "癸",
+      "sourceSolarTerm": {
+        "name": "立夏",
+        "localDateTime": "2023-05-06T02:19:00"
+      },
+      "elapsedShichen": 303,
+      "expected": {
+        "forward": false,
+        "startAfter": {
+          "years": 8,
+          "months": 5,
+          "days": 0,
+          "hours": 0
+        },
+        "startSolarDateTime": "2031-10-31 08:00:00"
+      }
+    },
+    {
+      "id": "QI-04",
+      "birthLocalDateTime": "2023-05-31T08:00:00",
+      "gender": "女",
+      "yearStem": "癸",
+      "sourceSolarTerm": {
+        "name": "芒种",
+        "localDateTime": "2023-06-06T06:18:00"
+      },
+      "elapsedShichen": 71,
+      "expected": {
+        "forward": true,
+        "startAfter": {
+          "years": 1,
+          "months": 11,
+          "days": 20,
+          "hours": 0
+        },
+        "startSolarDateTime": "2025-05-20 08:00:00"
+      }
+    },
+    {
+      "id": "QI-05",
+      "birthLocalDateTime": "2023-08-28T20:00:00",
+      "gender": "男",
+      "yearStem": "癸",
+      "sourceSolarTerm": {
+        "name": "立秋",
+        "localDateTime": "2023-08-08T02:23:00"
+      },
+      "elapsedShichen": 249,
+      "expected": {
+        "forward": false,
+        "startAfter": {
+          "years": 6,
+          "months": 11,
+          "days": 0,
+          "hours": 0
+        },
+        "startSolarDateTime": "2030-07-28 20:00:00"
+      }
+    },
+    {
+      "id": "QI-06",
+      "birthLocalDateTime": "2023-08-28T20:00:00",
+      "gender": "女",
+      "yearStem": "癸",
+      "sourceSolarTerm": {
+        "name": "白露",
+        "localDateTime": "2023-09-08T05:27:00"
+      },
+      "elapsedShichen": 125,
+      "expected": {
+        "forward": true,
+        "startAfter": {
+          "years": 3,
+          "months": 5,
+          "days": 20,
+          "hours": 0
+        },
+        "startSolarDateTime": "2027-02-17 20:00:00"
+      }
+    },
+    {
+      "id": "QI-07",
+      "birthLocalDateTime": "2023-11-15T00:00:00",
+      "gender": "男",
+      "yearStem": "癸",
+      "sourceSolarTerm": {
+        "name": "立冬",
+        "localDateTime": "2023-11-08T00:36:00"
+      },
+      "elapsedShichen": 84,
+      "expected": {
+        "forward": false,
+        "startAfter": {
+          "years": 2,
+          "months": 4,
+          "days": 0,
+          "hours": 0
+        },
+        "startSolarDateTime": "2026-03-15 00:00:00"
+      }
+    },
+    {
+      "id": "QI-08",
+      "birthLocalDateTime": "2023-11-15T00:00:00",
+      "gender": "女",
+      "yearStem": "癸",
+      "sourceSolarTerm": {
+        "name": "大雪",
+        "localDateTime": "2023-12-07T17:33:00"
+      },
+      "elapsedShichen": 273,
+      "expected": {
+        "forward": true,
+        "startAfter": {
+          "years": 7,
+          "months": 7,
+          "days": 0,
+          "hours": 0
+        },
+        "startSolarDateTime": "2031-06-15 00:00:00"
+      }
+    },
+    {
+      "id": "QI-09",
+      "birthLocalDateTime": "2024-02-29T12:00:00",
+      "gender": "男",
+      "yearStem": "甲",
+      "sourceSolarTerm": {
+        "name": "惊蛰",
+        "localDateTime": "2024-03-05T10:23:00"
+      },
+      "elapsedShichen": 59,
+      "expected": {
+        "forward": true,
+        "startAfter": {
+          "years": 1,
+          "months": 7,
+          "days": 20,
+          "hours": 0
+        },
+        "startSolarDateTime": "2025-10-18 12:00:00"
+      }
+    },
+    {
+      "id": "QI-10",
+      "birthLocalDateTime": "2024-02-29T12:00:00",
+      "gender": "女",
+      "yearStem": "甲",
+      "sourceSolarTerm": {
+        "name": "立春",
+        "localDateTime": "2024-02-04T16:27:00"
+      },
+      "elapsedShichen": 298,
+      "expected": {
+        "forward": false,
+        "startAfter": {
+          "years": 8,
+          "months": 3,
+          "days": 10,
+          "hours": 0
+        },
+        "startSolarDateTime": "2032-06-08 12:00:00"
+      }
+    },
+    {
+      "id": "QI-11",
+      "birthLocalDateTime": "2024-03-01T00:30:00",
+      "gender": "男",
+      "yearStem": "甲",
+      "sourceSolarTerm": {
+        "name": "惊蛰",
+        "localDateTime": "2024-03-05T10:23:00"
+      },
+      "elapsedShichen": 53,
+      "expected": {
+        "forward": true,
+        "startAfter": {
+          "years": 1,
+          "months": 5,
+          "days": 20,
+          "hours": 0
+        },
+        "startSolarDateTime": "2025-08-21 00:30:00"
+      }
+    },
+    {
+      "id": "QI-12",
+      "birthLocalDateTime": "2024-03-01T00:30:00",
+      "gender": "女",
+      "yearStem": "甲",
+      "sourceSolarTerm": {
+        "name": "立春",
+        "localDateTime": "2024-02-04T16:27:00"
+      },
+      "elapsedShichen": 304,
+      "expected": {
+        "forward": false,
+        "startAfter": {
+          "years": 8,
+          "months": 5,
+          "days": 10,
+          "hours": 0
+        },
+        "startSolarDateTime": "2032-08-11 00:30:00"
+      }
+    },
+    {
+      "id": "QI-13",
+      "birthLocalDateTime": "2024-05-31T18:00:00",
+      "gender": "男",
+      "yearStem": "甲",
+      "sourceSolarTerm": {
+        "name": "芒种",
+        "localDateTime": "2024-06-05T12:10:00"
+      },
+      "elapsedShichen": 57,
+      "expected": {
+        "forward": true,
+        "startAfter": {
+          "years": 1,
+          "months": 7,
+          "days": 0,
+          "hours": 0
+        },
+        "startSolarDateTime": "2025-12-31 18:00:00"
+      }
+    },
+    {
+      "id": "QI-14",
+      "birthLocalDateTime": "2024-05-31T18:00:00",
+      "gender": "女",
+      "yearStem": "甲",
+      "sourceSolarTerm": {
+        "name": "立夏",
+        "localDateTime": "2024-05-05T08:10:00"
+      },
+      "elapsedShichen": 317,
+      "expected": {
+        "forward": false,
+        "startAfter": {
+          "years": 8,
+          "months": 9,
+          "days": 20,
+          "hours": 0
+        },
+        "startSolarDateTime": "2033-03-20 18:00:00"
+      }
+    },
+    {
+      "id": "QI-15",
+      "birthLocalDateTime": "2024-08-28T02:00:00",
+      "gender": "男",
+      "yearStem": "甲",
+      "sourceSolarTerm": {
+        "name": "白露",
+        "localDateTime": "2024-09-07T11:11:00"
+      },
+      "elapsedShichen": 125,
+      "expected": {
+        "forward": true,
+        "startAfter": {
+          "years": 3,
+          "months": 5,
+          "days": 20,
+          "hours": 0
+        },
+        "startSolarDateTime": "2028-02-17 02:00:00"
+      }
+    },
+    {
+      "id": "QI-16",
+      "birthLocalDateTime": "2024-08-28T02:00:00",
+      "gender": "女",
+      "yearStem": "甲",
+      "sourceSolarTerm": {
+        "name": "立秋",
+        "localDateTime": "2024-08-07T08:09:00"
+      },
+      "elapsedShichen": 249,
+      "expected": {
+        "forward": false,
+        "startAfter": {
+          "years": 6,
+          "months": 11,
+          "days": 0,
+          "hours": 0
+        },
+        "startSolarDateTime": "2031-07-28 02:00:00"
+      }
+    },
+    {
+      "id": "QI-17",
+      "birthLocalDateTime": "2024-11-15T22:00:00",
+      "gender": "女",
+      "yearStem": "甲",
+      "sourceSolarTerm": {
+        "name": "立冬",
+        "localDateTime": "2024-11-07T06:20:00"
+      },
+      "elapsedShichen": 104,
+      "expected": {
+        "forward": false,
+        "startAfter": {
+          "years": 2,
+          "months": 10,
+          "days": 20,
+          "hours": 0
+        },
+        "startSolarDateTime": "2027-10-05 22:00:00"
+      }
+    },
+    {
+      "id": "QI-18",
+      "birthLocalDateTime": "2024-02-04T16:22:00",
+      "gender": "男",
+      "yearStem": "癸",
+      "sourceSolarTerm": {
+        "name": "小寒",
+        "localDateTime": "2024-01-06T04:49:00"
+      },
+      "elapsedShichen": 354,
+      "expected": {
+        "forward": false,
+        "startAfter": {
+          "years": 9,
+          "months": 10,
+          "days": 0,
+          "hours": 0
+        },
+        "startSolarDateTime": "2033-12-04 16:22:00"
+      }
+    },
+    {
+      "id": "QI-19",
+      "birthLocalDateTime": "2024-02-04T16:22:00",
+      "gender": "女",
+      "yearStem": "癸",
+      "sourceSolarTerm": {
+        "name": "立春",
+        "localDateTime": "2024-02-04T16:27:00"
+      },
+      "elapsedShichen": 0,
+      "expected": {
+        "forward": true,
+        "startAfter": {
+          "years": 0,
+          "months": 0,
+          "days": 0,
+          "hours": 0
+        },
+        "startSolarDateTime": "2024-02-04 16:22:00"
+      }
+    },
+    {
+      "id": "QI-20",
+      "birthLocalDateTime": "2024-02-04T16:32:00",
+      "gender": "男",
+      "yearStem": "甲",
+      "sourceSolarTerm": {
+        "name": "惊蛰",
+        "localDateTime": "2024-03-05T10:23:00"
+      },
+      "elapsedShichen": 357,
+      "expected": {
+        "forward": true,
+        "startAfter": {
+          "years": 9,
+          "months": 11,
+          "days": 0,
+          "hours": 0
+        },
+        "startSolarDateTime": "2034-01-04 16:32:00"
+      }
+    },
+    {
+      "id": "QI-21",
+      "birthLocalDateTime": "2024-02-04T16:32:00",
+      "gender": "女",
+      "yearStem": "甲",
+      "sourceSolarTerm": {
+        "name": "立春",
+        "localDateTime": "2024-02-04T16:27:00"
+      },
+      "elapsedShichen": 0,
+      "expected": {
+        "forward": false,
+        "startAfter": {
+          "years": 0,
+          "months": 0,
+          "days": 0,
+          "hours": 0
+        },
+        "startSolarDateTime": "2024-02-04 16:32:00"
+      }
+    },
+    {
+      "id": "QI-22",
+      "birthLocalDateTime": "2023-02-04T10:38:00",
+      "gender": "男",
+      "yearStem": "壬",
+      "sourceSolarTerm": {
+        "name": "立春",
+        "localDateTime": "2023-02-04T10:43:00"
+      },
+      "elapsedShichen": 0,
+      "expected": {
+        "forward": true,
+        "startAfter": {
+          "years": 0,
+          "months": 0,
+          "days": 0,
+          "hours": 0
+        },
+        "startSolarDateTime": "2023-02-04 10:38:00"
+      }
+    },
+    {
+      "id": "QI-23",
+      "birthLocalDateTime": "2023-02-04T10:48:00",
+      "gender": "男",
+      "yearStem": "癸",
+      "sourceSolarTerm": {
+        "name": "立春",
+        "localDateTime": "2023-02-04T10:43:00"
+      },
+      "elapsedShichen": 0,
+      "expected": {
+        "forward": false,
+        "startAfter": {
+          "years": 0,
+          "months": 0,
+          "days": 0,
+          "hours": 0
+        },
+        "startSolarDateTime": "2023-02-04 10:48:00"
+      }
+    },
+    {
+      "id": "QI-24",
+      "birthLocalDateTime": "2023-02-04T10:48:00",
+      "gender": "女",
+      "yearStem": "癸",
+      "sourceSolarTerm": {
+        "name": "惊蛰",
+        "localDateTime": "2023-03-06T04:36:00"
+      },
+      "elapsedShichen": 357,
+      "expected": {
+        "forward": true,
+        "startAfter": {
+          "years": 9,
+          "months": 11,
+          "days": 0,
+          "hours": 0
+        },
+        "startSolarDateTime": "2033-01-04 10:48:00"
+      }
+    }
+  ],
+  "ziwei": [
+    {
+      "input": {
+        "id": "Z01",
+        "year_stem": "甲",
+        "lunar_month": 1,
+        "lunar_day": 1,
+        "time_index": 0,
+        "sex": "男",
+        "is_leap_month": false,
+        "coverage": [
+          "ten_stems",
+          "five_bureaus",
+          "complement_parity"
+        ]
+      },
+      "expected": {
+        "effective_lunar_month_fortel": 1,
+        "ming_branch": "寅",
+        "shen_branch": "寅",
+        "ming_stem": "丙",
+        "five_element": "火",
+        "bureau": 6,
+        "ziwei_working": {
+          "day": 1,
+          "complement": 5,
+          "quotient": 1,
+          "branch": "酉"
+        },
+        "major_stars": {
+          "紫微": "酉",
+          "天机": "申",
+          "太阳": "午",
+          "武曲": "巳",
+          "天同": "辰",
+          "廉贞": "丑",
+          "天府": "未",
+          "太阴": "申",
+          "贪狼": "酉",
+          "巨门": "戌",
+          "天相": "亥",
+          "天梁": "子",
+          "七杀": "丑",
+          "破军": "巳"
+        },
+        "auxiliary_stars_fortel": {
+          "文昌": "戌",
+          "文曲": "辰",
+          "左辅": "辰",
+          "右弼": "戌",
+          "天魁": "丑",
+          "天钺": "未",
+          "禄存": "寅",
+          "擎羊": "卯",
+          "陀罗": "丑"
+        },
+        "palaces": [
+          {
+            "branch": "寅",
+            "name": "命宫",
+            "stem": "丙"
+          },
+          {
+            "branch": "丑",
+            "name": "兄弟",
+            "stem": "丁"
+          },
+          {
+            "branch": "子",
+            "name": "夫妻",
+            "stem": "丙"
+          },
+          {
+            "branch": "亥",
+            "name": "子女",
+            "stem": "乙"
+          },
+          {
+            "branch": "戌",
+            "name": "财帛",
+            "stem": "甲"
+          },
+          {
+            "branch": "酉",
+            "name": "疾厄",
+            "stem": "癸"
+          },
+          {
+            "branch": "申",
+            "name": "迁移",
+            "stem": "壬"
+          },
+          {
+            "branch": "未",
+            "name": "交友",
+            "stem": "辛"
+          },
+          {
+            "branch": "午",
+            "name": "官禄",
+            "stem": "庚"
+          },
+          {
+            "branch": "巳",
+            "name": "田宅",
+            "stem": "己"
+          },
+          {
+            "branch": "辰",
+            "name": "福德",
+            "stem": "戊"
+          },
+          {
+            "branch": "卯",
+            "name": "父母",
+            "stem": "丁"
+          }
+        ],
+        "sihua_by_source": {
+          "quanshu_1963110": [
+            {
+              "hua": "禄",
+              "star": "廉贞",
+              "branch": "丑"
+            },
+            {
+              "hua": "权",
+              "star": "破军",
+              "branch": "巳"
+            },
+            {
+              "hua": "科",
+              "star": "武曲",
+              "branch": "巳"
+            },
+            {
+              "hua": "忌",
+              "star": "太阳",
+              "branch": "午"
+            }
+          ],
+          "fortel_1_3_4": [
+            {
+              "hua": "禄",
+              "star": "廉贞",
+              "branch": "丑"
+            },
+            {
+              "hua": "权",
+              "star": "破军",
+              "branch": "巳"
+            },
+            {
+              "hua": "科",
+              "star": "武曲",
+              "branch": "巳"
+            },
+            {
+              "hua": "忌",
+              "star": "太阳",
+              "branch": "午"
+            }
+          ]
+        },
+        "decade_fortel": {
+          "direction": 1,
+          "direction_name": "顺",
+          "first_four": [
+            {
+              "branch": "寅",
+              "age_start": 6,
+              "age_end": 15
+            },
+            {
+              "branch": "卯",
+              "age_start": 16,
+              "age_end": 25
+            },
+            {
+              "branch": "辰",
+              "age_start": 26,
+              "age_end": 35
+            },
+            {
+              "branch": "巳",
+              "age_start": 36,
+              "age_end": 45
+            }
+          ]
+        },
+        "quanshu_kui_yue_literal": {
+          "天魁": "丑",
+          "天钺": "未"
+        },
+        "verification_boundary": {
+          "calendar_conversion": "NOT_IN_SCOPE",
+          "civil_date_rollover": "UNVERIFIED",
+          "input_is_normalized_lunar_date": true
+        }
+      }
+    },
+    {
+      "input": {
+        "id": "Z02",
+        "year_stem": "乙",
+        "lunar_month": 1,
+        "lunar_day": 2,
+        "time_index": 0,
+        "sex": "女",
+        "is_leap_month": false,
+        "coverage": [
+          "ten_stems",
+          "five_bureaus",
+          "complement_parity"
+        ]
+      },
+      "expected": {
+        "effective_lunar_month_fortel": 1,
+        "ming_branch": "寅",
+        "shen_branch": "寅",
+        "ming_stem": "戊",
+        "five_element": "土",
+        "bureau": 5,
+        "ziwei_working": {
+          "day": 2,
+          "complement": 3,
+          "quotient": 1,
+          "branch": "亥"
+        },
+        "major_stars": {
+          "紫微": "亥",
+          "天机": "戌",
+          "太阳": "申",
+          "武曲": "未",
+          "天同": "午",
+          "廉贞": "卯",
+          "天府": "巳",
+          "太阴": "午",
+          "贪狼": "未",
+          "巨门": "申",
+          "天相": "酉",
+          "天梁": "戌",
+          "七杀": "亥",
+          "破军": "卯"
+        },
+        "auxiliary_stars_fortel": {
+          "文昌": "戌",
+          "文曲": "辰",
+          "左辅": "辰",
+          "右弼": "戌",
+          "天魁": "子",
+          "天钺": "申",
+          "禄存": "卯",
+          "擎羊": "辰",
+          "陀罗": "寅"
+        },
+        "palaces": [
+          {
+            "branch": "寅",
+            "name": "命宫",
+            "stem": "戊"
+          },
+          {
+            "branch": "丑",
+            "name": "兄弟",
+            "stem": "己"
+          },
+          {
+            "branch": "子",
+            "name": "夫妻",
+            "stem": "戊"
+          },
+          {
+            "branch": "亥",
+            "name": "子女",
+            "stem": "丁"
+          },
+          {
+            "branch": "戌",
+            "name": "财帛",
+            "stem": "丙"
+          },
+          {
+            "branch": "酉",
+            "name": "疾厄",
+            "stem": "乙"
+          },
+          {
+            "branch": "申",
+            "name": "迁移",
+            "stem": "甲"
+          },
+          {
+            "branch": "未",
+            "name": "交友",
+            "stem": "癸"
+          },
+          {
+            "branch": "午",
+            "name": "官禄",
+            "stem": "壬"
+          },
+          {
+            "branch": "巳",
+            "name": "田宅",
+            "stem": "辛"
+          },
+          {
+            "branch": "辰",
+            "name": "福德",
+            "stem": "庚"
+          },
+          {
+            "branch": "卯",
+            "name": "父母",
+            "stem": "己"
+          }
+        ],
+        "sihua_by_source": {
+          "quanshu_1963110": [
+            {
+              "hua": "禄",
+              "star": "天机",
+              "branch": "戌"
+            },
+            {
+              "hua": "权",
+              "star": "天梁",
+              "branch": "戌"
+            },
+            {
+              "hua": "科",
+              "star": "紫微",
+              "branch": "亥"
+            },
+            {
+              "hua": "忌",
+              "star": "太阴",
+              "branch": "午"
+            }
+          ],
+          "fortel_1_3_4": [
+            {
+              "hua": "禄",
+              "star": "天机",
+              "branch": "戌"
+            },
+            {
+              "hua": "权",
+              "star": "天梁",
+              "branch": "戌"
+            },
+            {
+              "hua": "科",
+              "star": "紫微",
+              "branch": "亥"
+            },
+            {
+              "hua": "忌",
+              "star": "太阴",
+              "branch": "午"
+            }
+          ]
+        },
+        "decade_fortel": {
+          "direction": 1,
+          "direction_name": "顺",
+          "first_four": [
+            {
+              "branch": "寅",
+              "age_start": 5,
+              "age_end": 14
+            },
+            {
+              "branch": "卯",
+              "age_start": 15,
+              "age_end": 24
+            },
+            {
+              "branch": "辰",
+              "age_start": 25,
+              "age_end": 34
+            },
+            {
+              "branch": "巳",
+              "age_start": 35,
+              "age_end": 44
+            }
+          ]
+        },
+        "quanshu_kui_yue_literal": {
+          "天魁": "子",
+          "天钺": "申"
+        },
+        "verification_boundary": {
+          "calendar_conversion": "NOT_IN_SCOPE",
+          "civil_date_rollover": "UNVERIFIED",
+          "input_is_normalized_lunar_date": true
+        }
+      }
+    },
+    {
+      "input": {
+        "id": "Z03",
+        "year_stem": "丙",
+        "lunar_month": 1,
+        "lunar_day": 3,
+        "time_index": 0,
+        "sex": "男",
+        "is_leap_month": false,
+        "coverage": [
+          "ten_stems",
+          "five_bureaus",
+          "complement_parity"
+        ]
+      },
+      "expected": {
+        "effective_lunar_month_fortel": 1,
+        "ming_branch": "寅",
+        "shen_branch": "寅",
+        "ming_stem": "庚",
+        "five_element": "木",
+        "bureau": 3,
+        "ziwei_working": {
+          "day": 3,
+          "complement": 0,
+          "quotient": 1,
+          "branch": "寅"
+        },
+        "major_stars": {
+          "紫微": "寅",
+          "天机": "丑",
+          "太阳": "亥",
+          "武曲": "戌",
+          "天同": "酉",
+          "廉贞": "午",
+          "天府": "寅",
+          "太阴": "卯",
+          "贪狼": "辰",
+          "巨门": "巳",
+          "天相": "午",
+          "天梁": "未",
+          "七杀": "申",
+          "破军": "子"
+        },
+        "auxiliary_stars_fortel": {
+          "文昌": "戌",
+          "文曲": "辰",
+          "左辅": "辰",
+          "右弼": "戌",
+          "天魁": "亥",
+          "天钺": "酉",
+          "禄存": "巳",
+          "擎羊": "午",
+          "陀罗": "辰"
+        },
+        "palaces": [
+          {
+            "branch": "寅",
+            "name": "命宫",
+            "stem": "庚"
+          },
+          {
+            "branch": "丑",
+            "name": "兄弟",
+            "stem": "辛"
+          },
+          {
+            "branch": "子",
+            "name": "夫妻",
+            "stem": "庚"
+          },
+          {
+            "branch": "亥",
+            "name": "子女",
+            "stem": "己"
+          },
+          {
+            "branch": "戌",
+            "name": "财帛",
+            "stem": "戊"
+          },
+          {
+            "branch": "酉",
+            "name": "疾厄",
+            "stem": "丁"
+          },
+          {
+            "branch": "申",
+            "name": "迁移",
+            "stem": "丙"
+          },
+          {
+            "branch": "未",
+            "name": "交友",
+            "stem": "乙"
+          },
+          {
+            "branch": "午",
+            "name": "官禄",
+            "stem": "甲"
+          },
+          {
+            "branch": "巳",
+            "name": "田宅",
+            "stem": "癸"
+          },
+          {
+            "branch": "辰",
+            "name": "福德",
+            "stem": "壬"
+          },
+          {
+            "branch": "卯",
+            "name": "父母",
+            "stem": "辛"
+          }
+        ],
+        "sihua_by_source": {
+          "quanshu_1963110": [
+            {
+              "hua": "禄",
+              "star": "天同",
+              "branch": "酉"
+            },
+            {
+              "hua": "权",
+              "star": "天机",
+              "branch": "丑"
+            },
+            {
+              "hua": "科",
+              "star": "文昌",
+              "branch": "戌"
+            },
+            {
+              "hua": "忌",
+              "star": "廉贞",
+              "branch": "午"
+            }
+          ],
+          "fortel_1_3_4": [
+            {
+              "hua": "禄",
+              "star": "天同",
+              "branch": "酉"
+            },
+            {
+              "hua": "权",
+              "star": "天机",
+              "branch": "丑"
+            },
+            {
+              "hua": "科",
+              "star": "文昌",
+              "branch": "戌"
+            },
+            {
+              "hua": "忌",
+              "star": "廉贞",
+              "branch": "午"
+            }
+          ]
+        },
+        "decade_fortel": {
+          "direction": 1,
+          "direction_name": "顺",
+          "first_four": [
+            {
+              "branch": "寅",
+              "age_start": 3,
+              "age_end": 12
+            },
+            {
+              "branch": "卯",
+              "age_start": 13,
+              "age_end": 22
+            },
+            {
+              "branch": "辰",
+              "age_start": 23,
+              "age_end": 32
+            },
+            {
+              "branch": "巳",
+              "age_start": 33,
+              "age_end": 42
+            }
+          ]
+        },
+        "quanshu_kui_yue_literal": {
+          "天魁": "亥",
+          "天钺": "戌"
+        },
+        "verification_boundary": {
+          "calendar_conversion": "NOT_IN_SCOPE",
+          "civil_date_rollover": "UNVERIFIED",
+          "input_is_normalized_lunar_date": true
+        }
+      }
+    },
+    {
+      "input": {
+        "id": "Z04",
+        "year_stem": "丁",
+        "lunar_month": 1,
+        "lunar_day": 4,
+        "time_index": 0,
+        "sex": "女",
+        "is_leap_month": false,
+        "coverage": [
+          "ten_stems",
+          "five_bureaus",
+          "complement_parity"
+        ]
+      },
+      "expected": {
+        "effective_lunar_month_fortel": 1,
+        "ming_branch": "寅",
+        "shen_branch": "寅",
+        "ming_stem": "壬",
+        "five_element": "金",
+        "bureau": 4,
+        "ziwei_working": {
+          "day": 4,
+          "complement": 0,
+          "quotient": 1,
+          "branch": "寅"
+        },
+        "major_stars": {
+          "紫微": "寅",
+          "天机": "丑",
+          "太阳": "亥",
+          "武曲": "戌",
+          "天同": "酉",
+          "廉贞": "午",
+          "天府": "寅",
+          "太阴": "卯",
+          "贪狼": "辰",
+          "巨门": "巳",
+          "天相": "午",
+          "天梁": "未",
+          "七杀": "申",
+          "破军": "子"
+        },
+        "auxiliary_stars_fortel": {
+          "文昌": "戌",
+          "文曲": "辰",
+          "左辅": "辰",
+          "右弼": "戌",
+          "天魁": "亥",
+          "天钺": "酉",
+          "禄存": "午",
+          "擎羊": "未",
+          "陀罗": "巳"
+        },
+        "palaces": [
+          {
+            "branch": "寅",
+            "name": "命宫",
+            "stem": "壬"
+          },
+          {
+            "branch": "丑",
+            "name": "兄弟",
+            "stem": "癸"
+          },
+          {
+            "branch": "子",
+            "name": "夫妻",
+            "stem": "壬"
+          },
+          {
+            "branch": "亥",
+            "name": "子女",
+            "stem": "辛"
+          },
+          {
+            "branch": "戌",
+            "name": "财帛",
+            "stem": "庚"
+          },
+          {
+            "branch": "酉",
+            "name": "疾厄",
+            "stem": "己"
+          },
+          {
+            "branch": "申",
+            "name": "迁移",
+            "stem": "戊"
+          },
+          {
+            "branch": "未",
+            "name": "交友",
+            "stem": "丁"
+          },
+          {
+            "branch": "午",
+            "name": "官禄",
+            "stem": "丙"
+          },
+          {
+            "branch": "巳",
+            "name": "田宅",
+            "stem": "乙"
+          },
+          {
+            "branch": "辰",
+            "name": "福德",
+            "stem": "甲"
+          },
+          {
+            "branch": "卯",
+            "name": "父母",
+            "stem": "癸"
+          }
+        ],
+        "sihua_by_source": {
+          "quanshu_1963110": [
+            {
+              "hua": "禄",
+              "star": "太阴",
+              "branch": "卯"
+            },
+            {
+              "hua": "权",
+              "star": "天同",
+              "branch": "酉"
+            },
+            {
+              "hua": "科",
+              "star": "天机",
+              "branch": "丑"
+            },
+            {
+              "hua": "忌",
+              "star": "巨门",
+              "branch": "巳"
+            }
+          ],
+          "fortel_1_3_4": [
+            {
+              "hua": "禄",
+              "star": "太阴",
+              "branch": "卯"
+            },
+            {
+              "hua": "权",
+              "star": "天同",
+              "branch": "酉"
+            },
+            {
+              "hua": "科",
+              "star": "天机",
+              "branch": "丑"
+            },
+            {
+              "hua": "忌",
+              "star": "巨门",
+              "branch": "巳"
+            }
+          ]
+        },
+        "decade_fortel": {
+          "direction": 1,
+          "direction_name": "顺",
+          "first_four": [
+            {
+              "branch": "寅",
+              "age_start": 4,
+              "age_end": 13
+            },
+            {
+              "branch": "卯",
+              "age_start": 14,
+              "age_end": 23
+            },
+            {
+              "branch": "辰",
+              "age_start": 24,
+              "age_end": 33
+            },
+            {
+              "branch": "巳",
+              "age_start": 34,
+              "age_end": 43
+            }
+          ]
+        },
+        "quanshu_kui_yue_literal": {
+          "天魁": "亥",
+          "天钺": "戌"
+        },
+        "verification_boundary": {
+          "calendar_conversion": "NOT_IN_SCOPE",
+          "civil_date_rollover": "UNVERIFIED",
+          "input_is_normalized_lunar_date": true
+        }
+      }
+    },
+    {
+      "input": {
+        "id": "Z05",
+        "year_stem": "戊",
+        "lunar_month": 1,
+        "lunar_day": 5,
+        "time_index": 0,
+        "sex": "男",
+        "is_leap_month": false,
+        "coverage": [
+          "ten_stems",
+          "five_bureaus",
+          "complement_parity"
+        ]
+      },
+      "expected": {
+        "effective_lunar_month_fortel": 1,
+        "ming_branch": "寅",
+        "shen_branch": "寅",
+        "ming_stem": "甲",
+        "five_element": "水",
+        "bureau": 2,
+        "ziwei_working": {
+          "day": 5,
+          "complement": 1,
+          "quotient": 3,
+          "branch": "卯"
+        },
+        "major_stars": {
+          "紫微": "卯",
+          "天机": "寅",
+          "太阳": "子",
+          "武曲": "亥",
+          "天同": "戌",
+          "廉贞": "未",
+          "天府": "丑",
+          "太阴": "寅",
+          "贪狼": "卯",
+          "巨门": "辰",
+          "天相": "巳",
+          "天梁": "午",
+          "七杀": "未",
+          "破军": "亥"
+        },
+        "auxiliary_stars_fortel": {
+          "文昌": "戌",
+          "文曲": "辰",
+          "左辅": "辰",
+          "右弼": "戌",
+          "天魁": "丑",
+          "天钺": "未",
+          "禄存": "巳",
+          "擎羊": "午",
+          "陀罗": "辰"
+        },
+        "palaces": [
+          {
+            "branch": "寅",
+            "name": "命宫",
+            "stem": "甲"
+          },
+          {
+            "branch": "丑",
+            "name": "兄弟",
+            "stem": "乙"
+          },
+          {
+            "branch": "子",
+            "name": "夫妻",
+            "stem": "甲"
+          },
+          {
+            "branch": "亥",
+            "name": "子女",
+            "stem": "癸"
+          },
+          {
+            "branch": "戌",
+            "name": "财帛",
+            "stem": "壬"
+          },
+          {
+            "branch": "酉",
+            "name": "疾厄",
+            "stem": "辛"
+          },
+          {
+            "branch": "申",
+            "name": "迁移",
+            "stem": "庚"
+          },
+          {
+            "branch": "未",
+            "name": "交友",
+            "stem": "己"
+          },
+          {
+            "branch": "午",
+            "name": "官禄",
+            "stem": "戊"
+          },
+          {
+            "branch": "巳",
+            "name": "田宅",
+            "stem": "丁"
+          },
+          {
+            "branch": "辰",
+            "name": "福德",
+            "stem": "丙"
+          },
+          {
+            "branch": "卯",
+            "name": "父母",
+            "stem": "乙"
+          }
+        ],
+        "sihua_by_source": {
+          "quanshu_1963110": [
+            {
+              "hua": "禄",
+              "star": "贪狼",
+              "branch": "卯"
+            },
+            {
+              "hua": "权",
+              "star": "太阴",
+              "branch": "寅"
+            },
+            {
+              "hua": "科",
+              "star": "右弼",
+              "branch": "戌"
+            },
+            {
+              "hua": "忌",
+              "star": "天机",
+              "branch": "寅"
+            }
+          ],
+          "fortel_1_3_4": [
+            {
+              "hua": "禄",
+              "star": "贪狼",
+              "branch": "卯"
+            },
+            {
+              "hua": "权",
+              "star": "太阴",
+              "branch": "寅"
+            },
+            {
+              "hua": "科",
+              "star": "太阳",
+              "branch": "子"
+            },
+            {
+              "hua": "忌",
+              "star": "天机",
+              "branch": "寅"
+            }
+          ]
+        },
+        "decade_fortel": {
+          "direction": 1,
+          "direction_name": "顺",
+          "first_four": [
+            {
+              "branch": "寅",
+              "age_start": 2,
+              "age_end": 11
+            },
+            {
+              "branch": "卯",
+              "age_start": 12,
+              "age_end": 21
+            },
+            {
+              "branch": "辰",
+              "age_start": 22,
+              "age_end": 31
+            },
+            {
+              "branch": "巳",
+              "age_start": 32,
+              "age_end": 41
+            }
+          ]
+        },
+        "quanshu_kui_yue_literal": {
+          "天魁": "丑",
+          "天钺": "未"
+        },
+        "verification_boundary": {
+          "calendar_conversion": "NOT_IN_SCOPE",
+          "civil_date_rollover": "UNVERIFIED",
+          "input_is_normalized_lunar_date": true
+        }
+      }
+    },
+    {
+      "input": {
+        "id": "Z06",
+        "year_stem": "己",
+        "lunar_month": 1,
+        "lunar_day": 6,
+        "time_index": 0,
+        "sex": "女",
+        "is_leap_month": false,
+        "coverage": [
+          "ten_stems",
+          "five_bureaus",
+          "complement_parity"
+        ]
+      },
+      "expected": {
+        "effective_lunar_month_fortel": 1,
+        "ming_branch": "寅",
+        "shen_branch": "寅",
+        "ming_stem": "丙",
+        "five_element": "火",
+        "bureau": 6,
+        "ziwei_working": {
+          "day": 6,
+          "complement": 0,
+          "quotient": 1,
+          "branch": "寅"
+        },
+        "major_stars": {
+          "紫微": "寅",
+          "天机": "丑",
+          "太阳": "亥",
+          "武曲": "戌",
+          "天同": "酉",
+          "廉贞": "午",
+          "天府": "寅",
+          "太阴": "卯",
+          "贪狼": "辰",
+          "巨门": "巳",
+          "天相": "午",
+          "天梁": "未",
+          "七杀": "申",
+          "破军": "子"
+        },
+        "auxiliary_stars_fortel": {
+          "文昌": "戌",
+          "文曲": "辰",
+          "左辅": "辰",
+          "右弼": "戌",
+          "天魁": "子",
+          "天钺": "申",
+          "禄存": "午",
+          "擎羊": "未",
+          "陀罗": "巳"
+        },
+        "palaces": [
+          {
+            "branch": "寅",
+            "name": "命宫",
+            "stem": "丙"
+          },
+          {
+            "branch": "丑",
+            "name": "兄弟",
+            "stem": "丁"
+          },
+          {
+            "branch": "子",
+            "name": "夫妻",
+            "stem": "丙"
+          },
+          {
+            "branch": "亥",
+            "name": "子女",
+            "stem": "乙"
+          },
+          {
+            "branch": "戌",
+            "name": "财帛",
+            "stem": "甲"
+          },
+          {
+            "branch": "酉",
+            "name": "疾厄",
+            "stem": "癸"
+          },
+          {
+            "branch": "申",
+            "name": "迁移",
+            "stem": "壬"
+          },
+          {
+            "branch": "未",
+            "name": "交友",
+            "stem": "辛"
+          },
+          {
+            "branch": "午",
+            "name": "官禄",
+            "stem": "庚"
+          },
+          {
+            "branch": "巳",
+            "name": "田宅",
+            "stem": "己"
+          },
+          {
+            "branch": "辰",
+            "name": "福德",
+            "stem": "戊"
+          },
+          {
+            "branch": "卯",
+            "name": "父母",
+            "stem": "丁"
+          }
+        ],
+        "sihua_by_source": {
+          "quanshu_1963110": [
+            {
+              "hua": "禄",
+              "star": "武曲",
+              "branch": "戌"
+            },
+            {
+              "hua": "权",
+              "star": "贪狼",
+              "branch": "辰"
+            },
+            {
+              "hua": "科",
+              "star": "天梁",
+              "branch": "未"
+            },
+            {
+              "hua": "忌",
+              "star": "文曲",
+              "branch": "辰"
+            }
+          ],
+          "fortel_1_3_4": [
+            {
+              "hua": "禄",
+              "star": "武曲",
+              "branch": "戌"
+            },
+            {
+              "hua": "权",
+              "star": "贪狼",
+              "branch": "辰"
+            },
+            {
+              "hua": "科",
+              "star": "天梁",
+              "branch": "未"
+            },
+            {
+              "hua": "忌",
+              "star": "文曲",
+              "branch": "辰"
+            }
+          ]
+        },
+        "decade_fortel": {
+          "direction": 1,
+          "direction_name": "顺",
+          "first_four": [
+            {
+              "branch": "寅",
+              "age_start": 6,
+              "age_end": 15
+            },
+            {
+              "branch": "卯",
+              "age_start": 16,
+              "age_end": 25
+            },
+            {
+              "branch": "辰",
+              "age_start": 26,
+              "age_end": 35
+            },
+            {
+              "branch": "巳",
+              "age_start": 36,
+              "age_end": 45
+            }
+          ]
+        },
+        "quanshu_kui_yue_literal": {
+          "天魁": "子",
+          "天钺": "申"
+        },
+        "verification_boundary": {
+          "calendar_conversion": "NOT_IN_SCOPE",
+          "civil_date_rollover": "UNVERIFIED",
+          "input_is_normalized_lunar_date": true
+        }
+      }
+    },
+    {
+      "input": {
+        "id": "Z07",
+        "year_stem": "庚",
+        "lunar_month": 1,
+        "lunar_day": 7,
+        "time_index": 0,
+        "sex": "男",
+        "is_leap_month": false,
+        "coverage": [
+          "ten_stems",
+          "five_bureaus",
+          "complement_parity"
+        ]
+      },
+      "expected": {
+        "effective_lunar_month_fortel": 1,
+        "ming_branch": "寅",
+        "shen_branch": "寅",
+        "ming_stem": "戊",
+        "five_element": "土",
+        "bureau": 5,
+        "ziwei_working": {
+          "day": 7,
+          "complement": 3,
+          "quotient": 2,
+          "branch": "子"
+        },
+        "major_stars": {
+          "紫微": "子",
+          "天机": "亥",
+          "太阳": "酉",
+          "武曲": "申",
+          "天同": "未",
+          "廉贞": "辰",
+          "天府": "辰",
+          "太阴": "巳",
+          "贪狼": "午",
+          "巨门": "未",
+          "天相": "申",
+          "天梁": "酉",
+          "七杀": "戌",
+          "破军": "寅"
+        },
+        "auxiliary_stars_fortel": {
+          "文昌": "戌",
+          "文曲": "辰",
+          "左辅": "辰",
+          "右弼": "戌",
+          "天魁": "丑",
+          "天钺": "未",
+          "禄存": "申",
+          "擎羊": "酉",
+          "陀罗": "未"
+        },
+        "palaces": [
+          {
+            "branch": "寅",
+            "name": "命宫",
+            "stem": "戊"
+          },
+          {
+            "branch": "丑",
+            "name": "兄弟",
+            "stem": "己"
+          },
+          {
+            "branch": "子",
+            "name": "夫妻",
+            "stem": "戊"
+          },
+          {
+            "branch": "亥",
+            "name": "子女",
+            "stem": "丁"
+          },
+          {
+            "branch": "戌",
+            "name": "财帛",
+            "stem": "丙"
+          },
+          {
+            "branch": "酉",
+            "name": "疾厄",
+            "stem": "乙"
+          },
+          {
+            "branch": "申",
+            "name": "迁移",
+            "stem": "甲"
+          },
+          {
+            "branch": "未",
+            "name": "交友",
+            "stem": "癸"
+          },
+          {
+            "branch": "午",
+            "name": "官禄",
+            "stem": "壬"
+          },
+          {
+            "branch": "巳",
+            "name": "田宅",
+            "stem": "辛"
+          },
+          {
+            "branch": "辰",
+            "name": "福德",
+            "stem": "庚"
+          },
+          {
+            "branch": "卯",
+            "name": "父母",
+            "stem": "己"
+          }
+        ],
+        "sihua_by_source": {
+          "quanshu_1963110": [
+            {
+              "hua": "禄",
+              "star": "太阳",
+              "branch": "酉"
+            },
+            {
+              "hua": "权",
+              "star": "武曲",
+              "branch": "申"
+            },
+            {
+              "hua": "科",
+              "star": "太阴",
+              "branch": "巳"
+            },
+            {
+              "hua": "忌",
+              "star": "天同",
+              "branch": "未"
+            }
+          ],
+          "fortel_1_3_4": [
+            {
+              "hua": "禄",
+              "star": "太阳",
+              "branch": "酉"
+            },
+            {
+              "hua": "权",
+              "star": "武曲",
+              "branch": "申"
+            },
+            {
+              "hua": "科",
+              "star": "天府",
+              "branch": "辰"
+            },
+            {
+              "hua": "忌",
+              "star": "天同",
+              "branch": "未"
+            }
+          ]
+        },
+        "decade_fortel": {
+          "direction": 1,
+          "direction_name": "顺",
+          "first_four": [
+            {
+              "branch": "寅",
+              "age_start": 5,
+              "age_end": 14
+            },
+            {
+              "branch": "卯",
+              "age_start": 15,
+              "age_end": 24
+            },
+            {
+              "branch": "辰",
+              "age_start": 25,
+              "age_end": 34
+            },
+            {
+              "branch": "巳",
+              "age_start": 35,
+              "age_end": 44
+            }
+          ]
+        },
+        "quanshu_kui_yue_literal": {
+          "天魁": "丑",
+          "天钺": "未"
+        },
+        "verification_boundary": {
+          "calendar_conversion": "NOT_IN_SCOPE",
+          "civil_date_rollover": "UNVERIFIED",
+          "input_is_normalized_lunar_date": true
+        }
+      }
+    },
+    {
+      "input": {
+        "id": "Z08",
+        "year_stem": "辛",
+        "lunar_month": 1,
+        "lunar_day": 8,
+        "time_index": 0,
+        "sex": "女",
+        "is_leap_month": false,
+        "coverage": [
+          "ten_stems",
+          "five_bureaus",
+          "complement_parity"
+        ]
+      },
+      "expected": {
+        "effective_lunar_month_fortel": 1,
+        "ming_branch": "寅",
+        "shen_branch": "寅",
+        "ming_stem": "庚",
+        "five_element": "木",
+        "bureau": 3,
+        "ziwei_working": {
+          "day": 8,
+          "complement": 1,
+          "quotient": 3,
+          "branch": "卯"
+        },
+        "major_stars": {
+          "紫微": "卯",
+          "天机": "寅",
+          "太阳": "子",
+          "武曲": "亥",
+          "天同": "戌",
+          "廉贞": "未",
+          "天府": "丑",
+          "太阴": "寅",
+          "贪狼": "卯",
+          "巨门": "辰",
+          "天相": "巳",
+          "天梁": "午",
+          "七杀": "未",
+          "破军": "亥"
+        },
+        "auxiliary_stars_fortel": {
+          "文昌": "戌",
+          "文曲": "辰",
+          "左辅": "辰",
+          "右弼": "戌",
+          "天魁": "午",
+          "天钺": "寅",
+          "禄存": "酉",
+          "擎羊": "戌",
+          "陀罗": "申"
+        },
+        "palaces": [
+          {
+            "branch": "寅",
+            "name": "命宫",
+            "stem": "庚"
+          },
+          {
+            "branch": "丑",
+            "name": "兄弟",
+            "stem": "辛"
+          },
+          {
+            "branch": "子",
+            "name": "夫妻",
+            "stem": "庚"
+          },
+          {
+            "branch": "亥",
+            "name": "子女",
+            "stem": "己"
+          },
+          {
+            "branch": "戌",
+            "name": "财帛",
+            "stem": "戊"
+          },
+          {
+            "branch": "酉",
+            "name": "疾厄",
+            "stem": "丁"
+          },
+          {
+            "branch": "申",
+            "name": "迁移",
+            "stem": "丙"
+          },
+          {
+            "branch": "未",
+            "name": "交友",
+            "stem": "乙"
+          },
+          {
+            "branch": "午",
+            "name": "官禄",
+            "stem": "甲"
+          },
+          {
+            "branch": "巳",
+            "name": "田宅",
+            "stem": "癸"
+          },
+          {
+            "branch": "辰",
+            "name": "福德",
+            "stem": "壬"
+          },
+          {
+            "branch": "卯",
+            "name": "父母",
+            "stem": "辛"
+          }
+        ],
+        "sihua_by_source": {
+          "quanshu_1963110": [
+            {
+              "hua": "禄",
+              "star": "巨门",
+              "branch": "辰"
+            },
+            {
+              "hua": "权",
+              "star": "太阳",
+              "branch": "子"
+            },
+            {
+              "hua": "科",
+              "star": "文曲",
+              "branch": "辰"
+            },
+            {
+              "hua": "忌",
+              "star": "文昌",
+              "branch": "戌"
+            }
+          ],
+          "fortel_1_3_4": [
+            {
+              "hua": "禄",
+              "star": "巨门",
+              "branch": "辰"
+            },
+            {
+              "hua": "权",
+              "star": "太阳",
+              "branch": "子"
+            },
+            {
+              "hua": "科",
+              "star": "文曲",
+              "branch": "辰"
+            },
+            {
+              "hua": "忌",
+              "star": "文昌",
+              "branch": "戌"
+            }
+          ]
+        },
+        "decade_fortel": {
+          "direction": 1,
+          "direction_name": "顺",
+          "first_four": [
+            {
+              "branch": "寅",
+              "age_start": 3,
+              "age_end": 12
+            },
+            {
+              "branch": "卯",
+              "age_start": 13,
+              "age_end": 22
+            },
+            {
+              "branch": "辰",
+              "age_start": 23,
+              "age_end": 32
+            },
+            {
+              "branch": "巳",
+              "age_start": 33,
+              "age_end": 42
+            }
+          ]
+        },
+        "quanshu_kui_yue_literal": {
+          "天魁": "寅",
+          "天钺": "午"
+        },
+        "verification_boundary": {
+          "calendar_conversion": "NOT_IN_SCOPE",
+          "civil_date_rollover": "UNVERIFIED",
+          "input_is_normalized_lunar_date": true
+        }
+      }
+    },
+    {
+      "input": {
+        "id": "Z09",
+        "year_stem": "壬",
+        "lunar_month": 1,
+        "lunar_day": 9,
+        "time_index": 0,
+        "sex": "男",
+        "is_leap_month": false,
+        "coverage": [
+          "ten_stems",
+          "five_bureaus",
+          "complement_parity"
+        ]
+      },
+      "expected": {
+        "effective_lunar_month_fortel": 1,
+        "ming_branch": "寅",
+        "shen_branch": "寅",
+        "ming_stem": "壬",
+        "five_element": "金",
+        "bureau": 4,
+        "ziwei_working": {
+          "day": 9,
+          "complement": 3,
+          "quotient": 3,
+          "branch": "丑"
+        },
+        "major_stars": {
+          "紫微": "丑",
+          "天机": "子",
+          "太阳": "戌",
+          "武曲": "酉",
+          "天同": "申",
+          "廉贞": "巳",
+          "天府": "卯",
+          "太阴": "辰",
+          "贪狼": "巳",
+          "巨门": "午",
+          "天相": "未",
+          "天梁": "申",
+          "七杀": "酉",
+          "破军": "丑"
+        },
+        "auxiliary_stars_fortel": {
+          "文昌": "戌",
+          "文曲": "辰",
+          "左辅": "辰",
+          "右弼": "戌",
+          "天魁": "卯",
+          "天钺": "巳",
+          "禄存": "亥",
+          "擎羊": "子",
+          "陀罗": "戌"
+        },
+        "palaces": [
+          {
+            "branch": "寅",
+            "name": "命宫",
+            "stem": "壬"
+          },
+          {
+            "branch": "丑",
+            "name": "兄弟",
+            "stem": "癸"
+          },
+          {
+            "branch": "子",
+            "name": "夫妻",
+            "stem": "壬"
+          },
+          {
+            "branch": "亥",
+            "name": "子女",
+            "stem": "辛"
+          },
+          {
+            "branch": "戌",
+            "name": "财帛",
+            "stem": "庚"
+          },
+          {
+            "branch": "酉",
+            "name": "疾厄",
+            "stem": "己"
+          },
+          {
+            "branch": "申",
+            "name": "迁移",
+            "stem": "戊"
+          },
+          {
+            "branch": "未",
+            "name": "交友",
+            "stem": "丁"
+          },
+          {
+            "branch": "午",
+            "name": "官禄",
+            "stem": "丙"
+          },
+          {
+            "branch": "巳",
+            "name": "田宅",
+            "stem": "乙"
+          },
+          {
+            "branch": "辰",
+            "name": "福德",
+            "stem": "甲"
+          },
+          {
+            "branch": "卯",
+            "name": "父母",
+            "stem": "癸"
+          }
+        ],
+        "sihua_by_source": {
+          "quanshu_1963110": [
+            {
+              "hua": "禄",
+              "star": "天梁",
+              "branch": "申"
+            },
+            {
+              "hua": "权",
+              "star": "紫微",
+              "branch": "丑"
+            },
+            {
+              "hua": "科",
+              "star": "天府",
+              "branch": "卯"
+            },
+            {
+              "hua": "忌",
+              "star": "武曲",
+              "branch": "酉"
+            }
+          ],
+          "fortel_1_3_4": [
+            {
+              "hua": "禄",
+              "star": "天梁",
+              "branch": "申"
+            },
+            {
+              "hua": "权",
+              "star": "紫微",
+              "branch": "丑"
+            },
+            {
+              "hua": "科",
+              "star": "天府",
+              "branch": "卯"
+            },
+            {
+              "hua": "忌",
+              "star": "武曲",
+              "branch": "酉"
+            }
+          ]
+        },
+        "decade_fortel": {
+          "direction": 1,
+          "direction_name": "顺",
+          "first_four": [
+            {
+              "branch": "寅",
+              "age_start": 4,
+              "age_end": 13
+            },
+            {
+              "branch": "卯",
+              "age_start": 14,
+              "age_end": 23
+            },
+            {
+              "branch": "辰",
+              "age_start": 24,
+              "age_end": 33
+            },
+            {
+              "branch": "巳",
+              "age_start": 34,
+              "age_end": 43
+            }
+          ]
+        },
+        "quanshu_kui_yue_literal": {
+          "天魁": "卯",
+          "天钺": "巳"
+        },
+        "verification_boundary": {
+          "calendar_conversion": "NOT_IN_SCOPE",
+          "civil_date_rollover": "UNVERIFIED",
+          "input_is_normalized_lunar_date": true
+        }
+      }
+    },
+    {
+      "input": {
+        "id": "Z10",
+        "year_stem": "癸",
+        "lunar_month": 1,
+        "lunar_day": 30,
+        "time_index": 0,
+        "sex": "女",
+        "is_leap_month": false,
+        "coverage": [
+          "ten_stems",
+          "five_bureaus",
+          "complement_parity"
+        ]
+      },
+      "expected": {
+        "effective_lunar_month_fortel": 1,
+        "ming_branch": "寅",
+        "shen_branch": "寅",
+        "ming_stem": "甲",
+        "five_element": "水",
+        "bureau": 2,
+        "ziwei_working": {
+          "day": 30,
+          "complement": 0,
+          "quotient": 15,
+          "branch": "辰"
+        },
+        "major_stars": {
+          "紫微": "辰",
+          "天机": "卯",
+          "太阳": "丑",
+          "武曲": "子",
+          "天同": "亥",
+          "廉贞": "申",
+          "天府": "子",
+          "太阴": "丑",
+          "贪狼": "寅",
+          "巨门": "卯",
+          "天相": "辰",
+          "天梁": "巳",
+          "七杀": "午",
+          "破军": "戌"
+        },
+        "auxiliary_stars_fortel": {
+          "文昌": "戌",
+          "文曲": "辰",
+          "左辅": "辰",
+          "右弼": "戌",
+          "天魁": "卯",
+          "天钺": "巳",
+          "禄存": "子",
+          "擎羊": "丑",
+          "陀罗": "亥"
+        },
+        "palaces": [
+          {
+            "branch": "寅",
+            "name": "命宫",
+            "stem": "甲"
+          },
+          {
+            "branch": "丑",
+            "name": "兄弟",
+            "stem": "乙"
+          },
+          {
+            "branch": "子",
+            "name": "夫妻",
+            "stem": "甲"
+          },
+          {
+            "branch": "亥",
+            "name": "子女",
+            "stem": "癸"
+          },
+          {
+            "branch": "戌",
+            "name": "财帛",
+            "stem": "壬"
+          },
+          {
+            "branch": "酉",
+            "name": "疾厄",
+            "stem": "辛"
+          },
+          {
+            "branch": "申",
+            "name": "迁移",
+            "stem": "庚"
+          },
+          {
+            "branch": "未",
+            "name": "交友",
+            "stem": "己"
+          },
+          {
+            "branch": "午",
+            "name": "官禄",
+            "stem": "戊"
+          },
+          {
+            "branch": "巳",
+            "name": "田宅",
+            "stem": "丁"
+          },
+          {
+            "branch": "辰",
+            "name": "福德",
+            "stem": "丙"
+          },
+          {
+            "branch": "卯",
+            "name": "父母",
+            "stem": "乙"
+          }
+        ],
+        "sihua_by_source": {
+          "quanshu_1963110": [
+            {
+              "hua": "禄",
+              "star": "破军",
+              "branch": "戌"
+            },
+            {
+              "hua": "权",
+              "star": "巨门",
+              "branch": "卯"
+            },
+            {
+              "hua": "科",
+              "star": "太阴",
+              "branch": "丑"
+            },
+            {
+              "hua": "忌",
+              "star": "贪狼",
+              "branch": "寅"
+            }
+          ],
+          "fortel_1_3_4": [
+            {
+              "hua": "禄",
+              "star": "破军",
+              "branch": "戌"
+            },
+            {
+              "hua": "权",
+              "star": "巨门",
+              "branch": "卯"
+            },
+            {
+              "hua": "科",
+              "star": "太阴",
+              "branch": "丑"
+            },
+            {
+              "hua": "忌",
+              "star": "贪狼",
+              "branch": "寅"
+            }
+          ]
+        },
+        "decade_fortel": {
+          "direction": 1,
+          "direction_name": "顺",
+          "first_four": [
+            {
+              "branch": "寅",
+              "age_start": 2,
+              "age_end": 11
+            },
+            {
+              "branch": "卯",
+              "age_start": 12,
+              "age_end": 21
+            },
+            {
+              "branch": "辰",
+              "age_start": 22,
+              "age_end": 31
+            },
+            {
+              "branch": "巳",
+              "age_start": 32,
+              "age_end": 41
+            }
+          ]
+        },
+        "quanshu_kui_yue_literal": {
+          "天魁": "卯",
+          "天钺": "巳"
+        },
+        "verification_boundary": {
+          "calendar_conversion": "NOT_IN_SCOPE",
+          "civil_date_rollover": "UNVERIFIED",
+          "input_is_normalized_lunar_date": true
+        }
+      }
+    },
+    {
+      "input": {
+        "id": "Z11",
+        "year_stem": "甲",
+        "lunar_month": 1,
+        "lunar_day": 1,
+        "time_index": 0,
+        "sex": "女",
+        "is_leap_month": false,
+        "coverage": [
+          "yang_female_reverse"
+        ]
+      },
+      "expected": {
+        "effective_lunar_month_fortel": 1,
+        "ming_branch": "寅",
+        "shen_branch": "寅",
+        "ming_stem": "丙",
+        "five_element": "火",
+        "bureau": 6,
+        "ziwei_working": {
+          "day": 1,
+          "complement": 5,
+          "quotient": 1,
+          "branch": "酉"
+        },
+        "major_stars": {
+          "紫微": "酉",
+          "天机": "申",
+          "太阳": "午",
+          "武曲": "巳",
+          "天同": "辰",
+          "廉贞": "丑",
+          "天府": "未",
+          "太阴": "申",
+          "贪狼": "酉",
+          "巨门": "戌",
+          "天相": "亥",
+          "天梁": "子",
+          "七杀": "丑",
+          "破军": "巳"
+        },
+        "auxiliary_stars_fortel": {
+          "文昌": "戌",
+          "文曲": "辰",
+          "左辅": "辰",
+          "右弼": "戌",
+          "天魁": "丑",
+          "天钺": "未",
+          "禄存": "寅",
+          "擎羊": "卯",
+          "陀罗": "丑"
+        },
+        "palaces": [
+          {
+            "branch": "寅",
+            "name": "命宫",
+            "stem": "丙"
+          },
+          {
+            "branch": "丑",
+            "name": "兄弟",
+            "stem": "丁"
+          },
+          {
+            "branch": "子",
+            "name": "夫妻",
+            "stem": "丙"
+          },
+          {
+            "branch": "亥",
+            "name": "子女",
+            "stem": "乙"
+          },
+          {
+            "branch": "戌",
+            "name": "财帛",
+            "stem": "甲"
+          },
+          {
+            "branch": "酉",
+            "name": "疾厄",
+            "stem": "癸"
+          },
+          {
+            "branch": "申",
+            "name": "迁移",
+            "stem": "壬"
+          },
+          {
+            "branch": "未",
+            "name": "交友",
+            "stem": "辛"
+          },
+          {
+            "branch": "午",
+            "name": "官禄",
+            "stem": "庚"
+          },
+          {
+            "branch": "巳",
+            "name": "田宅",
+            "stem": "己"
+          },
+          {
+            "branch": "辰",
+            "name": "福德",
+            "stem": "戊"
+          },
+          {
+            "branch": "卯",
+            "name": "父母",
+            "stem": "丁"
+          }
+        ],
+        "sihua_by_source": {
+          "quanshu_1963110": [
+            {
+              "hua": "禄",
+              "star": "廉贞",
+              "branch": "丑"
+            },
+            {
+              "hua": "权",
+              "star": "破军",
+              "branch": "巳"
+            },
+            {
+              "hua": "科",
+              "star": "武曲",
+              "branch": "巳"
+            },
+            {
+              "hua": "忌",
+              "star": "太阳",
+              "branch": "午"
+            }
+          ],
+          "fortel_1_3_4": [
+            {
+              "hua": "禄",
+              "star": "廉贞",
+              "branch": "丑"
+            },
+            {
+              "hua": "权",
+              "star": "破军",
+              "branch": "巳"
+            },
+            {
+              "hua": "科",
+              "star": "武曲",
+              "branch": "巳"
+            },
+            {
+              "hua": "忌",
+              "star": "太阳",
+              "branch": "午"
+            }
+          ]
+        },
+        "decade_fortel": {
+          "direction": -1,
+          "direction_name": "逆",
+          "first_four": [
+            {
+              "branch": "寅",
+              "age_start": 6,
+              "age_end": 15
+            },
+            {
+              "branch": "丑",
+              "age_start": 16,
+              "age_end": 25
+            },
+            {
+              "branch": "子",
+              "age_start": 26,
+              "age_end": 35
+            },
+            {
+              "branch": "亥",
+              "age_start": 36,
+              "age_end": 45
+            }
+          ]
+        },
+        "quanshu_kui_yue_literal": {
+          "天魁": "丑",
+          "天钺": "未"
+        },
+        "verification_boundary": {
+          "calendar_conversion": "NOT_IN_SCOPE",
+          "civil_date_rollover": "UNVERIFIED",
+          "input_is_normalized_lunar_date": true
+        }
+      }
+    },
+    {
+      "input": {
+        "id": "Z12",
+        "year_stem": "乙",
+        "lunar_month": 1,
+        "lunar_day": 2,
+        "time_index": 0,
+        "sex": "男",
+        "is_leap_month": false,
+        "coverage": [
+          "yin_male_reverse"
+        ]
+      },
+      "expected": {
+        "effective_lunar_month_fortel": 1,
+        "ming_branch": "寅",
+        "shen_branch": "寅",
+        "ming_stem": "戊",
+        "five_element": "土",
+        "bureau": 5,
+        "ziwei_working": {
+          "day": 2,
+          "complement": 3,
+          "quotient": 1,
+          "branch": "亥"
+        },
+        "major_stars": {
+          "紫微": "亥",
+          "天机": "戌",
+          "太阳": "申",
+          "武曲": "未",
+          "天同": "午",
+          "廉贞": "卯",
+          "天府": "巳",
+          "太阴": "午",
+          "贪狼": "未",
+          "巨门": "申",
+          "天相": "酉",
+          "天梁": "戌",
+          "七杀": "亥",
+          "破军": "卯"
+        },
+        "auxiliary_stars_fortel": {
+          "文昌": "戌",
+          "文曲": "辰",
+          "左辅": "辰",
+          "右弼": "戌",
+          "天魁": "子",
+          "天钺": "申",
+          "禄存": "卯",
+          "擎羊": "辰",
+          "陀罗": "寅"
+        },
+        "palaces": [
+          {
+            "branch": "寅",
+            "name": "命宫",
+            "stem": "戊"
+          },
+          {
+            "branch": "丑",
+            "name": "兄弟",
+            "stem": "己"
+          },
+          {
+            "branch": "子",
+            "name": "夫妻",
+            "stem": "戊"
+          },
+          {
+            "branch": "亥",
+            "name": "子女",
+            "stem": "丁"
+          },
+          {
+            "branch": "戌",
+            "name": "财帛",
+            "stem": "丙"
+          },
+          {
+            "branch": "酉",
+            "name": "疾厄",
+            "stem": "乙"
+          },
+          {
+            "branch": "申",
+            "name": "迁移",
+            "stem": "甲"
+          },
+          {
+            "branch": "未",
+            "name": "交友",
+            "stem": "癸"
+          },
+          {
+            "branch": "午",
+            "name": "官禄",
+            "stem": "壬"
+          },
+          {
+            "branch": "巳",
+            "name": "田宅",
+            "stem": "辛"
+          },
+          {
+            "branch": "辰",
+            "name": "福德",
+            "stem": "庚"
+          },
+          {
+            "branch": "卯",
+            "name": "父母",
+            "stem": "己"
+          }
+        ],
+        "sihua_by_source": {
+          "quanshu_1963110": [
+            {
+              "hua": "禄",
+              "star": "天机",
+              "branch": "戌"
+            },
+            {
+              "hua": "权",
+              "star": "天梁",
+              "branch": "戌"
+            },
+            {
+              "hua": "科",
+              "star": "紫微",
+              "branch": "亥"
+            },
+            {
+              "hua": "忌",
+              "star": "太阴",
+              "branch": "午"
+            }
+          ],
+          "fortel_1_3_4": [
+            {
+              "hua": "禄",
+              "star": "天机",
+              "branch": "戌"
+            },
+            {
+              "hua": "权",
+              "star": "天梁",
+              "branch": "戌"
+            },
+            {
+              "hua": "科",
+              "star": "紫微",
+              "branch": "亥"
+            },
+            {
+              "hua": "忌",
+              "star": "太阴",
+              "branch": "午"
+            }
+          ]
+        },
+        "decade_fortel": {
+          "direction": -1,
+          "direction_name": "逆",
+          "first_four": [
+            {
+              "branch": "寅",
+              "age_start": 5,
+              "age_end": 14
+            },
+            {
+              "branch": "丑",
+              "age_start": 15,
+              "age_end": 24
+            },
+            {
+              "branch": "子",
+              "age_start": 25,
+              "age_end": 34
+            },
+            {
+              "branch": "亥",
+              "age_start": 35,
+              "age_end": 44
+            }
+          ]
+        },
+        "quanshu_kui_yue_literal": {
+          "天魁": "子",
+          "天钺": "申"
+        },
+        "verification_boundary": {
+          "calendar_conversion": "NOT_IN_SCOPE",
+          "civil_date_rollover": "UNVERIFIED",
+          "input_is_normalized_lunar_date": true
+        }
+      }
+    },
+    {
+      "input": {
+        "id": "Z13",
+        "year_stem": "癸",
+        "lunar_month": 2,
+        "lunar_day": 15,
+        "time_index": 3,
+        "sex": "女",
+        "is_leap_month": true,
+        "coverage": [
+          "leap_15_16",
+          "chang_qu_together"
+        ]
+      },
+      "expected": {
+        "effective_lunar_month_fortel": 2,
+        "ming_branch": "子",
+        "shen_branch": "午",
+        "ming_stem": "甲",
+        "five_element": "金",
+        "bureau": 4,
+        "ziwei_working": {
+          "day": 15,
+          "complement": 1,
+          "quotient": 4,
+          "branch": "辰"
+        },
+        "major_stars": {
+          "紫微": "辰",
+          "天机": "卯",
+          "太阳": "丑",
+          "武曲": "子",
+          "天同": "亥",
+          "廉贞": "申",
+          "天府": "子",
+          "太阴": "丑",
+          "贪狼": "寅",
+          "巨门": "卯",
+          "天相": "辰",
+          "天梁": "巳",
+          "七杀": "午",
+          "破军": "戌"
+        },
+        "auxiliary_stars_fortel": {
+          "文昌": "未",
+          "文曲": "未",
+          "左辅": "巳",
+          "右弼": "酉",
+          "天魁": "卯",
+          "天钺": "巳",
+          "禄存": "子",
+          "擎羊": "丑",
+          "陀罗": "亥"
+        },
+        "palaces": [
+          {
+            "branch": "子",
+            "name": "命宫",
+            "stem": "甲"
+          },
+          {
+            "branch": "亥",
+            "name": "兄弟",
+            "stem": "癸"
+          },
+          {
+            "branch": "戌",
+            "name": "夫妻",
+            "stem": "壬"
+          },
+          {
+            "branch": "酉",
+            "name": "子女",
+            "stem": "辛"
+          },
+          {
+            "branch": "申",
+            "name": "财帛",
+            "stem": "庚"
+          },
+          {
+            "branch": "未",
+            "name": "疾厄",
+            "stem": "己"
+          },
+          {
+            "branch": "午",
+            "name": "迁移",
+            "stem": "戊"
+          },
+          {
+            "branch": "巳",
+            "name": "交友",
+            "stem": "丁"
+          },
+          {
+            "branch": "辰",
+            "name": "官禄",
+            "stem": "丙"
+          },
+          {
+            "branch": "卯",
+            "name": "田宅",
+            "stem": "乙"
+          },
+          {
+            "branch": "寅",
+            "name": "福德",
+            "stem": "甲"
+          },
+          {
+            "branch": "丑",
+            "name": "父母",
+            "stem": "乙"
+          }
+        ],
+        "sihua_by_source": {
+          "quanshu_1963110": [
+            {
+              "hua": "禄",
+              "star": "破军",
+              "branch": "戌"
+            },
+            {
+              "hua": "权",
+              "star": "巨门",
+              "branch": "卯"
+            },
+            {
+              "hua": "科",
+              "star": "太阴",
+              "branch": "丑"
+            },
+            {
+              "hua": "忌",
+              "star": "贪狼",
+              "branch": "寅"
+            }
+          ],
+          "fortel_1_3_4": [
+            {
+              "hua": "禄",
+              "star": "破军",
+              "branch": "戌"
+            },
+            {
+              "hua": "权",
+              "star": "巨门",
+              "branch": "卯"
+            },
+            {
+              "hua": "科",
+              "star": "太阴",
+              "branch": "丑"
+            },
+            {
+              "hua": "忌",
+              "star": "贪狼",
+              "branch": "寅"
+            }
+          ]
+        },
+        "decade_fortel": {
+          "direction": 1,
+          "direction_name": "顺",
+          "first_four": [
+            {
+              "branch": "子",
+              "age_start": 4,
+              "age_end": 13
+            },
+            {
+              "branch": "丑",
+              "age_start": 14,
+              "age_end": 23
+            },
+            {
+              "branch": "寅",
+              "age_start": 24,
+              "age_end": 33
+            },
+            {
+              "branch": "卯",
+              "age_start": 34,
+              "age_end": 43
+            }
+          ]
+        },
+        "quanshu_kui_yue_literal": {
+          "天魁": "卯",
+          "天钺": "巳"
+        },
+        "verification_boundary": {
+          "calendar_conversion": "NOT_IN_SCOPE",
+          "civil_date_rollover": "UNVERIFIED",
+          "input_is_normalized_lunar_date": true
+        },
+        "quanshu_leap_ming_shen_only": {
+          "effective_month": 3,
+          "ming_branch": "丑",
+          "shen_branch": "未",
+          "status": "TEXT_VARIANT_DO_NOT_TREAT_AS_TARGET_FAILURE",
+          "auxiliary_month_application": "NOT_ESTABLISHED_BY_THIS_PASSAGE"
+        }
+      }
+    },
+    {
+      "input": {
+        "id": "Z14",
+        "year_stem": "癸",
+        "lunar_month": 2,
+        "lunar_day": 16,
+        "time_index": 3,
+        "sex": "女",
+        "is_leap_month": true,
+        "coverage": [
+          "leap_15_16",
+          "chang_qu_together"
+        ]
+      },
+      "expected": {
+        "effective_lunar_month_fortel": 3,
+        "ming_branch": "丑",
+        "shen_branch": "未",
+        "ming_stem": "乙",
+        "five_element": "金",
+        "bureau": 4,
+        "ziwei_working": {
+          "day": 16,
+          "complement": 0,
+          "quotient": 4,
+          "branch": "巳"
+        },
+        "major_stars": {
+          "紫微": "巳",
+          "天机": "辰",
+          "太阳": "寅",
+          "武曲": "丑",
+          "天同": "子",
+          "廉贞": "酉",
+          "天府": "亥",
+          "太阴": "子",
+          "贪狼": "丑",
+          "巨门": "寅",
+          "天相": "卯",
+          "天梁": "辰",
+          "七杀": "巳",
+          "破军": "酉"
+        },
+        "auxiliary_stars_fortel": {
+          "文昌": "未",
+          "文曲": "未",
+          "左辅": "午",
+          "右弼": "申",
+          "天魁": "卯",
+          "天钺": "巳",
+          "禄存": "子",
+          "擎羊": "丑",
+          "陀罗": "亥"
+        },
+        "palaces": [
+          {
+            "branch": "丑",
+            "name": "命宫",
+            "stem": "乙"
+          },
+          {
+            "branch": "子",
+            "name": "兄弟",
+            "stem": "甲"
+          },
+          {
+            "branch": "亥",
+            "name": "夫妻",
+            "stem": "癸"
+          },
+          {
+            "branch": "戌",
+            "name": "子女",
+            "stem": "壬"
+          },
+          {
+            "branch": "酉",
+            "name": "财帛",
+            "stem": "辛"
+          },
+          {
+            "branch": "申",
+            "name": "疾厄",
+            "stem": "庚"
+          },
+          {
+            "branch": "未",
+            "name": "迁移",
+            "stem": "己"
+          },
+          {
+            "branch": "午",
+            "name": "交友",
+            "stem": "戊"
+          },
+          {
+            "branch": "巳",
+            "name": "官禄",
+            "stem": "丁"
+          },
+          {
+            "branch": "辰",
+            "name": "田宅",
+            "stem": "丙"
+          },
+          {
+            "branch": "卯",
+            "name": "福德",
+            "stem": "乙"
+          },
+          {
+            "branch": "寅",
+            "name": "父母",
+            "stem": "甲"
+          }
+        ],
+        "sihua_by_source": {
+          "quanshu_1963110": [
+            {
+              "hua": "禄",
+              "star": "破军",
+              "branch": "酉"
+            },
+            {
+              "hua": "权",
+              "star": "巨门",
+              "branch": "寅"
+            },
+            {
+              "hua": "科",
+              "star": "太阴",
+              "branch": "子"
+            },
+            {
+              "hua": "忌",
+              "star": "贪狼",
+              "branch": "丑"
+            }
+          ],
+          "fortel_1_3_4": [
+            {
+              "hua": "禄",
+              "star": "破军",
+              "branch": "酉"
+            },
+            {
+              "hua": "权",
+              "star": "巨门",
+              "branch": "寅"
+            },
+            {
+              "hua": "科",
+              "star": "太阴",
+              "branch": "子"
+            },
+            {
+              "hua": "忌",
+              "star": "贪狼",
+              "branch": "丑"
+            }
+          ]
+        },
+        "decade_fortel": {
+          "direction": 1,
+          "direction_name": "顺",
+          "first_four": [
+            {
+              "branch": "丑",
+              "age_start": 4,
+              "age_end": 13
+            },
+            {
+              "branch": "寅",
+              "age_start": 14,
+              "age_end": 23
+            },
+            {
+              "branch": "卯",
+              "age_start": 24,
+              "age_end": 33
+            },
+            {
+              "branch": "辰",
+              "age_start": 34,
+              "age_end": 43
+            }
+          ]
+        },
+        "quanshu_kui_yue_literal": {
+          "天魁": "卯",
+          "天钺": "巳"
+        },
+        "verification_boundary": {
+          "calendar_conversion": "NOT_IN_SCOPE",
+          "civil_date_rollover": "UNVERIFIED",
+          "input_is_normalized_lunar_date": true
+        },
+        "quanshu_leap_ming_shen_only": {
+          "effective_month": 3,
+          "ming_branch": "丑",
+          "shen_branch": "未",
+          "status": "TEXT_VARIANT_DO_NOT_TREAT_AS_TARGET_FAILURE",
+          "auxiliary_month_application": "NOT_ESTABLISHED_BY_THIS_PASSAGE"
+        }
+      }
+    },
+    {
+      "input": {
+        "id": "Z15",
+        "year_stem": "甲",
+        "lunar_month": 4,
+        "lunar_day": 22,
+        "time_index": 0,
+        "civil_time_label": "00:00",
+        "sex": "男",
+        "is_leap_month": false,
+        "coverage": [
+          "early_late_zi",
+          "hour_boundary",
+          "left_right_together"
+        ],
+        "normalization_note": "The supplied lunar day is already selected. No assertion is made about which civil date an application should use at 23:00."
+      },
+      "expected": {
+        "effective_lunar_month_fortel": 4,
+        "ming_branch": "巳",
+        "shen_branch": "巳",
+        "ming_stem": "己",
+        "five_element": "木",
+        "bureau": 3,
+        "ziwei_working": {
+          "day": 22,
+          "complement": 2,
+          "quotient": 8,
+          "branch": "亥"
+        },
+        "major_stars": {
+          "紫微": "亥",
+          "天机": "戌",
+          "太阳": "申",
+          "武曲": "未",
+          "天同": "午",
+          "廉贞": "卯",
+          "天府": "巳",
+          "太阴": "午",
+          "贪狼": "未",
+          "巨门": "申",
+          "天相": "酉",
+          "天梁": "戌",
+          "七杀": "亥",
+          "破军": "卯"
+        },
+        "auxiliary_stars_fortel": {
+          "文昌": "戌",
+          "文曲": "辰",
+          "左辅": "未",
+          "右弼": "未",
+          "天魁": "丑",
+          "天钺": "未",
+          "禄存": "寅",
+          "擎羊": "卯",
+          "陀罗": "丑"
+        },
+        "palaces": [
+          {
+            "branch": "巳",
+            "name": "命宫",
+            "stem": "己"
+          },
+          {
+            "branch": "辰",
+            "name": "兄弟",
+            "stem": "戊"
+          },
+          {
+            "branch": "卯",
+            "name": "夫妻",
+            "stem": "丁"
+          },
+          {
+            "branch": "寅",
+            "name": "子女",
+            "stem": "丙"
+          },
+          {
+            "branch": "丑",
+            "name": "财帛",
+            "stem": "丁"
+          },
+          {
+            "branch": "子",
+            "name": "疾厄",
+            "stem": "丙"
+          },
+          {
+            "branch": "亥",
+            "name": "迁移",
+            "stem": "乙"
+          },
+          {
+            "branch": "戌",
+            "name": "交友",
+            "stem": "甲"
+          },
+          {
+            "branch": "酉",
+            "name": "官禄",
+            "stem": "癸"
+          },
+          {
+            "branch": "申",
+            "name": "田宅",
+            "stem": "壬"
+          },
+          {
+            "branch": "未",
+            "name": "福德",
+            "stem": "辛"
+          },
+          {
+            "branch": "午",
+            "name": "父母",
+            "stem": "庚"
+          }
+        ],
+        "sihua_by_source": {
+          "quanshu_1963110": [
+            {
+              "hua": "禄",
+              "star": "廉贞",
+              "branch": "卯"
+            },
+            {
+              "hua": "权",
+              "star": "破军",
+              "branch": "卯"
+            },
+            {
+              "hua": "科",
+              "star": "武曲",
+              "branch": "未"
+            },
+            {
+              "hua": "忌",
+              "star": "太阳",
+              "branch": "申"
+            }
+          ],
+          "fortel_1_3_4": [
+            {
+              "hua": "禄",
+              "star": "廉贞",
+              "branch": "卯"
+            },
+            {
+              "hua": "权",
+              "star": "破军",
+              "branch": "卯"
+            },
+            {
+              "hua": "科",
+              "star": "武曲",
+              "branch": "未"
+            },
+            {
+              "hua": "忌",
+              "star": "太阳",
+              "branch": "申"
+            }
+          ]
+        },
+        "decade_fortel": {
+          "direction": 1,
+          "direction_name": "顺",
+          "first_four": [
+            {
+              "branch": "巳",
+              "age_start": 3,
+              "age_end": 12
+            },
+            {
+              "branch": "午",
+              "age_start": 13,
+              "age_end": 22
+            },
+            {
+              "branch": "未",
+              "age_start": 23,
+              "age_end": 32
+            },
+            {
+              "branch": "申",
+              "age_start": 33,
+              "age_end": 42
+            }
+          ]
+        },
+        "quanshu_kui_yue_literal": {
+          "天魁": "丑",
+          "天钺": "未"
+        },
+        "verification_boundary": {
+          "calendar_conversion": "NOT_IN_SCOPE",
+          "civil_date_rollover": "UNVERIFIED",
+          "input_is_normalized_lunar_date": true
+        }
+      }
+    },
+    {
+      "input": {
+        "id": "Z16",
+        "year_stem": "甲",
+        "lunar_month": 4,
+        "lunar_day": 22,
+        "time_index": 0,
+        "civil_time_label": "00:59",
+        "sex": "男",
+        "is_leap_month": false,
+        "coverage": [
+          "early_late_zi",
+          "hour_boundary",
+          "left_right_together"
+        ],
+        "normalization_note": "The supplied lunar day is already selected. No assertion is made about which civil date an application should use at 23:00."
+      },
+      "expected": {
+        "effective_lunar_month_fortel": 4,
+        "ming_branch": "巳",
+        "shen_branch": "巳",
+        "ming_stem": "己",
+        "five_element": "木",
+        "bureau": 3,
+        "ziwei_working": {
+          "day": 22,
+          "complement": 2,
+          "quotient": 8,
+          "branch": "亥"
+        },
+        "major_stars": {
+          "紫微": "亥",
+          "天机": "戌",
+          "太阳": "申",
+          "武曲": "未",
+          "天同": "午",
+          "廉贞": "卯",
+          "天府": "巳",
+          "太阴": "午",
+          "贪狼": "未",
+          "巨门": "申",
+          "天相": "酉",
+          "天梁": "戌",
+          "七杀": "亥",
+          "破军": "卯"
+        },
+        "auxiliary_stars_fortel": {
+          "文昌": "戌",
+          "文曲": "辰",
+          "左辅": "未",
+          "右弼": "未",
+          "天魁": "丑",
+          "天钺": "未",
+          "禄存": "寅",
+          "擎羊": "卯",
+          "陀罗": "丑"
+        },
+        "palaces": [
+          {
+            "branch": "巳",
+            "name": "命宫",
+            "stem": "己"
+          },
+          {
+            "branch": "辰",
+            "name": "兄弟",
+            "stem": "戊"
+          },
+          {
+            "branch": "卯",
+            "name": "夫妻",
+            "stem": "丁"
+          },
+          {
+            "branch": "寅",
+            "name": "子女",
+            "stem": "丙"
+          },
+          {
+            "branch": "丑",
+            "name": "财帛",
+            "stem": "丁"
+          },
+          {
+            "branch": "子",
+            "name": "疾厄",
+            "stem": "丙"
+          },
+          {
+            "branch": "亥",
+            "name": "迁移",
+            "stem": "乙"
+          },
+          {
+            "branch": "戌",
+            "name": "交友",
+            "stem": "甲"
+          },
+          {
+            "branch": "酉",
+            "name": "官禄",
+            "stem": "癸"
+          },
+          {
+            "branch": "申",
+            "name": "田宅",
+            "stem": "壬"
+          },
+          {
+            "branch": "未",
+            "name": "福德",
+            "stem": "辛"
+          },
+          {
+            "branch": "午",
+            "name": "父母",
+            "stem": "庚"
+          }
+        ],
+        "sihua_by_source": {
+          "quanshu_1963110": [
+            {
+              "hua": "禄",
+              "star": "廉贞",
+              "branch": "卯"
+            },
+            {
+              "hua": "权",
+              "star": "破军",
+              "branch": "卯"
+            },
+            {
+              "hua": "科",
+              "star": "武曲",
+              "branch": "未"
+            },
+            {
+              "hua": "忌",
+              "star": "太阳",
+              "branch": "申"
+            }
+          ],
+          "fortel_1_3_4": [
+            {
+              "hua": "禄",
+              "star": "廉贞",
+              "branch": "卯"
+            },
+            {
+              "hua": "权",
+              "star": "破军",
+              "branch": "卯"
+            },
+            {
+              "hua": "科",
+              "star": "武曲",
+              "branch": "未"
+            },
+            {
+              "hua": "忌",
+              "star": "太阳",
+              "branch": "申"
+            }
+          ]
+        },
+        "decade_fortel": {
+          "direction": 1,
+          "direction_name": "顺",
+          "first_four": [
+            {
+              "branch": "巳",
+              "age_start": 3,
+              "age_end": 12
+            },
+            {
+              "branch": "午",
+              "age_start": 13,
+              "age_end": 22
+            },
+            {
+              "branch": "未",
+              "age_start": 23,
+              "age_end": 32
+            },
+            {
+              "branch": "申",
+              "age_start": 33,
+              "age_end": 42
+            }
+          ]
+        },
+        "quanshu_kui_yue_literal": {
+          "天魁": "丑",
+          "天钺": "未"
+        },
+        "verification_boundary": {
+          "calendar_conversion": "NOT_IN_SCOPE",
+          "civil_date_rollover": "UNVERIFIED",
+          "input_is_normalized_lunar_date": true
+        }
+      }
+    },
+    {
+      "input": {
+        "id": "Z17",
+        "year_stem": "甲",
+        "lunar_month": 4,
+        "lunar_day": 22,
+        "time_index": 1,
+        "civil_time_label": "01:00",
+        "sex": "男",
+        "is_leap_month": false,
+        "coverage": [
+          "early_late_zi",
+          "hour_boundary",
+          "left_right_together"
+        ],
+        "normalization_note": "The supplied lunar day is already selected. No assertion is made about which civil date an application should use at 23:00."
+      },
+      "expected": {
+        "effective_lunar_month_fortel": 4,
+        "ming_branch": "辰",
+        "shen_branch": "午",
+        "ming_stem": "戊",
+        "five_element": "木",
+        "bureau": 3,
+        "ziwei_working": {
+          "day": 22,
+          "complement": 2,
+          "quotient": 8,
+          "branch": "亥"
+        },
+        "major_stars": {
+          "紫微": "亥",
+          "天机": "戌",
+          "太阳": "申",
+          "武曲": "未",
+          "天同": "午",
+          "廉贞": "卯",
+          "天府": "巳",
+          "太阴": "午",
+          "贪狼": "未",
+          "巨门": "申",
+          "天相": "酉",
+          "天梁": "戌",
+          "七杀": "亥",
+          "破军": "卯"
+        },
+        "auxiliary_stars_fortel": {
+          "文昌": "酉",
+          "文曲": "巳",
+          "左辅": "未",
+          "右弼": "未",
+          "天魁": "丑",
+          "天钺": "未",
+          "禄存": "寅",
+          "擎羊": "卯",
+          "陀罗": "丑"
+        },
+        "palaces": [
+          {
+            "branch": "辰",
+            "name": "命宫",
+            "stem": "戊"
+          },
+          {
+            "branch": "卯",
+            "name": "兄弟",
+            "stem": "丁"
+          },
+          {
+            "branch": "寅",
+            "name": "夫妻",
+            "stem": "丙"
+          },
+          {
+            "branch": "丑",
+            "name": "子女",
+            "stem": "丁"
+          },
+          {
+            "branch": "子",
+            "name": "财帛",
+            "stem": "丙"
+          },
+          {
+            "branch": "亥",
+            "name": "疾厄",
+            "stem": "乙"
+          },
+          {
+            "branch": "戌",
+            "name": "迁移",
+            "stem": "甲"
+          },
+          {
+            "branch": "酉",
+            "name": "交友",
+            "stem": "癸"
+          },
+          {
+            "branch": "申",
+            "name": "官禄",
+            "stem": "壬"
+          },
+          {
+            "branch": "未",
+            "name": "田宅",
+            "stem": "辛"
+          },
+          {
+            "branch": "午",
+            "name": "福德",
+            "stem": "庚"
+          },
+          {
+            "branch": "巳",
+            "name": "父母",
+            "stem": "己"
+          }
+        ],
+        "sihua_by_source": {
+          "quanshu_1963110": [
+            {
+              "hua": "禄",
+              "star": "廉贞",
+              "branch": "卯"
+            },
+            {
+              "hua": "权",
+              "star": "破军",
+              "branch": "卯"
+            },
+            {
+              "hua": "科",
+              "star": "武曲",
+              "branch": "未"
+            },
+            {
+              "hua": "忌",
+              "star": "太阳",
+              "branch": "申"
+            }
+          ],
+          "fortel_1_3_4": [
+            {
+              "hua": "禄",
+              "star": "廉贞",
+              "branch": "卯"
+            },
+            {
+              "hua": "权",
+              "star": "破军",
+              "branch": "卯"
+            },
+            {
+              "hua": "科",
+              "star": "武曲",
+              "branch": "未"
+            },
+            {
+              "hua": "忌",
+              "star": "太阳",
+              "branch": "申"
+            }
+          ]
+        },
+        "decade_fortel": {
+          "direction": 1,
+          "direction_name": "顺",
+          "first_four": [
+            {
+              "branch": "辰",
+              "age_start": 3,
+              "age_end": 12
+            },
+            {
+              "branch": "巳",
+              "age_start": 13,
+              "age_end": 22
+            },
+            {
+              "branch": "午",
+              "age_start": 23,
+              "age_end": 32
+            },
+            {
+              "branch": "未",
+              "age_start": 33,
+              "age_end": 42
+            }
+          ]
+        },
+        "quanshu_kui_yue_literal": {
+          "天魁": "丑",
+          "天钺": "未"
+        },
+        "verification_boundary": {
+          "calendar_conversion": "NOT_IN_SCOPE",
+          "civil_date_rollover": "UNVERIFIED",
+          "input_is_normalized_lunar_date": true
+        }
+      }
+    },
+    {
+      "input": {
+        "id": "Z18",
+        "year_stem": "甲",
+        "lunar_month": 4,
+        "lunar_day": 22,
+        "time_index": 11,
+        "civil_time_label": "22:59",
+        "sex": "男",
+        "is_leap_month": false,
+        "coverage": [
+          "early_late_zi",
+          "hour_boundary",
+          "left_right_together"
+        ],
+        "normalization_note": "The supplied lunar day is already selected. No assertion is made about which civil date an application should use at 23:00."
+      },
+      "expected": {
+        "effective_lunar_month_fortel": 4,
+        "ming_branch": "午",
+        "shen_branch": "辰",
+        "ming_stem": "庚",
+        "five_element": "土",
+        "bureau": 5,
+        "ziwei_working": {
+          "day": 22,
+          "complement": 3,
+          "quotient": 5,
+          "branch": "卯"
+        },
+        "major_stars": {
+          "紫微": "卯",
+          "天机": "寅",
+          "太阳": "子",
+          "武曲": "亥",
+          "天同": "戌",
+          "廉贞": "未",
+          "天府": "丑",
+          "太阴": "寅",
+          "贪狼": "卯",
+          "巨门": "辰",
+          "天相": "巳",
+          "天梁": "午",
+          "七杀": "未",
+          "破军": "亥"
+        },
+        "auxiliary_stars_fortel": {
+          "文昌": "亥",
+          "文曲": "卯",
+          "左辅": "未",
+          "右弼": "未",
+          "天魁": "丑",
+          "天钺": "未",
+          "禄存": "寅",
+          "擎羊": "卯",
+          "陀罗": "丑"
+        },
+        "palaces": [
+          {
+            "branch": "午",
+            "name": "命宫",
+            "stem": "庚"
+          },
+          {
+            "branch": "巳",
+            "name": "兄弟",
+            "stem": "己"
+          },
+          {
+            "branch": "辰",
+            "name": "夫妻",
+            "stem": "戊"
+          },
+          {
+            "branch": "卯",
+            "name": "子女",
+            "stem": "丁"
+          },
+          {
+            "branch": "寅",
+            "name": "财帛",
+            "stem": "丙"
+          },
+          {
+            "branch": "丑",
+            "name": "疾厄",
+            "stem": "丁"
+          },
+          {
+            "branch": "子",
+            "name": "迁移",
+            "stem": "丙"
+          },
+          {
+            "branch": "亥",
+            "name": "交友",
+            "stem": "乙"
+          },
+          {
+            "branch": "戌",
+            "name": "官禄",
+            "stem": "甲"
+          },
+          {
+            "branch": "酉",
+            "name": "田宅",
+            "stem": "癸"
+          },
+          {
+            "branch": "申",
+            "name": "福德",
+            "stem": "壬"
+          },
+          {
+            "branch": "未",
+            "name": "父母",
+            "stem": "辛"
+          }
+        ],
+        "sihua_by_source": {
+          "quanshu_1963110": [
+            {
+              "hua": "禄",
+              "star": "廉贞",
+              "branch": "未"
+            },
+            {
+              "hua": "权",
+              "star": "破军",
+              "branch": "亥"
+            },
+            {
+              "hua": "科",
+              "star": "武曲",
+              "branch": "亥"
+            },
+            {
+              "hua": "忌",
+              "star": "太阳",
+              "branch": "子"
+            }
+          ],
+          "fortel_1_3_4": [
+            {
+              "hua": "禄",
+              "star": "廉贞",
+              "branch": "未"
+            },
+            {
+              "hua": "权",
+              "star": "破军",
+              "branch": "亥"
+            },
+            {
+              "hua": "科",
+              "star": "武曲",
+              "branch": "亥"
+            },
+            {
+              "hua": "忌",
+              "star": "太阳",
+              "branch": "子"
+            }
+          ]
+        },
+        "decade_fortel": {
+          "direction": 1,
+          "direction_name": "顺",
+          "first_four": [
+            {
+              "branch": "午",
+              "age_start": 5,
+              "age_end": 14
+            },
+            {
+              "branch": "未",
+              "age_start": 15,
+              "age_end": 24
+            },
+            {
+              "branch": "申",
+              "age_start": 25,
+              "age_end": 34
+            },
+            {
+              "branch": "酉",
+              "age_start": 35,
+              "age_end": 44
+            }
+          ]
+        },
+        "quanshu_kui_yue_literal": {
+          "天魁": "丑",
+          "天钺": "未"
+        },
+        "verification_boundary": {
+          "calendar_conversion": "NOT_IN_SCOPE",
+          "civil_date_rollover": "UNVERIFIED",
+          "input_is_normalized_lunar_date": true
+        }
+      }
+    },
+    {
+      "input": {
+        "id": "Z19",
+        "year_stem": "甲",
+        "lunar_month": 4,
+        "lunar_day": 22,
+        "time_index": 12,
+        "civil_time_label": "23:00",
+        "sex": "男",
+        "is_leap_month": false,
+        "coverage": [
+          "early_late_zi",
+          "hour_boundary",
+          "left_right_together"
+        ],
+        "normalization_note": "The supplied lunar day is already selected. No assertion is made about which civil date an application should use at 23:00."
+      },
+      "expected": {
+        "effective_lunar_month_fortel": 4,
+        "ming_branch": "巳",
+        "shen_branch": "巳",
+        "ming_stem": "己",
+        "five_element": "木",
+        "bureau": 3,
+        "ziwei_working": {
+          "day": 22,
+          "complement": 2,
+          "quotient": 8,
+          "branch": "亥"
+        },
+        "major_stars": {
+          "紫微": "亥",
+          "天机": "戌",
+          "太阳": "申",
+          "武曲": "未",
+          "天同": "午",
+          "廉贞": "卯",
+          "天府": "巳",
+          "太阴": "午",
+          "贪狼": "未",
+          "巨门": "申",
+          "天相": "酉",
+          "天梁": "戌",
+          "七杀": "亥",
+          "破军": "卯"
+        },
+        "auxiliary_stars_fortel": {
+          "文昌": "戌",
+          "文曲": "辰",
+          "左辅": "未",
+          "右弼": "未",
+          "天魁": "丑",
+          "天钺": "未",
+          "禄存": "寅",
+          "擎羊": "卯",
+          "陀罗": "丑"
+        },
+        "palaces": [
+          {
+            "branch": "巳",
+            "name": "命宫",
+            "stem": "己"
+          },
+          {
+            "branch": "辰",
+            "name": "兄弟",
+            "stem": "戊"
+          },
+          {
+            "branch": "卯",
+            "name": "夫妻",
+            "stem": "丁"
+          },
+          {
+            "branch": "寅",
+            "name": "子女",
+            "stem": "丙"
+          },
+          {
+            "branch": "丑",
+            "name": "财帛",
+            "stem": "丁"
+          },
+          {
+            "branch": "子",
+            "name": "疾厄",
+            "stem": "丙"
+          },
+          {
+            "branch": "亥",
+            "name": "迁移",
+            "stem": "乙"
+          },
+          {
+            "branch": "戌",
+            "name": "交友",
+            "stem": "甲"
+          },
+          {
+            "branch": "酉",
+            "name": "官禄",
+            "stem": "癸"
+          },
+          {
+            "branch": "申",
+            "name": "田宅",
+            "stem": "壬"
+          },
+          {
+            "branch": "未",
+            "name": "福德",
+            "stem": "辛"
+          },
+          {
+            "branch": "午",
+            "name": "父母",
+            "stem": "庚"
+          }
+        ],
+        "sihua_by_source": {
+          "quanshu_1963110": [
+            {
+              "hua": "禄",
+              "star": "廉贞",
+              "branch": "卯"
+            },
+            {
+              "hua": "权",
+              "star": "破军",
+              "branch": "卯"
+            },
+            {
+              "hua": "科",
+              "star": "武曲",
+              "branch": "未"
+            },
+            {
+              "hua": "忌",
+              "star": "太阳",
+              "branch": "申"
+            }
+          ],
+          "fortel_1_3_4": [
+            {
+              "hua": "禄",
+              "star": "廉贞",
+              "branch": "卯"
+            },
+            {
+              "hua": "权",
+              "star": "破军",
+              "branch": "卯"
+            },
+            {
+              "hua": "科",
+              "star": "武曲",
+              "branch": "未"
+            },
+            {
+              "hua": "忌",
+              "star": "太阳",
+              "branch": "申"
+            }
+          ]
+        },
+        "decade_fortel": {
+          "direction": 1,
+          "direction_name": "顺",
+          "first_four": [
+            {
+              "branch": "巳",
+              "age_start": 3,
+              "age_end": 12
+            },
+            {
+              "branch": "午",
+              "age_start": 13,
+              "age_end": 22
+            },
+            {
+              "branch": "未",
+              "age_start": 23,
+              "age_end": 32
+            },
+            {
+              "branch": "申",
+              "age_start": 33,
+              "age_end": 42
+            }
+          ]
+        },
+        "quanshu_kui_yue_literal": {
+          "天魁": "丑",
+          "天钺": "未"
+        },
+        "verification_boundary": {
+          "calendar_conversion": "NOT_IN_SCOPE",
+          "civil_date_rollover": "UNVERIFIED",
+          "input_is_normalized_lunar_date": true
+        }
+      }
+    },
+    {
+      "input": {
+        "id": "Z20",
+        "year_stem": "甲",
+        "lunar_month": 4,
+        "lunar_day": 22,
+        "time_index": 12,
+        "civil_time_label": "23:59",
+        "sex": "男",
+        "is_leap_month": false,
+        "coverage": [
+          "early_late_zi",
+          "hour_boundary",
+          "left_right_together"
+        ],
+        "normalization_note": "The supplied lunar day is already selected. No assertion is made about which civil date an application should use at 23:00."
+      },
+      "expected": {
+        "effective_lunar_month_fortel": 4,
+        "ming_branch": "巳",
+        "shen_branch": "巳",
+        "ming_stem": "己",
+        "five_element": "木",
+        "bureau": 3,
+        "ziwei_working": {
+          "day": 22,
+          "complement": 2,
+          "quotient": 8,
+          "branch": "亥"
+        },
+        "major_stars": {
+          "紫微": "亥",
+          "天机": "戌",
+          "太阳": "申",
+          "武曲": "未",
+          "天同": "午",
+          "廉贞": "卯",
+          "天府": "巳",
+          "太阴": "午",
+          "贪狼": "未",
+          "巨门": "申",
+          "天相": "酉",
+          "天梁": "戌",
+          "七杀": "亥",
+          "破军": "卯"
+        },
+        "auxiliary_stars_fortel": {
+          "文昌": "戌",
+          "文曲": "辰",
+          "左辅": "未",
+          "右弼": "未",
+          "天魁": "丑",
+          "天钺": "未",
+          "禄存": "寅",
+          "擎羊": "卯",
+          "陀罗": "丑"
+        },
+        "palaces": [
+          {
+            "branch": "巳",
+            "name": "命宫",
+            "stem": "己"
+          },
+          {
+            "branch": "辰",
+            "name": "兄弟",
+            "stem": "戊"
+          },
+          {
+            "branch": "卯",
+            "name": "夫妻",
+            "stem": "丁"
+          },
+          {
+            "branch": "寅",
+            "name": "子女",
+            "stem": "丙"
+          },
+          {
+            "branch": "丑",
+            "name": "财帛",
+            "stem": "丁"
+          },
+          {
+            "branch": "子",
+            "name": "疾厄",
+            "stem": "丙"
+          },
+          {
+            "branch": "亥",
+            "name": "迁移",
+            "stem": "乙"
+          },
+          {
+            "branch": "戌",
+            "name": "交友",
+            "stem": "甲"
+          },
+          {
+            "branch": "酉",
+            "name": "官禄",
+            "stem": "癸"
+          },
+          {
+            "branch": "申",
+            "name": "田宅",
+            "stem": "壬"
+          },
+          {
+            "branch": "未",
+            "name": "福德",
+            "stem": "辛"
+          },
+          {
+            "branch": "午",
+            "name": "父母",
+            "stem": "庚"
+          }
+        ],
+        "sihua_by_source": {
+          "quanshu_1963110": [
+            {
+              "hua": "禄",
+              "star": "廉贞",
+              "branch": "卯"
+            },
+            {
+              "hua": "权",
+              "star": "破军",
+              "branch": "卯"
+            },
+            {
+              "hua": "科",
+              "star": "武曲",
+              "branch": "未"
+            },
+            {
+              "hua": "忌",
+              "star": "太阳",
+              "branch": "申"
+            }
+          ],
+          "fortel_1_3_4": [
+            {
+              "hua": "禄",
+              "star": "廉贞",
+              "branch": "卯"
+            },
+            {
+              "hua": "权",
+              "star": "破军",
+              "branch": "卯"
+            },
+            {
+              "hua": "科",
+              "star": "武曲",
+              "branch": "未"
+            },
+            {
+              "hua": "忌",
+              "star": "太阳",
+              "branch": "申"
+            }
+          ]
+        },
+        "decade_fortel": {
+          "direction": 1,
+          "direction_name": "顺",
+          "first_four": [
+            {
+              "branch": "巳",
+              "age_start": 3,
+              "age_end": 12
+            },
+            {
+              "branch": "午",
+              "age_start": 13,
+              "age_end": 22
+            },
+            {
+              "branch": "未",
+              "age_start": 23,
+              "age_end": 32
+            },
+            {
+              "branch": "申",
+              "age_start": 33,
+              "age_end": 42
+            }
+          ]
+        },
+        "quanshu_kui_yue_literal": {
+          "天魁": "丑",
+          "天钺": "未"
+        },
+        "verification_boundary": {
+          "calendar_conversion": "NOT_IN_SCOPE",
+          "civil_date_rollover": "UNVERIFIED",
+          "input_is_normalized_lunar_date": true
+        }
+      }
+    },
+    {
+      "input": {
+        "id": "Z21",
+        "year_stem": "甲",
+        "lunar_month": 1,
+        "lunar_day": 2,
+        "time_index": 0,
+        "sex": "男",
+        "is_leap_month": false,
+        "coverage": [
+          "complement_four_even"
+        ]
+      },
+      "expected": {
+        "effective_lunar_month_fortel": 1,
+        "ming_branch": "寅",
+        "shen_branch": "寅",
+        "ming_stem": "丙",
+        "five_element": "火",
+        "bureau": 6,
+        "ziwei_working": {
+          "day": 2,
+          "complement": 4,
+          "quotient": 1,
+          "branch": "午"
+        },
+        "major_stars": {
+          "紫微": "午",
+          "天机": "巳",
+          "太阳": "卯",
+          "武曲": "寅",
+          "天同": "丑",
+          "廉贞": "戌",
+          "天府": "戌",
+          "太阴": "亥",
+          "贪狼": "子",
+          "巨门": "丑",
+          "天相": "寅",
+          "天梁": "卯",
+          "七杀": "辰",
+          "破军": "申"
+        },
+        "auxiliary_stars_fortel": {
+          "文昌": "戌",
+          "文曲": "辰",
+          "左辅": "辰",
+          "右弼": "戌",
+          "天魁": "丑",
+          "天钺": "未",
+          "禄存": "寅",
+          "擎羊": "卯",
+          "陀罗": "丑"
+        },
+        "palaces": [
+          {
+            "branch": "寅",
+            "name": "命宫",
+            "stem": "丙"
+          },
+          {
+            "branch": "丑",
+            "name": "兄弟",
+            "stem": "丁"
+          },
+          {
+            "branch": "子",
+            "name": "夫妻",
+            "stem": "丙"
+          },
+          {
+            "branch": "亥",
+            "name": "子女",
+            "stem": "乙"
+          },
+          {
+            "branch": "戌",
+            "name": "财帛",
+            "stem": "甲"
+          },
+          {
+            "branch": "酉",
+            "name": "疾厄",
+            "stem": "癸"
+          },
+          {
+            "branch": "申",
+            "name": "迁移",
+            "stem": "壬"
+          },
+          {
+            "branch": "未",
+            "name": "交友",
+            "stem": "辛"
+          },
+          {
+            "branch": "午",
+            "name": "官禄",
+            "stem": "庚"
+          },
+          {
+            "branch": "巳",
+            "name": "田宅",
+            "stem": "己"
+          },
+          {
+            "branch": "辰",
+            "name": "福德",
+            "stem": "戊"
+          },
+          {
+            "branch": "卯",
+            "name": "父母",
+            "stem": "丁"
+          }
+        ],
+        "sihua_by_source": {
+          "quanshu_1963110": [
+            {
+              "hua": "禄",
+              "star": "廉贞",
+              "branch": "戌"
+            },
+            {
+              "hua": "权",
+              "star": "破军",
+              "branch": "申"
+            },
+            {
+              "hua": "科",
+              "star": "武曲",
+              "branch": "寅"
+            },
+            {
+              "hua": "忌",
+              "star": "太阳",
+              "branch": "卯"
+            }
+          ],
+          "fortel_1_3_4": [
+            {
+              "hua": "禄",
+              "star": "廉贞",
+              "branch": "戌"
+            },
+            {
+              "hua": "权",
+              "star": "破军",
+              "branch": "申"
+            },
+            {
+              "hua": "科",
+              "star": "武曲",
+              "branch": "寅"
+            },
+            {
+              "hua": "忌",
+              "star": "太阳",
+              "branch": "卯"
+            }
+          ]
+        },
+        "decade_fortel": {
+          "direction": 1,
+          "direction_name": "顺",
+          "first_four": [
+            {
+              "branch": "寅",
+              "age_start": 6,
+              "age_end": 15
+            },
+            {
+              "branch": "卯",
+              "age_start": 16,
+              "age_end": 25
+            },
+            {
+              "branch": "辰",
+              "age_start": 26,
+              "age_end": 35
+            },
+            {
+              "branch": "巳",
+              "age_start": 36,
+              "age_end": 45
+            }
+          ]
+        },
+        "quanshu_kui_yue_literal": {
+          "天魁": "丑",
+          "天钺": "未"
+        },
+        "verification_boundary": {
+          "calendar_conversion": "NOT_IN_SCOPE",
+          "civil_date_rollover": "UNVERIFIED",
+          "input_is_normalized_lunar_date": true
+        }
+      }
+    }
+  ],
+  "fourTransformationsClassical": {
+    "甲": [
+      "廉贞",
+      "破军",
+      "武曲",
+      "太阳"
+    ],
+    "乙": [
+      "天机",
+      "天梁",
+      "紫微",
+      "太阴"
+    ],
+    "丙": [
+      "天同",
+      "天机",
+      "文昌",
+      "廉贞"
+    ],
+    "丁": [
+      "太阴",
+      "天同",
+      "天机",
+      "巨门"
+    ],
+    "戊": [
+      "贪狼",
+      "太阴",
+      "右弼",
+      "天机"
+    ],
+    "己": [
+      "武曲",
+      "贪狼",
+      "天梁",
+      "文曲"
+    ],
+    "庚": [
+      "太阳",
+      "武曲",
+      "太阴",
+      "天同"
+    ],
+    "辛": [
+      "巨门",
+      "太阳",
+      "文曲",
+      "文昌"
+    ],
+    "壬": [
+      "天梁",
+      "紫微",
+      "天府",
+      "武曲"
+    ],
+    "癸": [
+      "破军",
+      "巨门",
+      "太阴",
+      "贪狼"
+    ]
+  },
+  "fourTransformationsModernRen": [
+    "天梁",
+    "紫微",
+    "左辅",
+    "武曲"
+  ]
+}

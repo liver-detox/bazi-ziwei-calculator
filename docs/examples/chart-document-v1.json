@@ -1,7 +1,8 @@
 {
   "schemaVersion": 1,
-  "calculatorVersion": "0.3.2",
-  "exportedAt": "2026-08-13T06:30:00.000Z",
+  "calculatorVersion": "0.4.0",
+  "exportSourceId": "src1-87a05daa8d582c79",
+  "exportedAt": "2026-09-17T04:00:00.000Z",
   "subject": {
     "nameOrAlias": "DEMO-NORMAL",
     "gender": "女"
@@ -23,7 +24,7 @@
     }
   },
   "selection": {
-    "candidateId": "CS-2000-917:civil_clock_provided:current:calendar:solar",
+    "candidateId": "CS-2000-001:civil_clock_provided:current:calendar:solar",
     "hadAlternatives": false,
     "rationale": null
   },
@@ -31,7 +32,7 @@
     "chart": {
       "schemaVersion": "1.0.0",
       "rulesetVersion": "CyberSaga-Bazi-v1",
-      "candidateId": "CS-2000-917:civil_clock_provided:current:calendar:solar",
+      "candidateId": "CS-2000-001:civil_clock_provided:current:calendar:solar",
       "engine": {
         "name": "lunar-typescript",
         "version": "1.8.6"
@@ -293,8 +294,8 @@
         "liuYuePerYear": 12
       },
       "candidate": {
-        "candidateId": "CS-2000-917:civil_clock_provided:current:calendar:solar",
-        "sourceBaziCandidateFingerprint": "sha256:ab1fa1893789efc0d7e7ad77b5c75a39215de5d78c9c14ea7bb19f7fef07f659",
+        "candidateId": "CS-2000-001:civil_clock_provided:current:calendar:solar",
+        "sourceBaziCandidateFingerprint": "sha256:05a2c52cab280a021899a0b259d194ee38bdd8487a58be4276e5ba03a118a705",
         "auxiliaryPillars": {
           "taiYuan": {
             "ganZhi": "戊辰",
@@ -519,7 +520,7 @@
   "ziwei": {
     "schemaVersion": "1.0.0",
     "rulesetVersion": "CyberSaga-Ziwei-v1",
-    "candidateId": "CS-2000-917:civil_clock_provided:current:calendar:solar",
+    "candidateId": "CS-2000-001:civil_clock_provided:current:calendar:solar",
     "engine": {
       "name": "iztro",
       "version": "2.5.8"
@@ -1151,6 +1152,18 @@
       }
     ],
     "yearlyFortunes": []
+  },
+  "evidence": {
+    "auditLevel": "A",
+    "workflowStatus": "review",
+    "allowedAnalysisModes": [
+      "full_dual",
+      "provisional_dual",
+      "single_track",
+      "data_diagnosis"
+    ],
+    "findings": [],
+    "timeHandling": "user_provided_unverified"
   },
   "warnings": []
 }

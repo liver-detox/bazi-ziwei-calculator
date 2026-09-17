@@ -1,4 +1,6 @@
 import { BaziDetailPage } from "./BaziDetailPage.js";
+import { CURRENT_SOURCE_ID } from "#source-identity";
+import { baziDaYunAnnualLabels } from "../shared/chart-display.js";
 import { FortunePage } from "./FortunePage.js";
 import { GanZhiText } from "./five-elements.js";
 import {
@@ -81,7 +83,7 @@ function CompactOverview({
                 key={period.index}
               >
                 {period.index === selection.viewingDaYunIndex ? "正在查看 · " : ""}
-                {period.ganZhi === null ? "起运前" : <GanZhiText text={period.ganZhi} />} · 虚岁 {period.startAge}–{period.endAge}
+                {period.ganZhi === null ? "起运前" : <GanZhiText text={period.ganZhi} />} · {baziDaYunAnnualLabels(period).age}
               </span>
             ))}</div>
           </div>
@@ -154,6 +156,7 @@ export function ResultsShell({
             <button aria-describedby="copy-for-ai-note" aria-busy={copyForAiState === "preparing" || copyForAiState === "busy" ? "true" : undefined} className="button result-primary-action primary" data-copy-for-ai-trigger disabled={copyForAiDisabled} type="button" onClick={onCopyForAi}>{copyForAiLabel}</button>
           </div>
           <p className="result-action-note" id="copy-for-ai-note">复制内容包含姓名或代号及出生资料。</p>
+          <p className="result-action-note">界面 / 文本源码 {CURRENT_SOURCE_ID}</p>
         </div>
       </header>
 

@@ -1,4 +1,4 @@
-import type { NormalizedZiweiStar, ZiweiHoroscopeItem, ZiweiYearlyFortune } from "../core/charts/types.js";
+import { presentZiweiPalaces, ZIWEI_PALACE_READING_NOTE } from "../shared/ziwei-palace-presentation.js";
 import { GanZhiText } from "./five-elements.js";
 import {
   presentResults,
@@ -20,95 +20,12 @@ export interface ZiweiDetailPageProps {
   isNarrow?: boolean;
 }
 
-const TRANSFORMATION_LABELS = ["禄", "权", "科", "忌"] as const;
-
-function StarList({ label, stars }: { label: string; stars: readonly NormalizedZiweiStar[] }) {
-  return (
-    <div className="ziwei-star-group">
-      <h4>{label}</h4>
-      {stars.length === 0 ? <p>无</p> : <ul>{stars.map((star, index) => (
-        <li key={`${star.name}-${star.scope}-${index}`}>
-          <strong>{star.name}</strong>
-          <span>类型 {star.type}</span>
-          <span>{star.brightness === null ? "亮度未标注" : `亮度 ${star.brightness}`}</span>
-          <span>{star.transformation === null ? "四化无" : `四化 ${star.transformation}`}</span>
-        </li>
-      ))}</ul>}
-    </div>
-  );
-}
-
-function OverlayTransformations({ item, label }: { item: ZiweiHoroscopeItem; label: string }) {
-  return (
-    <div className="overlay-transformations">
-      <h4>{label}四化</h4>
-      {TRANSFORMATION_LABELS.map((transformation, index) => <span key={transformation}>{transformation}：{item.transformations[index]}</span>)}
-    </div>
-  );
-}
-
-type YearlyOverlayResolution =
-  | { status: "natal" }
-  | { status: "available"; fortune: ZiweiYearlyFortune }
-  | { status: "unavailable" };
-
-function hasTwelveAlignedOverlaySlots(item: ZiweiHoroscopeItem): boolean {
-  const palaceSlotIndexes = Array.from({ length: 12 }, (_, index) => index);
-  return item.palaceNames.length === 12
-    && item.starsByPalace.length === 12
-    && item.transformations.length === 4
-    && palaceSlotIndexes.every((index) => {
-      const name = item.palaceNames[index];
-      return typeof name === "string" && name.trim() !== "" && Array.isArray(item.starsByPalace[index]);
-    });
-}
-
-function resolveYearlyOverlay(
-  fortunes: readonly ZiweiYearlyFortune[],
-  selectedYear: number | null,
-  mode: ResultSelection["ziweiMode"],
-  palaceIndexes: readonly number[]
-): YearlyOverlayResolution {
-  if (mode === "natal") return { status: "natal" };
-  if (selectedYear === null) return { status: "unavailable" };
-  const matches = fortunes.filter(({ targetYear }) => targetYear === selectedYear);
-  if (matches.length !== 1) return { status: "unavailable" };
-  const alignedBasePalaces = palaceIndexes.length === 12 && palaceIndexes.every((index, position) => index === position);
-  const fortune = matches[0];
-  if (!alignedBasePalaces || !hasTwelveAlignedOverlaySlots(fortune.decadal) || !hasTwelveAlignedOverlaySlots(fortune.yearly)) {
-    return { status: "unavailable" };
-  }
-  return { status: "available", fortune };
-}
-
 export function ZiweiDetailPage({ snapshot, selection, onSelectionChange, onAddTargetYear, onAddTargetYearRange, onRemoveTargetYear, isNarrow = false }: ZiweiDetailPageProps) {
   const presentation = presentResults(snapshot, selection);
   const chart = presentation.chart.ziwei;
-  const fortunes = [...chart.yearlyFortunes].sort((left, right) => left.targetYear - right.targetYear);
-  const overlayResolution = resolveYearlyOverlay(
-    fortunes,
-    selection.selectedTargetYear,
-    selection.ziweiMode,
-    chart.palaces.map(({ index }) => index)
-  );
-  const overlay = overlayResolution.status === "available" ? overlayResolution.fortune : null;
-
-  if (overlayResolution.status === "unavailable") {
-    return (
-      <section className="result-page ziwei-detail-page" aria-labelledby="ziwei-detail-title">
-        <div className="result-page-heading">
-          <div><p className="eyebrow">十二宫全盘</p><h2 id="ziwei-detail-title">紫微详盘</h2></div>
-          <p>本命空间位置固定；所选年份只叠加已保存的运限资料。</p>
-        </div>
-        <TargetYearControl isNarrow={isNarrow} onAddTargetYear={onAddTargetYear} onAddTargetYearRange={onAddTargetYearRange} onRemoveTargetYear={onRemoveTargetYear} onSelectionChange={onSelectionChange} page="ziwei" selection={selection} snapshot={snapshot} />
-        <div className="result-empty-state" role="status">
-          <h3>所选流年紫微详盘暂不可用</h3>
-          <p>这份结果没有完整、唯一且逐宫对齐的所选流年资料。</p>
-          <button className="button secondary" type="button" onClick={() => onSelectionChange(selectZiweiMode(selection, "natal"))}>返回本命</button>
-        </div>
-      </section>
-    );
-  }
+  const fortunes = [...(chart.yearlyFortunes ?? [])].sort((left, right) => left.targetYear - right.targetYear);
+  const reading = presentZiweiPalaces(chart, selection.ziweiMode === "natal" ? undefined : selection.selectedTargetYear);
+  const overlay = reading.overlay;
 
   return (
     <section className="result-page ziwei-detail-page" aria-labelledby="ziwei-detail-title">
@@ -133,11 +50,16 @@ export function ZiweiDetailPage({ snapshot, selection, onSelectionChange, onAddT
         </nav>
       )}
 
+      <section className="ziwei-reading-scope" aria-label="逐宫合并阅读范围">
+        {reading.scope.map((line) => <p key={line}>{line}</p>)}
+        <p className="muted">{ZIWEI_PALACE_READING_NOTE}</p>
+      </section>
+      {reading.status === "unavailable" && <p className="result-empty-state" role="status">{reading.palaces.length > 0 ? "所选流年紫微详盘暂不可用；下方保留本命资料。" : "紫微逐宫展示暂不可用。"}</p>}
+      {reading.boundary.length > 0 && <section className="engine-time-label" aria-label="所选年份紫微交限说明">{reading.boundary.map((line) => <p key={line}>{line}</p>)}</section>}
+
       <div className="ziwei-detail-board">
-        {chart.palaces.map((palace) => {
+        {reading.palaces.map((palace) => {
           const position = getPalaceGridPosition(palace.index);
-          const decadalStars = overlay?.decadal.starsByPalace[palace.index] ?? [];
-          const yearlyStars = overlay?.yearly.starsByPalace[palace.index] ?? [];
           return (
             <article
               className={`ziwei-detail-palace ${palace.name === "命宫" ? "soul-palace" : ""}`}
@@ -147,25 +69,22 @@ export function ZiweiDetailPage({ snapshot, selection, onSelectionChange, onAddT
               style={{ gridRow: position.row, gridColumn: position.column }}
             >
               <header>
-                <div><strong>{palace.name}</strong><GanZhiText text={`${palace.heavenlyStem}${palace.earthlyBranch}`} /></div>
+                <div><strong>{palace.name}</strong><GanZhiText text={palace.ganZhi} /></div>
                 <div className="palace-markers">
                   {palace.name === "命宫" && <span>命宫</span>}
                   {palace.isBodyPalace && <span>身宫</span>}
                   {palace.isOriginalPalace && <span>原宫</span>}
                 </div>
               </header>
-              <StarList label="主星" stars={palace.majorStars} />
-              <StarList label="辅星" stars={palace.minorStars} />
-              {overlay && (
-                <div className="palace-overlays">
-                  <section><h4>大限 · {overlay.decadal.palaceNames[palace.index]}</h4><StarList label="大限星曜" stars={decadalStars} /></section>
-                  <section><h4>流年 · {overlay.yearly.palaceNames[palace.index]}</h4><StarList label="流年星曜" stars={yearlyStars} /></section>
-                </div>
-              )}
+              <p className="palace-identity">{palace.identity}</p>
+              {palace.layers.map((layer) => (
+                <section className={`palace-reading-layer palace-reading-${layer.key}`} data-reading-layer={layer.key} key={layer.key}>
+                  <h4>{layer.title}</h4>
+                  <dl>{layer.fields.map((field) => <div key={field.label}><dt>{field.label}</dt><dd>{field.value}</dd></div>)}</dl>
+                </section>
+              ))}
               <dl className="palace-cycle-details">
-                <div><dt>十二长生</dt><dd>{palace.changsheng12}</dd></div>
-                <div><dt>大限虚岁</dt><dd>{palace.decadal.startAge}–{palace.decadal.endAge}</dd></div>
-                <div><dt>对应虚岁</dt><dd>{palace.ages.join("、")}</dd></div>
+                {palace.details.map((field) => <div key={field.label}><dt>{field.label}</dt><dd>{field.value}</dd></div>)}
               </dl>
             </article>
           );
@@ -184,11 +103,10 @@ export function ZiweiDetailPage({ snapshot, selection, onSelectionChange, onAddT
         </section>
       </div>
 
-      <section className="ziwei-transformations" aria-labelledby="natal-transformations-title">
-        <h3 id="natal-transformations-title">本命四化</h3>
-        <div>{chart.transformations.map((item) => <span key={`${item.palaceIndex}-${item.starName}-${item.transformation}`}><strong>{item.transformation}</strong>：{item.starName} · {item.palaceName}</span>)}</div>
-      </section>
-      {overlay && <section className="ziwei-overlay-summary"><OverlayTransformations item={overlay.decadal} label="大限" /><OverlayTransformations item={overlay.yearly} label="流年" /></section>}
+      {reading.unresolved.length > 0 && <section className="ziwei-unresolved" aria-label="未定位四化说明">
+        <h3>未定位四化说明</h3>
+        {reading.unresolved.map((field, index) => <p key={index}>{field.label}：{field.value}</p>)}
+      </section>}
     </section>
   );
 }
