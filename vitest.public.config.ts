@@ -5,6 +5,7 @@ export default defineConfig({
     environment: "node",
     include: [
       "test/chart-document-export.test.ts",
+      "test/calculate-cli.test.ts",
       "test/web-chart-document-text.test.ts",
       "test/web-export-download.test.ts",
       "test/web-export-orchestration.test.ts",

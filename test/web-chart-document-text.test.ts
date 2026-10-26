@@ -7,6 +7,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
+  chartDocumentYears,
   chartDocumentTextFilename,
   presentChartDocumentText
 } from "../src/web/chart-document-text.js";
@@ -176,7 +177,8 @@ describe("ChartDocument plain-text presentation", () => {
     delete olderExport.evidence;
     const legacy = ChartDocumentV1Schema.parse(olderExport);
     const legacyText = presentChartDocumentText(legacy, filename).plainText;
-    expect(legacyText).toContain("JSON 导出源码标识：未知（旧版 V1 未记录）");
+    expect(legacyText).not.toContain("JSON 导出源码标识：");
+    expect(legacy.exportSourceId).toBeUndefined();
     expect(legacyText).toContain("紫微交限日期：2011-02-03");
     expect(legacy.bazi).toEqual(document.bazi);
     expect(legacy.ziwei).toEqual(document.ziwei);
@@ -241,7 +243,7 @@ describe("ChartDocument plain-text presentation", () => {
     expect(document.bazi.chart.calendar.isLeapMonth).toBe(true);
     expect(document.evidence?.findings.some(({ code }) => code === "TIME_LEAP_MONTH_UNRESOLVED")).toBe(true);
     expect(document.evidence?.allowedAnalysisModes).toEqual(["data_diagnosis"]);
-    expect(presentChartDocumentText(document, filename).plainText).toContain("TIME_LEAP_MONTH_UNRESOLVED");
+    expect(presentChartDocumentText(document, filename).plainText).toContain(document.evidence!.findings.find(({ code }) => code === "TIME_LEAP_MONTH_UNRESOLVED")!.summary);
     expect(baziDaYunDateIntervals(document.bazi.chart)).not.toBeNull();
   }, 20_000);
 
@@ -363,17 +365,13 @@ describe("ChartDocument plain-text presentation", () => {
 
     const view = presentChartDocumentText(document, filename);
     const introduction = view.plainText.split("## 文档信息")[0];
-    expect(introduction).toContain(`当前修订计算审计等级：${auditLevel}`);
-    expect(introduction).toContain("不证明出生资料真实，也不代表预测高置信");
-    expect(introduction).toContain("未独立核验");
-    expect(introduction).toContain("本次计算未按地点、时区、夏令时（DST）或真太阳时自动校正");
-    expect(introduction).toContain("不要自行重复校正");
-    expect(introduction).toContain(basis === "apparent_solar_provided" ? "用户声明已校正为真太阳时" : "用户提供的当地钟表时间");
+    expect(introduction).not.toMatch(/计算审计等级|允许分析范围|不证明出生资料真实|高置信/);
+    expect(introduction).toContain(basis === "apparent_solar_provided"
+      ? "按你提供的真太阳日期和时间直接计算，不再校正。"
+      : "按你输入的当地钟表日期和时间直接计算，不做真太阳时校正。");
     if (findingCode !== null) {
-      expect(introduction).toContain(findingCode);
-      expect(introduction).toContain("单轨分析（仅限证据支持的轨道）");
-      expect(introduction).toContain("资料诊断");
-      expect(introduction).not.toMatch(/full_dual|provisional_dual/u);
+      const summary = audit.findings.find(({ code }) => code === findingCode)!.summary;
+      expect(introduction.split(summary)).toHaveLength(2);
     }
 
     const blobs: Blob[] = [];
@@ -392,25 +390,22 @@ describe("ChartDocument plain-text presentation", () => {
     await printChartDocumentText({ view, browser, reveal: (text) => { printText = text; }, conceal: () => {} });
     expect(printText).toBe(view.plainText);
     const html = renderToStaticMarkup(createElement(ChartDocumentPrintout, { text: printText }));
-    expect(html).toContain(`当前修订计算审计等级：${auditLevel}`);
-    expect(html).toContain("未独立核验");
-    if (findingCode !== null) expect(html).toContain(findingCode);
+    expect(html).toContain("时间处理：");
+    if (findingCode !== null) expect(html).toContain(audit.findings.find(({ code }) => code === findingCode)!.summary);
     for (const output of [json, view.plainText, html]) {
       expect(output).toContain("SYNTHETIC-EXPORTED-NAME");
       expect(output).not.toMatch(/SYNTHETIC-PRIVATE|privateContext|birthplaceNote|sourceNote|evidenceRefs|\/Users\//u);
     }
 
-    // The old V1 shape remains valid; deleting evidence must not turn uncertainty into clearance.
+    // Old V1 remains readable without adding audit boilerplate or claiming verified input.
     const legacy = structuredClone(document);
     delete legacy.evidence;
     legacy.warnings = [];
     expect(ChartDocumentV1Schema.parse(legacy)).toEqual(legacy);
     const legacyText = presentChartDocumentText(legacy, filename).plainText;
-    expect(legacyText).toContain("计算审计等级：未知");
-    expect(legacyText).toContain("允许分析范围：未知");
-    expect(legacyText).toContain("时间处理：未知");
-    expect(legacyText).toContain("警告为空不代表无风险");
-    expect(legacyText).not.toContain("警告：未提供");
+    expect(legacyText).toContain("时间处理：");
+    expect(legacyText).toContain(precision === "minute" ? "提供到分钟（用户声明）" : precision === "approximate" ? "约略时间" : "仅知时辰区间");
+    expect(legacyText).not.toMatch(/允许分析范围|无风险|已核实/);
   }, 20_000);
 
   it("projects a synthetic selected chart into deterministic, safe, ordered text", async () => {
@@ -432,9 +427,7 @@ describe("ChartDocument plain-text presentation", () => {
       .toBeLessThan(view.plainText.indexOf("## 八字"));
     expect(view.plainText.indexOf("## 八字"))
       .toBeLessThan(view.plainText.indexOf("## 紫微斗数"));
-    expect(view.plainText).toContain("目标流年：2026");
-    expect(view.plainText.indexOf("## 证据限制与分析范围"))
-      .toBeLessThan(view.plainText.indexOf("## 输入资料"));
+    expect(view.plainText).toContain("本次展开流年：2026");
     expect(view.plainText).toContain("### 目标流年与流月（仅在存在时）");
     expect(view.plainText).toContain("### 十二宫逐宫合并");
     expect(document.bazi.chart.annualFortunes.map(({ year }) => year)).toContain(2030);
@@ -519,6 +512,72 @@ describe("ChartDocument plain-text presentation", () => {
     expect(attackedText).not.toContain("\ufeff");
     expect(attackedText).toContain("合成名可见 # 伪造标题 尾");
   }, 20_000);
+
+  it("expands multiple saved years once and uses the same text for copy, TXT and print", async () => {
+    const workbench = await makeWorkbench();
+    const request = syntheticDemoRequest("DEMO-YEARS", "CS-2002-932");
+    const created = await workbench.createCase(request);
+    const candidateId = (created.snapshot.timeEvidence as { candidates: Array<{ id: string }> }).candidates[0].id;
+    const { document, filename } = await workbench.downloadChartDocument(
+      request.birthRecord.caseId, created.revision.revisionId, { candidateId, targetYear: 2026 }
+    );
+    const original = structuredClone(document);
+    expect(chartDocumentYears(document)).toEqual([2026, 2030]);
+    const view = presentChartDocumentText(document, filename, [2030, 2026, 2030]);
+    expect(view.plainText.match(/^## 八字$/gmu)).toHaveLength(1);
+    expect(view.plainText.match(/^## 紫微斗数$/gmu)).toHaveLength(1);
+    expect(view.plainText.match(/^### 起运与大运$/gmu)).toHaveLength(1);
+    expect(view.plainText.match(/^#### 本命 · /gmu)).toHaveLength(12);
+    expect(view.plainText.match(/^## (2026|2030) 年度$/gmu)).toEqual(["## 2026 年度", "## 2030 年度"]);
+    for (const year of [2026, 2030]) {
+      const section = view.plainText.split(`## ${year} 年度`)[1].split("\n## ")[0];
+      expect(section).toContain(`#### 流年 ${year}`);
+      expect(section).toContain(`${year}-07-01`);
+      expect(section.match(/^#### 流年 · /gmu)).toHaveLength(12);
+      expect(section).not.toContain("#### 本命 ·");
+      const detail = document.bazi.detail.candidate.annualDetails.find((item) => item.year === year)!;
+      for (const month of detail.liuYue) expect(section).toContain(`##### ${month.monthName}`);
+    }
+    const blobs: Blob[] = [];
+    const browser: ChartDocumentBrowserSeam = {
+      createObjectURL: (blob) => { blobs.push(blob); return "blob:synthetic-multiple-years"; },
+      revokeObjectURL: vi.fn(), clickDownload: vi.fn(), writeClipboardText: vi.fn(async () => {}),
+      supportsShare: () => false, canShare: () => false, share: vi.fn(async () => {}),
+      print: vi.fn(), getPageTitle: () => "合成多年", setPageTitle: vi.fn()
+    };
+    await copyChartDocumentText({ view, browser });
+    saveChartDocumentTextDownload({ view, browser });
+    let printed = "";
+    await printChartDocumentText({ view, browser, reveal: (text) => { printed = text; }, conceal: () => {} });
+    expect(browser.writeClipboardText).toHaveBeenCalledWith(view.plainText);
+    expect(await blobs[0].text()).toBe(view.plainText);
+    expect(printed).toBe(view.plainText);
+    expect(document).toEqual(original);
+    const missing = presentChartDocumentText(document, filename, [2028]);
+    expect(missing.plainText).toContain("2028 年未保存八字流年、八字流月与小运、紫微年度盘");
+    expect(missing.plainText).not.toContain("#### 流年 2028");
+    expect(document).toEqual(original);
+  });
+
+  it("keeps a concrete legacy finding even when warnings are empty, without repeating it", async () => {
+    const workbench = await makeWorkbench();
+    const request = syntheticDemoRequest("DEMO-NORMAL", "CS-2000-933");
+    const created = await workbench.createCase(request);
+    const candidateId = (created.snapshot.timeEvidence as { candidates: Array<{ id: string }> }).candidates[0].id;
+    const { document, filename } = await workbench.downloadChartDocument(
+      request.birthRecord.caseId, created.revision.revisionId, { candidateId }
+    );
+    const summary = "合成资料的出生分钟尚待确认。";
+    document.evidence!.findings = [{ code: "PRECISION_APPROXIMATE_UNRESOLVED", severity: "warning", summary }];
+    document.warnings = [];
+    expect(presentChartDocumentText(document, filename).plainText.split(summary)).toHaveLength(2);
+    document.warnings.push(summary, summary);
+    const text = presentChartDocumentText(document, filename).plainText;
+    expect(text.split(summary)).toHaveLength(2);
+    expect(text).not.toMatch(/免责声明|计算审计等级|允许分析范围|高置信/);
+    expect(document.evidence!.findings[0].code).toBe("PRECISION_APPROXIMATE_UNRESOLVED");
+    expect(document.warnings).toHaveLength(2);
+  });
 
   it("derives a text filename from one safe chart-document JSON filename", () => {
     expect(chartDocumentTextFilename("bazi-ziwei-chart-20260819-0830.json"))

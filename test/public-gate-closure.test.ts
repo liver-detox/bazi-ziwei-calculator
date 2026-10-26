@@ -13,6 +13,7 @@ const projectRoot = resolve(import.meta.dirname, "..");
 const publicConfigPath = resolve(projectRoot, "vitest.public.config.ts");
 const publicCorrectnessTests = [
   "test/chart-document-export.test.ts",
+  "test/calculate-cli.test.ts",
   "test/web-chart-document-text.test.ts",
   "test/web-export-download.test.ts",
   "test/web-export-orchestration.test.ts",
@@ -33,6 +34,8 @@ const requiredPublicAssets = [
   ".github/ISSUE_TEMPLATE/feature_request.yml",
   ".github/workflows/ci.yml",
   "docs/examples/chart-document-v1.json",
+  "docs/examples/input.json",
+  "src/cli/calculate.ts",
   "scripts/run-optional-internal-suite.mjs",
   "scripts/run-performance-benchmarks.mjs",
   "scripts/start-local.cmd",

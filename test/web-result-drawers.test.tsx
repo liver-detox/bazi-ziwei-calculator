@@ -166,6 +166,34 @@ describe("result drawers", () => {
     expect(DecisionRequestSchema.parse(shortNote)).toMatchObject({ evidenceRefs: [] });
   });
 
+  it("lets a user choose all saved years for text actions while JSON stays complete", () => {
+    const onAllYearsChange = vi.fn();
+    const props: ExportPanelProps = {
+      busy: false, shareAvailable: false, status: "", availableYears: [2026, 2030],
+      currentYear: 2026, allYears: true, onAllYearsChange,
+      onCopy: vi.fn(), onDownloadJson: vi.fn(), onDownloadText: vi.fn(), onPrint: vi.fn(), onShare: vi.fn()
+    };
+    const html = renderToStaticMarkup(<ExportPanel {...props} />);
+    expect(html).toContain("文本年份");
+    expect(html).toContain("当前年份（2026）");
+    expect(html).toMatch(/<option value="all" selected="">全部已计算年份（2 年）<\/option>/u);
+    expect(html).toContain("完整 JSON 始终保留全部年份");
+    const controls: Array<ReactElement<Record<string, unknown>>> = [];
+    const walk = (node: ReactNode): void => {
+      if (Array.isArray(node)) { node.forEach(walk); return; }
+      if (node === null || typeof node !== "object" || !("props" in node)) return;
+      const element = node as ReactElement<Record<string, unknown>>;
+      if (element.type === "select") controls.push(element);
+      walk(element.props.children as ReactNode);
+    };
+    walk(ExportPanel(props));
+    const change = controls[0].props.onChange as (event: { target: { value: string } }) => void;
+    change({ target: { value: "current" } });
+    change({ target: { value: "all" } });
+    expect(onAllYearsChange.mock.calls).toEqual([[false], [true]]);
+    expect(renderToStaticMarkup(<ExportPanel {...props} availableYears={[2026]} />)).not.toContain("文本年份");
+  });
+
   it("renders five grouped export actions when system sharing is available", () => {
     const html = renderToStaticMarkup(<ExportPanel
       busy={false}
@@ -180,7 +208,7 @@ describe("result drawers", () => {
 
     ["复制 AI 文本", "系统分享", "下载 TXT", "打开打印", "下载完整 JSON"]
       .forEach((label) => expect(html).toContain(label));
-    expect(html).toContain("导出内容包含当前输入的姓名或代号及出生资料，请确认后再分享。");
+    expect(html).toContain("导出包含姓名或代号及出生资料。");
     expect(html).toContain("给大模型使用");
     expect(html).toContain("阅读与保存");
     expect(html).toContain("完整数据");

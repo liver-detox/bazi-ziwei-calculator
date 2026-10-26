@@ -1,5 +1,5 @@
 import { ApiError, type ApiChartDocument } from "./api.js";
-import type { ChartDocumentTextView, presentChartDocumentText } from "./chart-document-text.js";
+import type { ChartDocumentTextView } from "./chart-document-text.js";
 import type { ExportActionResult } from "./export-download.js";
 
 export interface ExportActionLifecycle {
@@ -10,7 +10,8 @@ export interface ExportActionLifecycle {
 
 export interface ResolveChartDocumentTextInput {
   request: () => Promise<ApiChartDocument>;
-  present?: typeof presentChartDocumentText;
+  present?: (document: ApiChartDocument["document"], filename: string, years?: readonly number[]) => ChartDocumentTextView;
+  requestedYears?: readonly number[];
 }
 
 export interface RunExportActionInput {
@@ -48,7 +49,9 @@ export async function resolveChartDocumentText(
   const result = await input.request();
   const present = input.present
     ?? (await import("./chart-document-text.js")).presentChartDocumentText;
-  return present(result.document, result.filename);
+  return input.requestedYears === undefined
+    ? present(result.document, result.filename)
+    : present(result.document, result.filename, input.requestedYears);
 }
 
 export function startChartDocumentTextPreparation(

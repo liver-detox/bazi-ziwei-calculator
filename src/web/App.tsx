@@ -151,6 +151,7 @@ export function App() {
   const [notice, setNotice] = useState("");
   const [exportStatus, setExportStatus] = useState<"" | ExportActionResult>("");
   const [printText, setPrintText] = useState("");
+  const [exportAllYears, setExportAllYears] = useState(false);
   const [preparedChartText, setPreparedChartText] = useState<{ key: string; view: ChartDocumentTextView }>();
   const [chartTextPreparing, setChartTextPreparing] = useState(false);
   const [chartTextError, setChartTextError] = useState("");
@@ -199,8 +200,10 @@ export function App() {
 
   useEffect(() => { void loadCases().catch((reason: unknown) => setError(reason instanceof Error ? reason.message : "无法读取本地案例")).finally(() => setLoading(false)); }, []);
 
+  useEffect(() => { setExportAllYears(false); }, [snapshot?.input.caseId]);
+
   const chartTextPreparationKey = snapshot && selection
-    ? [snapshot.input.caseId, snapshot.manifest.revisionId, selection.candidateId, selection.selectedTargetYear ?? ""].join(":")
+    ? [snapshot.input.caseId, snapshot.manifest.revisionId, selection.candidateId, selection.selectedTargetYear ?? "", exportAllYears ? "all" : "current"].join(":")
     : "";
   useEffect(() => {
     if (!snapshot || !selection || chartTextPreparationKey === "") {
@@ -213,6 +216,7 @@ export function App() {
     const preparation = startChartDocumentTextPreparation({
       key: chartTextPreparationKey,
       request: () => apiChartDocument(request.path, request.options),
+      requestedYears: exportAllYears ? snapshot.charts.targetYears : undefined,
       onUpdate: (update) => {
         if (update.status === "preparing") {
           setPreparedChartText(undefined);
@@ -400,7 +404,7 @@ export function App() {
       </> : <EmptyResults onCreate={beginCreate} />}
     </div>
     <CaseDrawer cases={cases} currentCaseId={selectedCaseId} onClose={() => setCaseDrawerOpen(false)} onCreate={() => { setCaseDrawerOpen(false); beginCreate(); }} onSelect={(item) => void selectCase(item)} open={caseDrawerOpen} returnFocus={caseTrigger.current} />
-    {snapshot && <VerificationDrawer audit={<AuditPanel audit={snapshot.audit} busy={busy} candidateOrder={snapshot.timeEvidence.candidates.map(({ id }) => id)} identity={verificationIdentity} onDecision={saveDecision} open={verificationOpen} />} evidence={<TimeEvidencePanel evidence={snapshot.timeEvidence} />} exportPanel={<ExportPanel busy={busy} onCopy={copyChartDocument} onDownloadJson={downloadChartDocumentJson} onDownloadText={downloadChartDocumentText} onPrint={printChartDocument} onRetryText={() => setChartTextRetryNonce((value) => value + 1)} onShare={shareChartDocument} shareAvailable={typeof navigator !== "undefined" && supportsChartDocumentShare()} status={exportStatus} textError={chartTextError} textPreparing={chartTextPreparing} textReady={preparedChartText?.key === chartTextPreparationKey} />} onClose={closeVerification} open={verificationOpen} returnFocus={verificationTrigger.current} technical={<dl className="technical-identity"><div><dt>修订编号</dt><dd>{snapshot.manifest.revisionId}</dd></div><div><dt>审计等级</dt><dd>{snapshot.audit.auditLevel}</dd></div><div><dt>内容指纹</dt><dd><code>{fingerprint}</code></dd></div></dl>} />}
+    {snapshot && <VerificationDrawer audit={<AuditPanel audit={snapshot.audit} busy={busy} candidateOrder={snapshot.timeEvidence.candidates.map(({ id }) => id)} identity={verificationIdentity} onDecision={saveDecision} open={verificationOpen} />} evidence={<TimeEvidencePanel evidence={snapshot.timeEvidence} />} exportPanel={<ExportPanel allYears={exportAllYears} availableYears={snapshot.charts.targetYears} currentYear={selection?.selectedTargetYear ?? null} onAllYearsChange={(all) => { setExportAllYears(all); setExportStatus(""); }} busy={busy} onCopy={copyChartDocument} onDownloadJson={downloadChartDocumentJson} onDownloadText={downloadChartDocumentText} onPrint={printChartDocument} onRetryText={() => setChartTextRetryNonce((value) => value + 1)} onShare={shareChartDocument} shareAvailable={typeof navigator !== "undefined" && supportsChartDocumentShare()} status={exportStatus} textError={chartTextError} textPreparing={chartTextPreparing} textReady={preparedChartText?.key === chartTextPreparationKey} />} onClose={closeVerification} open={verificationOpen} returnFocus={verificationTrigger.current} technical={<dl className="technical-identity"><div><dt>修订编号</dt><dd>{snapshot.manifest.revisionId}</dd></div><div><dt>审计等级</dt><dd>{snapshot.audit.auditLevel}</dd></div><div><dt>内容指纹</dt><dd><code>{fingerprint}</code></dd></div></dl>} />}
   </div>
   <ChartDocumentPrintout text={printText} />
   </div>;

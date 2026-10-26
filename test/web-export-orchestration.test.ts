@@ -69,6 +69,13 @@ function browserSeam(): ChartDocumentBrowserSeam {
 }
 
 describe("chart document export orchestration", () => {
+  it("passes selected text years to presentation without changing the downloaded document", async () => {
+    const presenter = vi.fn(present);
+    await resolveChartDocumentText({ request: async () => apiResult, present: presenter, requestedYears: [2026, 2030] });
+    expect(presenter).toHaveBeenCalledWith(apiResult.document, filename, [2026, 2030]);
+    expect(apiResult.document).toEqual({ schemaVersion: 1 });
+  });
+
   it("prepares one keyed text view through one request and reports real state transitions", async () => {
     const pending = deferred<ApiChartDocument>();
     const request = vi.fn(() => pending.promise);

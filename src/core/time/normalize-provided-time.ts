@@ -145,7 +145,7 @@ export function normalizeProvidedTime(record: PublicBirthRecordV2): TimeEvidence
   const ambiguousCalendar = parsedRecord.calendar.leapMonth === "unknown";
   const candidates = validResolutions.flatMap((resolution) => (
     candidatesForResolution(parsedRecord, resolution, ambiguousCalendar, issues)
-  ));
+  )).sort((left, right) => left.id < right.id ? -1 : left.id > right.id ? 1 : 0);
 
   if (ambiguousCalendar) {
     const hasInvalidAlternative = calendarResolutions.some((resolution) => resolution.status === "invalid");

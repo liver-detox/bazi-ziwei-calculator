@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "2.0.0",
+  "caseId": "CS-2000-001",
+  "alias": "合成演示",
+  "gender": "女",
+  "calendar": {
+    "type": "solar",
+    "date": "2000-01-15",
+    "leapMonth": false
+  },
+  "providedTime": {
+    "localTime": "12:00",
+    "basis": "civil_clock_provided",
+    "precision": "minute",
+    "sourceType": "unknown"
+  },
+  "policy": {
+    "lateZi": "candidates"
+  }
+}

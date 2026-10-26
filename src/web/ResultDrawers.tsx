@@ -177,6 +177,10 @@ export function AuditPanel({ audit, candidateOrder, identity, open, onDecision, 
 }
 
 export interface ExportPanelProps {
+  allYears?: boolean;
+  availableYears?: readonly number[];
+  currentYear?: number | null;
+  onAllYearsChange?: (all: boolean) => void;
   busy: boolean;
   shareAvailable: boolean;
   status: "" | ExportActionResult;
@@ -203,11 +207,12 @@ function exportStatusText(status: ExportPanelProps["status"]): string {
   return status === "" ? "" : labels[status];
 }
 
-export function ExportPanel({ busy, shareAvailable, status, textError = "", textPreparing = false, textReady = true, onRetryText, onCopy, onDownloadText, onShare, onPrint, onDownloadJson }: ExportPanelProps) {
+export function ExportPanel({ allYears = false, availableYears = [], currentYear = null, onAllYearsChange, busy, shareAvailable, status, textError = "", textPreparing = false, textReady = true, onRetryText, onCopy, onDownloadText, onShare, onPrint, onDownloadJson }: ExportPanelProps) {
   const statusText = exportStatusText(status);
   const textActionDisabled = busy || !textReady;
   return <div className="drawer-export">
-    <p className="field-note">导出内容包含当前输入的姓名或代号及出生资料，请确认后再分享。</p>
+    {availableYears.length > 1 && onAllYearsChange && <label className="export-year-scope">文本年份<select disabled={busy} onChange={(event) => onAllYearsChange(event.target.value === "all")} value={allYears ? "all" : "current"}><option value="current">{currentYear === null ? "本命与大运" : `当前年份（${currentYear}）`}</option><option value="all">全部已计算年份（{availableYears.length} 年）</option></select><span className="field-note">复制、TXT、分享和打印使用同一范围；完整 JSON 始终保留全部年份。</span></label>}
+    <p className="field-note">导出包含姓名或代号及出生资料。</p>
     {textPreparing && <p aria-live="polite" className="field-note" role="status">正在准备文本导出……</p>}
     {textError && <div className="field-note" role="alert">AI 文本准备失败：{textError} {onRetryText && <button className="button ghost" disabled={busy || textPreparing} onClick={onRetryText} type="button">重试准备 AI 文本</button>}</div>}
     <section className="export-action-group"><h3>给大模型使用</h3><div className="export-actions">{shareAvailable && <button className="button primary" disabled={textActionDisabled} onClick={() => void onShare()} type="button">系统分享</button>}<button className={shareAvailable ? "button secondary" : "button primary"} disabled={textActionDisabled} onClick={() => void onCopy()} type="button">复制 AI 文本</button></div>{shareAvailable ? <p className="field-note">系统分享可能发送 TXT 文件或同一文本，复制可作为备选。</p> : <p className="field-note">当前浏览器不支持系统分享，请使用复制或下载 TXT。</p>}</section>

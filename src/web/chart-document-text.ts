@@ -16,58 +16,12 @@ export interface ChartDocumentTextView {
   plainText: string;
 }
 
-const ANALYSIS_MODE_LABELS = {
-  full_dual: "完整双轨分析",
-  provisional_dual: "暂定双轨分析",
-  single_track: "单轨分析（仅限证据支持的轨道）",
-  data_diagnosis: "资料诊断"
-} as const;
-
-const WORKFLOW_LABELS = {
-  draft: "草稿",
-  review: "待复核",
-  verified: "已确认工作流",
-  void: "已作废"
-} as const;
-
-function evidenceText(document: ChartDocumentV1): string[] {
-  const lines = [
-    "## 证据限制与分析范围",
-    "> 计算审计仅反映给定输入下的计算与证据状态；A 级或工作流已确认均不证明出生资料真实，也不代表预测高置信。"
-  ];
-  const evidence = document.evidence;
-  if (evidence === undefined) {
-    return [
-      ...lines,
-      field("计算审计等级", "未知（旧版 V1 未提供证据信息）"),
-      field("工作流状态", "未知"),
-      field("允许分析范围", "未知，不得据此默认允许双轨分析"),
-      field("证据限制", "未知；警告为空不代表无风险"),
-      field("时间处理", "未知（旧文档未记录是否校正或独立核验）；请先确认时间口径，不要自行重复校正")
-    ];
-  }
-  lines.push(
-    field("当前修订计算审计等级", evidence.auditLevel),
-    field("工作流状态", WORKFLOW_LABELS[evidence.workflowStatus]),
-    field("允许分析范围", evidence.allowedAnalysisModes.map((mode) => `${ANALYSIS_MODE_LABELS[mode]}（${mode}）`).join("、") || "无"),
-    "> 导出完整排盘不扩大允许分析范围；选择候选不会自动消除当前修订的证据限制。"
-  );
-  if (evidence.findings.length === 0) {
-    lines.push(field("审计发现", "本次计算审计未报告问题；出生资料仍未独立核实"));
-  } else {
-    for (const finding of evidence.findings) {
-      lines.push(field(`审计发现 ${finding.code}`, finding.summary));
-    }
-  }
-  if (evidence.timeHandling === "user_provided_unverified") {
-    lines.push(
-      field("时间处理", document.birthInput.providedTime.basis === "apparent_solar_provided"
-        ? "用户声明已校正为真太阳时，计算器仅按所提供日期和时间直接排盘；未独立核验校正结果"
-        : "用户提供的当地钟表时间，计算器仅按所提供日期和时间直接排盘；未独立核验时间来源"),
-      "> 本次计算未按地点、时区、夏令时（DST）或真太阳时自动校正；来源类型也是用户声明，不代表已核验原始凭证。请沿用已声明的时间口径，不要自行重复校正；需改正时先确认资料并重新排盘。"
-    );
-  }
-  return lines;
+function inputNotes(document: ChartDocumentV1): string[] {
+  const summaries = [...new Set([
+    ...document.warnings,
+    ...(document.evidence?.findings.filter(({ severity }) => severity !== "info").map(({ summary }) => summary) ?? [])
+  ].map(inline))];
+  return summaries.length === 0 ? [] : ["### 本次输入的具体说明", ...summaries.map((summary) => `- ${summary}`)];
 }
 
 function inline(value: unknown): string {
@@ -92,19 +46,25 @@ function dayBoundaryText(boundary: "current" | "forward"): string {
   return boundary === "current" ? "当日口径" : "次日口径";
 }
 
-function textScope(document: ChartDocumentV1): string[] {
-  const years = [...new Set([
+export function chartDocumentYears(document: ChartDocumentV1): number[] {
+  return [...new Set([
     ...document.bazi.chart.annualFortunes.map(({ year }) => year),
     ...document.bazi.detail.candidate.annualDetails.map(({ year }) => year),
     ...(document.ziwei.yearlyFortunes ?? []).map(({ targetYear }) => targetYear)
   ])].sort((left, right) => left - right);
+}
+
+function textScope(document: ChartDocumentV1, years: readonly number[]): string[] {
+  const available = chartDocumentYears(document);
   return [
     "## 本次文本范围",
-    field("文本覆盖范围", document.targetYear === undefined
+    field("文本覆盖范围", years.length === 0
       ? "本命与全部已算大运；未选择目标年，不展开流年、流月及紫微年度叠加"
-      : `本命与全部已算大运；仅展开目标年 ${document.targetYear} 的八字流年、十二节气流月及紫微年度叠加`),
-    field("完整 JSON 已算目标年份", years.length === 0 ? "无（尚未计算目标年份）" : list(years)),
-    "> 文本未展开的年份不代表未计算；其余已算年份见完整 JSON，原始机器字段也保留在 JSON 中。",
+      : years.length === 1
+        ? `本命与全部已算大运；仅展开目标年 ${years[0]} 的八字流年、十二节气流月及紫微年度叠加`
+        : "本命与全部已算大运各列一次；按年展开八字流年、十二节气流月及紫微年度叠加"),
+    field("本次展开流年", years.length === 0 ? "无，仅本命与大运" : list(years)),
+    field("完整 JSON 已算目标年份", available.length === 0 ? "无（尚未计算目标年份）" : list(available)),
     `> ${DUAL_YEAR_BOUNDARY_NOTE}`
   ];
 }
@@ -148,53 +108,7 @@ function pillarText(
   );
 }
 
-export function chartDocumentTextFilename(jsonFilename: string): string {
-  if (!/^bazi-ziwei-chart-\d{8}-\d{4}\.json$/u.test(jsonFilename)) {
-    throw new Error("ChartDocument JSON 文件名无效");
-  }
-  return jsonFilename.replace(/\.json$/u, ".txt");
-}
-
-export function presentChartDocumentText(
-  document: ChartDocumentV1,
-  jsonFilename: string
-): ChartDocumentTextView {
-  const lines: string[] = [
-    "# 八字与紫微斗数双轨排盘",
-    "> 这是排盘数据，不含命理解读；不得猜测缺失字段。",
-    ...evidenceText(document),
-    ...textScope(document),
-    "## 文档信息",
-    field("Schema 版本", document.schemaVersion),
-    field("计算器版本", document.calculatorVersion),
-    field("JSON 导出源码标识", document.exportSourceId ?? "未知（旧版 V1 未记录）"),
-    field("本次文本呈现源码标识", CURRENT_SOURCE_ID),
-    "> 源码标识区分本次导出与文本呈现，不代表新发布版本；不为已保存排盘补记原始计算构建身份。计算引擎、规则与结果沿用文件中的记录。",
-    field("导出时间（交付元数据）", document.exportedAt),
-    field("目标流年", document.targetYear ?? "未选择"),
-    "## 输入资料",
-    field("姓名或别名", document.subject.nameOrAlias),
-    field("性别", document.subject.gender),
-    field("历法类型", document.birthInput.calendar.type === "solar" ? "公历" : "农历"),
-    field("日期", document.birthInput.calendar.date),
-    field("闰月", document.birthInput.calendar.leapMonth),
-    field("提供时间", document.birthInput.providedTime.localTime),
-    field("时间口径", PROVIDED_TIME_PRESENTATION[document.birthInput.providedTime.basis].label),
-    field("时间精度", { minute: "提供到分钟（用户声明）", approximate: "约略时间", branch: "仅知时辰区间" }[document.birthInput.providedTime.precision]),
-    field("时间来源类型（用户声明）", { birth_certificate: "出生证明", hospital_record: "医院记录", family_memory: "家人记忆", existing_chart: "既有命盘", external_true_solar_tool: "外部真太阳时工具", unknown: "未说明" }[document.birthInput.providedTime.sourceType]),
-    field("晚子时换日规则", { candidates: "保留当日与次日候选", current_day: "按当日", next_day: "按次日" }[document.birthInput.policy.lateZi]),
-    "## 候选选择与警告",
-    field("候选 ID", document.selection.candidateId),
-    field("存在其他候选", document.selection.hadAlternatives),
-    field("选择理由", document.selection.rationale)
-  ];
-
-  if (document.warnings.length === 0) {
-    lines.push(field("警告", "文档未附加警告；不代表资料已核实或无风险"));
-  } else {
-    document.warnings.forEach((warning, index) => lines.push(field(`警告 ${index + 1}`, warning)));
-  }
-
+function appendBaziNatal(lines: string[], document: ChartDocumentV1): void {
   const { chart, detail } = document.bazi;
   lines.push(
     "## 八字",
@@ -280,57 +194,58 @@ export function presentChartDocumentText(
     }
   }
 
-  lines.push("### 目标流年与流月（仅在存在时）");
-  if (document.targetYear === undefined) {
-    lines.push(field("目标流年", "未选择，不展开年度详情"));
-  } else {
-    for (const annual of chart.annualFortunes.filter(({ year }) => year === document.targetYear)) {
-      const annualDetail = detail.candidate.annualDetails.find((item) => item.year === annual.year);
+}
+
+function appendBaziYear(lines: string[], document: ChartDocumentV1, targetYear: number): void {
+  const { chart, detail } = document.bazi;
+  for (const annual of chart.annualFortunes.filter(({ year }) => year === targetYear)) {
+    const annualDetail = detail.candidate.annualDetails.find((item) => item.year === annual.year);
+    lines.push(
+      `#### 流年 ${inline(annual.year)}`,
+      field("年份", annual.year),
+      field("虚岁", annual.age),
+      field("干支", annual.ganZhi),
+      field("旬", annual.xun),
+      field("空亡", annual.voidBranches),
+      field("大运年表索引", annual.daYunIndex),
+      field("所选公历年内的大运分段", `${annual.year} 年；出生前不适用，与立春起的八字流年区间不同`)
+    );
+    const yearIntervals = baziDaYunYearIntervals(chart, annual.year);
+    if (yearIntervals === null) lines.push(field("按日期推算的大运", BAZI_LUCK_DATE_UNAVAILABLE));
+    for (const interval of yearIntervals ?? []) {
+      lines.push(field("按日期推算的大运", baziDaYunIntervalText(interval)));
+    }
+    if (annualDetail === undefined) {
+      lines.push(field("流年关系", "未提供"));
+      continue;
+    }
+    ganZhiRelations(lines, annualDetail.relations);
+    lines.push(
+      "##### 小运",
+      field("年份", annualDetail.xiaoYun.year),
+      field("虚岁", annualDetail.xiaoYun.virtualAge),
+      field("干支", annualDetail.xiaoYun.ganZhi),
+      field("旬", annualDetail.xiaoYun.xun),
+      field("空亡", annualDetail.xiaoYun.voidBranches)
+    );
+    ganZhiRelations(lines, annualDetail.xiaoYun.relations);
+    for (const month of annualDetail.liuYue) {
       lines.push(
-        `#### 流年 ${inline(annual.year)}`,
-        field("年份", annual.year),
-        field("虚岁", annual.age),
-        field("干支", annual.ganZhi),
-        field("旬", annual.xun),
-        field("空亡", annual.voidBranches),
-        field("大运年表索引", annual.daYunIndex),
-        field("所选公历年内的大运分段", `${annual.year} 年；出生前不适用，与立春起的八字流年区间不同`)
+        `##### ${inline(month.monthName)}`,
+        field("序号", month.ordinal),
+        field("节气开始", `${month.interval.start.name} ${month.interval.start.engineDateTime}`),
+        field("节气结束", `${month.interval.end.name} ${month.interval.end.engineDateTime}`),
+        field("区间语义", "含开始，不含结束（左闭右开）"),
+        field("干支", month.ganZhi),
+        field("旬", month.xun),
+        field("空亡", month.voidBranches)
       );
-      const yearIntervals = baziDaYunYearIntervals(chart, annual.year);
-      if (yearIntervals === null) lines.push(field("按日期推算的大运", BAZI_LUCK_DATE_UNAVAILABLE));
-      for (const interval of yearIntervals ?? []) {
-        lines.push(field("按日期推算的大运", baziDaYunIntervalText(interval)));
-      }
-      if (annualDetail === undefined) {
-        lines.push(field("流年关系", "未提供"));
-        continue;
-      }
-      ganZhiRelations(lines, annualDetail.relations);
-      lines.push(
-        "##### 小运",
-        field("年份", annualDetail.xiaoYun.year),
-        field("虚岁", annualDetail.xiaoYun.virtualAge),
-        field("干支", annualDetail.xiaoYun.ganZhi),
-        field("旬", annualDetail.xiaoYun.xun),
-        field("空亡", annualDetail.xiaoYun.voidBranches)
-      );
-      ganZhiRelations(lines, annualDetail.xiaoYun.relations);
-      for (const month of annualDetail.liuYue) {
-        lines.push(
-          `##### ${inline(month.monthName)}`,
-          field("序号", month.ordinal),
-          field("节气开始", `${month.interval.start.name} ${month.interval.start.engineDateTime}`),
-          field("节气结束", `${month.interval.end.name} ${month.interval.end.engineDateTime}`),
-          field("区间语义", "含开始，不含结束（左闭右开）"),
-          field("干支", month.ganZhi),
-          field("旬", month.xun),
-          field("空亡", month.voidBranches)
-        );
-        ganZhiRelations(lines, month.relations);
-      }
+      ganZhiRelations(lines, month.relations);
     }
   }
+}
 
+function appendZiweiNatal(lines: string[], document: ChartDocumentV1): void {
   const { ziwei } = document;
   lines.push(
     "## 紫微斗数",
@@ -367,7 +282,10 @@ export function presentChartDocumentText(
     field("身主", ziwei.body),
     field("五行局", ziwei.fiveElementsClass)
   );
-  const reading = presentZiweiPalaces(ziwei, document.targetYear);
+}
+
+function appendZiweiPalaces(lines: string[], document: ChartDocumentV1, targetYear: number | undefined, includeNatal: boolean): void {
+  const reading = presentZiweiPalaces(document.ziwei, targetYear);
   lines.push("### 逐宫合并阅读范围", ...reading.scope.map((line) => `- ${inline(line)}`), `> ${ZIWEI_PALACE_READING_NOTE}`);
   if (reading.boundary.length > 0) {
     lines.push("### 所选年份紫微交限说明", ...reading.boundary.map((line) => `- ${inline(line)}`));
@@ -388,20 +306,83 @@ export function presentChartDocumentText(
       field("身宫", palace.isBodyPalace), field("来因宫", palace.isOriginalPalace),
       field("宫位关系", palace.identity)
     );
-    for (const layer of palace.layers) {
+    for (const layer of palace.layers.filter((item) => includeNatal || item.key !== "natal")) {
       lines.push(`#### ${inline(layer.title)}`, ...layer.fields.map((item) => field(item.label, item.value)));
     }
-    lines.push(...palace.details.map((item) => field(item.label, item.value)));
+    if (includeNatal) lines.push(...palace.details.map((item) => field(item.label, item.value)));
   }
   if (reading.unresolved.length > 0) {
     lines.push("### 未定位四化说明", ...reading.unresolved.map((item) => field(item.label, item.value)));
   }
 
-  lines.push("## 说明", "- 本文本使用 ChartDocument V1 的已有字段；日期区间和宫位关系为这些字段的确定性展示，不构成独立历法核验或命理解读。", "");
+}
+
+export function chartDocumentTextFilename(jsonFilename: string): string {
+  if (jsonFilename !== "排盘.json" && !/^bazi-ziwei-chart-\d{8}-\d{4}\.json$/u.test(jsonFilename)) {
+    throw new Error("ChartDocument JSON 文件名无效");
+  }
+  return jsonFilename.replace(/\.json$/u, ".txt");
+}
+
+/** Render saved fields only; selecting years never runs a chart calculation. */
+export function presentChartDocumentText(
+  document: ChartDocumentV1,
+  jsonFilename = "排盘.json",
+  requestedYears?: readonly number[]
+): ChartDocumentTextView {
+  const years = [...new Set(requestedYears ?? (document.targetYear === undefined ? [] : [document.targetYear]))]
+    .sort((left, right) => left - right);
+  const lines: string[] = [
+    "# 八字与紫微斗数双轨排盘",
+    "## 输入资料",
+    field("姓名或别名", document.subject.nameOrAlias),
+    field("性别", document.subject.gender),
+    field("历法类型", document.birthInput.calendar.type === "solar" ? "公历" : "农历"),
+    field("日期", document.birthInput.calendar.date),
+    field("闰月", document.birthInput.calendar.leapMonth),
+    field("提供时间", document.birthInput.providedTime.localTime),
+    field("时间口径", PROVIDED_TIME_PRESENTATION[document.birthInput.providedTime.basis].label),
+    field("时间处理", PROVIDED_TIME_PRESENTATION[document.birthInput.providedTime.basis].statement),
+    field("时间精度", { minute: "提供到分钟（用户声明）", approximate: "约略时间", branch: "仅知时辰区间" }[document.birthInput.providedTime.precision]),
+    field("晚子时换日规则", { candidates: "保留当日与次日候选", current_day: "按当日", next_day: "按次日" }[document.birthInput.policy.lateZi]),
+    field("本文件候选", document.selection.candidateId),
+    field("存在其他候选", document.selection.hadAlternatives),
+    ...(document.selection.rationale === null ? [] : [field("选择说明", document.selection.rationale)]),
+    ...inputNotes(document),
+    ...textScope(document, years),
+    "## 文档信息",
+    field("计算器版本", document.calculatorVersion),
+    ...(document.exportSourceId === undefined ? [] : [field("JSON 导出源码标识", document.exportSourceId)]),
+    field("本次文本呈现源码标识", CURRENT_SOURCE_ID),
+    field("导出时间", document.exportedAt)
+  ];
+  appendBaziNatal(lines, document);
+  // A single year keeps the familiar three-layer palace layout. In a multi-year
+  // document, natal stars appear once before the yearly overlays.
+  if (years.length === 1) {
+    lines.push("### 目标流年与流月（仅在存在时）");
+    appendBaziYear(lines, document, years[0]);
+  }
+  appendZiweiNatal(lines, document);
+  appendZiweiPalaces(lines, document, years.length === 1 ? years[0] : undefined, true);
+  for (const year of years) {
+    if (years.length > 1) lines.push(`## ${year} 年度`);
+    const missing = [
+      ...(document.bazi.chart.annualFortunes.some((item) => item.year === year) ? [] : ["八字流年"]),
+      ...(document.bazi.detail.candidate.annualDetails.some((item) => item.year === year) ? [] : ["八字流月与小运"]),
+      ...((document.ziwei.yearlyFortunes ?? []).some((item) => item.targetYear === year) ? [] : ["紫微年度盘"])
+    ];
+    if (missing.length > 0) lines.push(field("资料缺口", `${year} 年未保存${missing.join("、")}；可用原始输入补算。`));
+    if (years.length > 1) {
+      appendBaziYear(lines, document, year);
+      lines.push("### 紫微年度同宫分层（本命星曜见前文同一地支宫）");
+      appendZiweiPalaces(lines, document, year, false);
+    }
+  }
   return {
     title: "八字与紫微斗数双轨排盘",
     filename: chartDocumentTextFilename(jsonFilename),
     contentType: CHART_DOCUMENT_TEXT_CONTENT_TYPE,
-    plainText: lines.join("\n")
+    plainText: lines.join("\n") + "\n"
   };
 }

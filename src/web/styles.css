@@ -337,6 +337,7 @@ code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monos
 .drawer-evidence .issue { margin-top: 8px; }
 .drawer-export { display: grid; gap: 10px; }
 .drawer-export p { margin: 0; }
+.export-year-scope { display: grid; gap: 6px; color: var(--muted); font-size: 13px; }
 .export-action-group { display: grid; gap: 8px; }
 .export-action-group h3 { margin: 0; color: var(--muted); font-size: 12px; }
 .export-actions { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 9px; }
@@ -435,7 +436,7 @@ code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monos
 .target-year-controls { display: grid; gap: 12px; }
 .add-year-control, .year-search-selector label { display: grid; gap: 6px; color: var(--muted); font-size: 13px; }
 .add-year-control { max-width: 300px; }
-.add-year-control select, .year-search-selector input, .year-search-selector select { width: 100%; height: 40px; padding: 0 10px; border: 1px solid var(--line); border-radius: 6px; color: var(--ink); background: var(--surface); font-size: var(--result-text-sm); }
+.export-year-scope select, .add-year-control select, .year-search-selector input, .year-search-selector select { width: 100%; height: 40px; padding: 0 10px; border: 1px solid var(--line); border-radius: 6px; color: var(--ink); background: var(--surface); font-size: var(--result-text-sm); }
 .target-year-range-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; }
 .target-year-range-actions span { color: var(--muted); font-size: 13px; }
 .year-tabs, .ziwei-mode-tabs { display: flex; flex-wrap: wrap; gap: 7px; }
