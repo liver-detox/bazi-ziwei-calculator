@@ -26,12 +26,20 @@ describe("localBrowserOpenCommand", () => {
     });
   });
 
-  it.each(["win32", "linux"] as const)("does not auto-open on %s", (platform) => {
-    expect(localBrowserOpenCommand(platform, "http://127.0.0.1:3000", false)).toBeNull();
+  it("opens the default Windows browser without a command shell", () => {
+    expect(localBrowserOpenCommand("win32", "http://127.0.0.1:3000", false)).toEqual({
+      command: `${process.env.SystemRoot ?? "C:\\Windows"}\\System32\\rundll32.exe`,
+      args: ["url.dll,FileProtocolHandler", "http://127.0.0.1:3000"]
+    });
+  });
+
+  it("does not auto-open on Linux", () => {
+    expect(localBrowserOpenCommand("linux", "http://127.0.0.1:3000", false)).toBeNull();
   });
 
   it("does not auto-open when browser startup is disabled", () => {
     expect(localBrowserOpenCommand("darwin", "http://127.0.0.1:3000", true)).toBeNull();
+    expect(localBrowserOpenCommand("win32", "http://127.0.0.1:3000", true)).toBeNull();
   });
 
   it.each([

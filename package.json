@@ -27,7 +27,9 @@
     "data:build:geonames-admin": "tsx scripts/build-geonames-cn-admin-places.ts",
     "dev": "vite --host 127.0.0.1",
     "start": "tsx src/server/index.ts",
-    "calculate": "node --import tsx src/cli/calculate.ts"
+    "calculate": "node --import tsx src/cli/calculate.ts",
+    "build:portable": "node scripts/build-windows-portable.mjs",
+    "test:portable": "node scripts/check-windows-portable.mjs"
   },
   "dependencies": {
     "@fastify/static": "10.1.2",

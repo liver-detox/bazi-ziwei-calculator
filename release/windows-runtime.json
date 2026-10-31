@@ -1,0 +1,13 @@
+{
+  "version": "24.22.2",
+  "architectures": {
+    "x64": {
+      "archiveSha256": "ca1bff5d8ead13c9f2ea404a176db46bd430704d5b5113734049fa365e7799e2",
+      "nodeSha256": "1c331340fa6cac5e4294725959070a143fa0507195a78ad77eed7943f719aac9"
+    },
+    "arm64": {
+      "archiveSha256": "f47968c213105077f64c6510f007632c0ca2574802a0b5067c327c49abe1c468",
+      "nodeSha256": "e2d6e75a0bfe4c176316d7c732eb8def9d94570c759eaeab335473a015abb7ea"
+    }
+  }
+}

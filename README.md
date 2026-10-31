@@ -99,6 +99,10 @@ npm start
 
 ### Windows 11 + Chrome
 
+Windows x64 便携测试版见 [下载与反馈](https://github.com/liver-detox/bazi-ziwei-calculator/releases/tag/v0.5.0-windows-preview.1)：解压整个 ZIP 后双击 `Start.cmd`，无需安装 Node.js 或 npm 依赖。此版本尚未完成 Windows 实机验收，欢迎反馈启动及使用问题。维护者见 [Windows 便携版构建与验收](docs/windows-portable.md)。
+
+从源码运行时：
+
 在项目目录完成一次 `npm ci` 后，在“命令提示符”运行：
 
 ```bat

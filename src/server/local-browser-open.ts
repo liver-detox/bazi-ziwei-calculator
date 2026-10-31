@@ -36,11 +36,16 @@ export function localBrowserOpenCommand(
     throw new Error(LOCAL_URL_ERROR);
   }
 
-  if (disabled || platform !== "darwin") {
+  if (disabled) {
     return null;
   }
 
-  return { command: "/usr/bin/open", args: [url] };
+  if (platform === "darwin") return { command: "/usr/bin/open", args: [url] };
+  if (platform === "win32") {
+    // Pass a validated local URL as an argument, without a command shell.
+    return { command: `${process.env.SystemRoot ?? "C:\\Windows"}\\System32\\rundll32.exe`, args: ["url.dll,FileProtocolHandler", url] };
+  }
+  return null;
 }
 
 export function monitorLocalBrowserOpen(
